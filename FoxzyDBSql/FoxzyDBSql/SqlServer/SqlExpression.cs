@@ -8,11 +8,6 @@ namespace FoxzyDBSql.SqlServer
 {
     public class SqlExpression : AbsDbExpression
     {
-        public override AbsDbExpression From(Dictionary<string, string> tableAsName)
-        {
-            throw new NotImplementedException();
-        }
-
         public override AbsDbExpression From(string tableName, string AsTableName = null)
         {
             if (AsTableName == null)
@@ -30,12 +25,14 @@ namespace FoxzyDBSql.SqlServer
 
         public override AbsDbExpression From(string tablesql)
         {
-            foreach (String table in tablesql.ToUpper().Split(','))
+            foreach (String table in tablesql.Split(','))
             {
-                if (table.IndexOf("AS") >= 0)
+                if (table.IndexOf(" ") >= 0)
                 {
-                    var _tb = table.Split("AS".ToCharArray());
-                    this._keyObject.Tables.Add(_tb[0].Trim(), _tb[1].Trim());
+                    String _tbName = table.Substring(0, table.IndexOf(" "));
+                    String _asName = table.Substring(table.LastIndexOf(" "));
+
+                    this._keyObject.Tables.Add(_tbName, _asName);
                 }
                 else
                     this._keyObject.Tables.Add(table, null);
@@ -99,7 +96,7 @@ namespace FoxzyDBSql.SqlServer
             List<String> select_sql = new List<string>();
             sb_sql.AppendLine("select ");
             //Select
-            if (String.IsNullOrEmpty(_keyObject.SelectStr) && _keyObject.Selects == null)
+            if (!String.IsNullOrEmpty(_keyObject.SelectStr) && _keyObject.Selects != null)
             {
                 if (_keyObject.Selects != null)
                 {
@@ -135,10 +132,12 @@ namespace FoxzyDBSql.SqlServer
                 foreach (var tb in _keyObject.Tables)
                 {
                     if (String.IsNullOrEmpty(tb.Value))
-                        select_sql.Add(tb.Key);
+                        select_sql.Add(tb.Key + ".*");
                     else
                         select_sql.Add(tb.Value + ".*");
                 }
+
+                sb_sql.AppendLine(String.Join(",", select_sql));
             }
         }
 

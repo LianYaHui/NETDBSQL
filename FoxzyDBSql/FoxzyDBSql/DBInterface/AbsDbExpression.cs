@@ -13,8 +13,6 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract AbsDbExpression From(String tableName, String AsTableName = null);
 
-        public abstract AbsDbExpression From(Dictionary<String, String> tableAsName);
-
         public abstract AbsDbExpression From(String tablesql);
 
         public abstract AbsDbExpression Select(IEnumerable<DBSelectComponent> Component);

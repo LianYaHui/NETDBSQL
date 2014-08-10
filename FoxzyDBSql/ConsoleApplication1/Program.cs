@@ -1,4 +1,5 @@
-﻿using FoxzyDBSql.SqlServer;
+﻿using FoxzyDBSql.Common;
+using FoxzyDBSql.SqlServer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +13,15 @@ namespace ConsoleApplication1
         {
             var db = new SqlManageUtil();
 
+
             string sql = db.CreateExpression()
-                 .From("h_emp_mstr")
+                 .From("h_emp_mstr", "tb_emp")
                  .Select()
                  .ToSql();
 
             Console.WriteLine(sql);
 
+            Console.ReadKey();
         }
     }
 }

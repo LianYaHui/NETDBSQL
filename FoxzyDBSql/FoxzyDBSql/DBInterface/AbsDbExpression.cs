@@ -19,12 +19,14 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract AbsDbExpression Select(String selectStr = null);
 
-        public abstract AbsDbExpression Where();
+        public abstract AbsDbExpression Where(String where);
 
-        public abstract AbsDbExpression OrderBy();
+        public abstract AbsDbExpression OrderBy(String field);
 
-        public abstract AbsDbExpression OrderByDesc();
+        public abstract AbsDbExpression OrderBy(String field, String tableName);
 
+        public abstract AbsDbExpression OrderByDesc(String field);
+        public abstract AbsDbExpression OrderByDesc(String field, String tableName);
         public abstract AbsDbExpression GropuBy();
 
         public abstract AbsDbExpression Having();

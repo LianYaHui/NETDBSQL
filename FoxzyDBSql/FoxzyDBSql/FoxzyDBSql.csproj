@@ -42,7 +42,7 @@
     <Compile Include="Common\Coloum.cs" />
     <Compile Include="Common\DbColunmList.cs" />
     <Compile Include="Common\DBExpression.cs" />
-    <Compile Include="Common\DBlWhereComponent.cs" />
+    <Compile Include="Common\DBWhereComponent.cs" />
     <Compile Include="Common\DBSelectComponent.cs" />
     <Compile Include="Common\DBSqlKeyObject.cs" />
     <Compile Include="Common\SqlFunctionAttribute.cs" />

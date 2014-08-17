@@ -15,8 +15,11 @@ namespace ConsoleApplication1
 
 
             string sql = db.CreateExpression()
-                 .From("h_emp_mstr", "tb_emp")
+                 .From("h_emp_mstr as tb_emp,P_Plan as p")
                  .Select()
+                 .Where("tb_emp.emp_id=p.Emp_ID")
+                 .OrderBy("tb_emp.emp_id")
+                 .OrderByDesc("ID","p")
                  .ToSql();
 
             Console.WriteLine(sql);

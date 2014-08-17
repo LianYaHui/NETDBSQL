@@ -54,22 +54,42 @@ namespace FoxzyDBSql.SqlServer
             return this;
         }
 
-        public override AbsDbExpression Where()
+        public override AbsDbExpression Where(String sql)
         {
-            throw new NotImplementedException();
+            this._keyObject.WhereSql = sql;
+            return this;
         }
 
-        public override AbsDbExpression OrderBy()
+        public override AbsDbExpression OrderBy(String faild)
         {
-            throw new NotImplementedException();
+            this._keyObject.Sort.Add(faild.ToLower(), true);
+            return this;
         }
 
-        public override AbsDbExpression OrderByDesc()
+        public override AbsDbExpression OrderBy(string field, string tableName)
         {
-            throw new NotImplementedException();
+            String col = String.Format("{0}.{1}", tableName, field);
+
+            this._keyObject.Sort.Add(col.ToLower(), true);
+            return this;
         }
 
-        public override AbsDbExpression GropuBy()
+        public override AbsDbExpression OrderByDesc(string field)
+        {
+            this._keyObject.Sort.Add(field.ToLower(), false);
+            return this;
+        }
+
+        public override AbsDbExpression OrderByDesc(string field, string tableName)
+        {
+            String col = String.Format("{0}.{1}", tableName, field);
+            this._keyObject.Sort.Add(col.ToLower(), false);
+            return this;
+        }
+
+        public override AbsDbExpression 
+            
+            GropuBy()
         {
             throw new NotImplementedException();
         }
@@ -88,9 +108,17 @@ namespace FoxzyDBSql.SqlServer
 
             _initSelect(sb_sql);
 
+            initFrom(sb_sql);
+
+            initWhere(sb_sql);
+
+            initSort(sb_sql);
+
             return sb_sql.ToString();
         }
 
+
+        #region 私有方法
         private void _initSelect(StringBuilder sb_sql)
         {
             List<String> select_sql = new List<string>();
@@ -141,10 +169,68 @@ namespace FoxzyDBSql.SqlServer
             }
         }
 
+        void initFrom(StringBuilder sb)
+        {
+            sb.Append(" from ");
+
+            List<String> fromSql = new List<string>();
+
+            foreach (var tb in this._keyObject.Tables)
+            {
+                if (String.IsNullOrEmpty(tb.Value))
+                {
+                    fromSql.Add(tb.Key);
+                }
+                else fromSql.Add(String.Format("{0} as {1}", tb.Key, tb.Value));
+            }
+
+            sb.Append(String.Join(",", fromSql));
+
+        }
+
+        void initWhere(StringBuilder sb)
+        {
+            sb.Append(" where 1=1");
+
+            if (!String.IsNullOrEmpty(this._keyObject.WhereSql))
+            {
+                sb.Append(" and ");
+                sb.Append(this._keyObject.WhereSql);
+            }
+        }
+
+        void initSort(StringBuilder sb)
+        {
+            if (this._keyObject.Sort.Count == 0)
+                return;
+
+            List<String> orderSql = new List<string>();
+            sb.Append(" order by ");
+
+            foreach (String key in _keyObject.Sort.Keys)
+            {
+                if ((bool)(_keyObject.Sort[key]))
+                {
+                    orderSql.Add(String.Format("{0} asc", key));
+                }
+                else
+                {
+                    orderSql.Add(String.Format("{0} desc", key));
+                }
+            }
+
+            sb.Append(String.Join(",", orderSql));
+        }
+
+        #endregion
+
+
         public override System.Data.DataSet ToDataSet()
         {
             throw new NotImplementedException();
         }
+
+
 
 
     }

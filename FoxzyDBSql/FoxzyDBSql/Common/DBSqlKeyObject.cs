@@ -19,10 +19,13 @@ namespace FoxzyDBSql.Common
 
         public Hashtable Sort { set; get; }
 
+        public Hashtable Join { set; get; }
+
         public DBSqlKeyObject()
         {
             Tables = new Dictionary<string, string>();
             Sort = new Hashtable();
+            Join = new Hashtable();
         }
 
         public static DBSqlKeyObject Create()

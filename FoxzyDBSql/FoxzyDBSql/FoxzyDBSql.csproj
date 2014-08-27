@@ -48,8 +48,10 @@
     <Compile Include="Common\SqlFunctionAttribute.cs" />
     <Compile Include="DBInterface\AbsDbExpression.cs" />
     <Compile Include="DBInterface\DbManage.cs" />
+    <Compile Include="DBInterface\IDBOnExpression.cs" />
     <Compile Include="DBInterface\IDBFunction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlServer\SqlDBOnExpression.cs" />
     <Compile Include="SqlServer\SqlExpression.cs" />
     <Compile Include="SqlServer\SqlManageUtil.cs" />
   </ItemGroup>

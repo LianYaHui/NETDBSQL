@@ -87,9 +87,7 @@ namespace FoxzyDBSql.SqlServer
             return this;
         }
 
-        public override AbsDbExpression 
-            
-            GropuBy()
+        public override AbsDbExpression GropuBy()
         {
             throw new NotImplementedException();
         }
@@ -109,6 +107,8 @@ namespace FoxzyDBSql.SqlServer
             _initSelect(sb_sql);
 
             initFrom(sb_sql);
+
+            initJoin(sb_sql);
 
             initWhere(sb_sql);
 
@@ -171,21 +171,7 @@ namespace FoxzyDBSql.SqlServer
 
         void initFrom(StringBuilder sb)
         {
-            sb.Append(" from ");
-
-            List<String> fromSql = new List<string>();
-
-            foreach (var tb in this._keyObject.Tables)
-            {
-                if (String.IsNullOrEmpty(tb.Value))
-                {
-                    fromSql.Add(tb.Key);
-                }
-                else fromSql.Add(String.Format("{0} as {1}", tb.Key, tb.Value));
-            }
-
-            sb.Append(String.Join(",", fromSql));
-
+            sb.AppendFormat(" from {0}", this._keyObject.FromTable);
         }
 
         void initWhere(StringBuilder sb)
@@ -222,6 +208,20 @@ namespace FoxzyDBSql.SqlServer
             sb.Append(String.Join(",", orderSql));
         }
 
+        void initJoin(StringBuilder sb)
+        {
+            if (this._keyObject.Join.Count == 0)
+                return;
+
+            foreach (String key in _keyObject.Join.Keys)
+            {
+                var onExp = _keyObject.Join[key] as IDBOnExpression;
+
+                sb.Append(onExp.ToString());
+            }
+
+        }
+
         #endregion
 
 
@@ -231,7 +231,42 @@ namespace FoxzyDBSql.SqlServer
         }
 
 
+        public override IDBOnExpression LeftJoin(String joinTable)
+        {
+            joinTable = joinTable.Trim();
+            IDBOnExpression ex = new SqlDBOnExpression();
+
+            ex.Type = "left join";
+
+            if (joinTable.IndexOf(" ") > 1)
+            {
+                ex.TableName = joinTable.Substring(0, joinTable.IndexOf(" "));
+                ex.AsName = joinTable.Substring(joinTable.LastIndexOf(" "));
+
+                this._keyObject.Tables.Add(ex.TableName, ex.AsName);
+            }
+            else
+            {
+                ex.TableName = joinTable;
+                ex.AsName = joinTable;
+
+                this._keyObject.Tables.Add(ex.TableName, null);
+            }
 
 
+
+
+            return ex.Fill(this);
+        }
+
+        public override IDBOnExpression RightJoin()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IDBOnExpression InnerJoin()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

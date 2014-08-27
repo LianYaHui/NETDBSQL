@@ -9,7 +9,7 @@ namespace FoxzyDBSql.DBInterface
 {
     public abstract class AbsDbExpression
     {
-        protected DBSqlKeyObject _keyObject = DBSqlKeyObject.Create();
+        public DBSqlKeyObject _keyObject = DBSqlKeyObject.Create();
 
         public abstract AbsDbExpression From(String tableName, String AsTableName = null);
 
@@ -22,14 +22,21 @@ namespace FoxzyDBSql.DBInterface
         public abstract AbsDbExpression Where(String where);
 
         public abstract AbsDbExpression OrderBy(String field);
-
         public abstract AbsDbExpression OrderBy(String field, String tableName);
 
         public abstract AbsDbExpression OrderByDesc(String field);
         public abstract AbsDbExpression OrderByDesc(String field, String tableName);
+
+
         public abstract AbsDbExpression GropuBy();
 
         public abstract AbsDbExpression Having();
+
+        public abstract IDBOnExpression LeftJoin(String joinTable);
+
+        public abstract IDBOnExpression RightJoin();
+
+        public abstract IDBOnExpression InnerJoin();
 
         public abstract String ToSql();
 

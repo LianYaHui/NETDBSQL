@@ -31,8 +31,9 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract int BulkCopyInsert(String tabelName, DataTable data);
 
-        public abstract AbsDbExpression CreateExpression();
+        public abstract AbsDbExpression CreateSelect();
 
+        public abstract AbsDbExpression CreateUpdate(String table);
 
         public virtual void Dispose()
         {

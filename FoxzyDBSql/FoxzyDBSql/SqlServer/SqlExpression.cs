@@ -3,11 +3,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data.SqlClient;
 
 namespace FoxzyDBSql.SqlServer
 {
     public class SqlExpression : AbsDbExpression
     {
+        private DbManage db;
+
+        public SqlExpression(DbManage db, Common.SqlExceType type)
+        {
+            if (db == null)
+                throw new Exception("DbManage is not null");
+
+            this.db = db;
+            this._keyObject.SqlType = type;
+        }
+
+
         public override AbsDbExpression From(string tableName, string AsTableName = null)
         {
             if (AsTableName == null)
@@ -87,44 +100,59 @@ namespace FoxzyDBSql.SqlServer
             return this;
         }
 
-        public override AbsDbExpression GropuBy()
+        public override AbsDbExpression GropuBy(params String[] field)
         {
-            throw new NotImplementedException();
+            foreach (String f in field)
+                this._keyObject.GroupByField.Add(f);
+
+            return this;
         }
 
-        public override AbsDbExpression Having()
+        public override AbsDbExpression Having(String havingStr)
         {
-            throw new NotImplementedException();
+            this._keyObject.HavingSql = havingStr;
+            return this;
         }
 
         public override string ToSql()
         {
-            if (String.IsNullOrEmpty(_keyObject.FromTable))
-                throw new Exception("没有制定表");
-
             StringBuilder sb_sql = new StringBuilder();
 
-            _initSelect(sb_sql);
+            if (_keyObject.SqlType == Common.SqlExceType.Select)
+            {
+                if (String.IsNullOrEmpty(_keyObject.FromTable))
+                    throw new Exception("没有制定表");
 
-            initFrom(sb_sql);
+                initSelect(sb_sql);
+                initFrom(sb_sql);
+                initJoin(sb_sql);
+                initWhere(sb_sql);
+                initGroup(sb_sql);
+                initHaving(sb_sql);
+                initSort(sb_sql);
 
-            initJoin(sb_sql);
+                return sb_sql.ToString();
+            }
+            if (_keyObject.SqlType == Common.SqlExceType.Update)
+            {
+                initUpdate(sb_sql);
+                initset(sb_sql);
+                initWhere(sb_sql);
 
-            initWhere(sb_sql);
 
-            initSort(sb_sql);
+                return sb_sql.ToString();
+            }
 
-            return sb_sql.ToString();
+            throw new NotImplementedException();
         }
 
-
         #region 私有方法
-        private void _initSelect(StringBuilder sb_sql)
+        private void initSelect(StringBuilder sb_sql)
         {
             List<String> select_sql = new List<string>();
-            sb_sql.AppendLine("select ");
+            sb_sql.Append("select ");
             //Select
-            if (!String.IsNullOrEmpty(_keyObject.SelectStr) && _keyObject.Selects != null)
+            if (!String.IsNullOrEmpty(_keyObject.SelectStr) || _keyObject.Selects != null)
             {
                 if (_keyObject.Selects != null)
                 {
@@ -149,7 +177,7 @@ namespace FoxzyDBSql.SqlServer
 
                 if (!String.IsNullOrEmpty(_keyObject.SelectStr))
                 {
-                    sb_sql.AppendLine(_keyObject.SelectStr);
+                    sb_sql.Append(_keyObject.SelectStr);
                 }
             }
             else
@@ -176,11 +204,9 @@ namespace FoxzyDBSql.SqlServer
 
         void initWhere(StringBuilder sb)
         {
-            sb.Append(" where 1=1");
-
             if (!String.IsNullOrEmpty(this._keyObject.WhereSql))
             {
-                sb.Append(" and ");
+                sb.Append(" where ");
                 sb.Append(this._keyObject.WhereSql);
             }
         }
@@ -222,13 +248,76 @@ namespace FoxzyDBSql.SqlServer
 
         }
 
+        void initGroup(StringBuilder sb)
+        {
+            if (this._keyObject.GroupByField.Count == 0)
+                return;
+
+            sb.AppendFormat(" group by {0}", String.Join(",", this._keyObject.GroupByField));
+        }
+
+        void initHaving(StringBuilder sb)
+        {
+            if (!String.IsNullOrEmpty(this._keyObject.HavingSql))
+            {
+                sb.Append(" having ");
+                sb.Append(this._keyObject.HavingSql);
+            }
+        }
+
+        void initUpdate(StringBuilder sb)
+        {
+            sb.AppendFormat("update {0} ", this._keyObject.UpdateTable);
+        }
+
+        void initset(StringBuilder sb)
+        {
+            if (this._keyObject.Set.Count == 0)
+                throw new Exception("至少制定一个Set可供更新");
+
+            sb.AppendFormat("set {0}", String.Join(",", this._keyObject.Set.Values.OfType<String>()));
+        }
+
         #endregion
 
 
         public override System.Data.DataSet ToDataSet()
         {
-            throw new NotImplementedException();
+
+            try
+            {
+                return db.FillDataSet(this.ToSql(), this._keyObject.DataParameters);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
+
+        public override object ExecuteScalar()
+        {
+            try
+            {
+                return db.ExecuteScalar(this.ToSql(), this._keyObject.DataParameters);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public override int ExecuteNonQuery()
+        {
+            try
+            {
+                return db.ExecuteNonQuery(this.ToSql(), this._keyObject.DataParameters);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
 
 
         public override IDBOnExpression LeftJoin(String joinTable)
@@ -259,14 +348,107 @@ namespace FoxzyDBSql.SqlServer
             return ex.Fill(this);
         }
 
-        public override IDBOnExpression RightJoin()
+        public override IDBOnExpression RightJoin(String joinTable)
         {
-            throw new NotImplementedException();
+            joinTable = joinTable.Trim();
+            IDBOnExpression ex = new SqlDBOnExpression();
+
+            ex.Type = "right join";
+
+            if (joinTable.IndexOf(" ") > 1)
+            {
+                ex.TableName = joinTable.Substring(0, joinTable.IndexOf(" "));
+                ex.AsName = joinTable.Substring(joinTable.LastIndexOf(" "));
+
+                this._keyObject.Tables.Add(ex.TableName, ex.AsName);
+            }
+            else
+            {
+                ex.TableName = joinTable;
+                ex.AsName = joinTable;
+
+                this._keyObject.Tables.Add(ex.TableName, null);
+            }
+
+            return ex.Fill(this);
         }
 
-        public override IDBOnExpression InnerJoin()
+        public override IDBOnExpression InnerJoin(String joinTable)
         {
-            throw new NotImplementedException();
+            joinTable = joinTable.Trim();
+            IDBOnExpression ex = new SqlDBOnExpression();
+
+            ex.Type = "inner join";
+
+            if (joinTable.IndexOf(" ") > 1)
+            {
+                ex.TableName = joinTable.Substring(0, joinTable.IndexOf(" "));
+                ex.AsName = joinTable.Substring(joinTable.LastIndexOf(" "));
+
+                this._keyObject.Tables.Add(ex.TableName, ex.AsName);
+            }
+            else
+            {
+                ex.TableName = joinTable;
+                ex.AsName = joinTable;
+
+                this._keyObject.Tables.Add(ex.TableName, null);
+            }
+
+            return ex.Fill(this);
+        }
+
+        public override AbsDbExpression SetParameter(params SqlParameter[] pars)
+        {
+            this._keyObject.DataParameters.AddRange(pars);
+            return this;
+        }
+
+        public override AbsDbExpression SetParameter(IEnumerable<SqlParameter> pars)
+        {
+            this._keyObject.DataParameters.AddRange(pars);
+            return this;
+        }
+
+        public override AbsDbExpression SetParameter(string replaceText, object value)
+        {
+            this._keyObject.DataParameters.Add(new SqlParameter(replaceText, value));
+            return this;
+        }
+
+
+        public override AbsDbExpression Update(String tb)
+        {
+            if (String.IsNullOrEmpty(tb))
+            {
+                throw new Exception("表名不能为空");
+            }
+
+            tb = tb.Trim();
+
+            this._keyObject.UpdateTable = tb;
+
+            return this;
+        }
+
+        public override AbsDbExpression Set(string sql)
+        {
+            if (String.IsNullOrEmpty(sql))
+            {
+                throw new Exception("set 参数不能为空");
+            }
+
+            foreach (String set in sql.Split(','))
+            {
+                String key = set.Substring(0, set.IndexOf("="));
+
+                if (this._keyObject.Set.ContainsKey(key))
+                    throw new Exception(String.Format("在 SET 子句中多次指定了列名 '{0}'", key));
+
+                this._keyObject.Set.Add(key, set);
+            }
+
+            return this;
         }
     }
 }

@@ -108,11 +108,19 @@ namespace FoxzyDBSql.SqlServer
             InitCommand(command, pars, type);
             DataAdapter.SelectCommand = Command;
 
+            try
+            {
+                DataAdapter.Fill(DBDataSet);
+                var Ds = DBDataSet.Copy();
+                Dispose();
+                return Ds;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
-            DataAdapter.Fill(DBDataSet);
-            var Ds = DBDataSet.Copy();
-            Dispose();
-            return Ds;
+
         }
 
         public override int BulkCopyInsert(String tabelName, DataTable data)
@@ -145,9 +153,15 @@ namespace FoxzyDBSql.SqlServer
             return _bulkcopy;
         }
 
-        public override AbsDbExpression CreateExpression()
+        public override AbsDbExpression CreateSelect()
         {
-            return new SqlExpression();
+            var _sql = new SqlExpression(this, Common.SqlExceType.Select);
+            return _sql;
+        }
+
+        public override AbsDbExpression CreateUpdate(String table)
+        {
+            return new SqlExpression(this, Common.SqlExceType.Update).Update(table);
         }
     }
 }

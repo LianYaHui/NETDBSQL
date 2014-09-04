@@ -28,19 +28,29 @@ namespace ConsoleApplication1
             //     .ToSql();
 
 
-            db.CreateUpdate("P_Plan")
-                .Set("remark=@r,TheoryCreateEmp=@t")
-                .SetParameter(new SqlParameter("@r", "Foxzy"))
-                .Set("lock=0")
-                .Where("ID=4000")
-                .SetParameter("@t", "lianF")
-                .ExecuteNonQuery();
+            //db.CreateUpdate("P_Plan")
+            //    .Set("remark=@r,TheoryCreateEmp=@t")
+            //    .SetParameter(new SqlParameter("@r", "Foxzy"))
+            //    .Set("lock=0")
+            //    .Where("ID=4000")
+            //    .SetParameter("@t", "lianF")
+            //    .ExecuteNonQuery();
+
+
+            var t= typeof(Person);
+
+            var a = t.GetCustomAttributes(true);
 
             Console.WriteLine("");
 
 
 
             Console.ReadKey();
+        }
+
+        [FoxzyDBSql.DBInterface.DBTableMapping("Ps")]
+        public class Person { 
+            
         }
     }
 }

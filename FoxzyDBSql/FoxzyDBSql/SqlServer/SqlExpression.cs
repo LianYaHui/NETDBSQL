@@ -20,7 +20,6 @@ namespace FoxzyDBSql.SqlServer
             this._keyObject.SqlType = type;
         }
 
-
         public override AbsDbExpression From(string tableName, string AsTableName = null)
         {
             if (AsTableName == null)
@@ -64,6 +63,12 @@ namespace FoxzyDBSql.SqlServer
         public override AbsDbExpression Select(string selectStr = null)
         {
             this._keyObject.SelectStr = selectStr;
+            return this;
+        }
+
+        public override AbsDbExpression Into(string intoTable)
+        {
+            this._keyObject.IntoTable = intoTable;
             return this;
         }
 
@@ -142,9 +147,28 @@ namespace FoxzyDBSql.SqlServer
 
                 return sb_sql.ToString();
             }
+            if (_keyObject.SqlType == Common.SqlExceType.Delete)
+            {
+                initDelete(sb_sql);
+                initWhere(sb_sql);
+
+                return sb_sql.ToString();
+            }
+
+            if (_keyObject.SqlType == Common.SqlExceType.Insert)
+            {
+                initInsert(sb_sql);
+                initWhere(sb_sql);
+
+                return sb_sql.ToString();
+            }
+
 
             throw new NotImplementedException();
         }
+
+
+
 
         #region 私有方法
         private void initSelect(StringBuilder sb_sql)
@@ -196,6 +220,15 @@ namespace FoxzyDBSql.SqlServer
                 sb_sql.AppendLine(String.Join(",", select_sql));
             }
         }
+
+        void initInto(StringBuilder sb_sql)
+        {
+            if (!String.IsNullOrEmpty(_keyObject.IntoTable))
+            {
+                sb_sql.AppendFormat(" into {0}", _keyObject.IntoTable);
+            }
+        }
+
 
         void initFrom(StringBuilder sb)
         {
@@ -276,6 +309,16 @@ namespace FoxzyDBSql.SqlServer
                 throw new Exception("至少制定一个Set可供更新");
 
             sb.AppendFormat("set {0}", String.Join(",", this._keyObject.Set.Values.OfType<String>()));
+        }
+
+        private void initDelete(StringBuilder sb)
+        {
+            sb.AppendFormat("delete {0} ", this._keyObject.DeleteTable);
+        }
+
+        private void initInsert(StringBuilder sb_sql)
+        {
+            sb_sql.AppendFormat("insert {0} ", this._keyObject.InsertTable);
         }
 
         #endregion
@@ -446,6 +489,135 @@ namespace FoxzyDBSql.SqlServer
                     throw new Exception(String.Format("在 SET 子句中多次指定了列名 '{0}'", key));
 
                 this._keyObject.Set.Add(key, set);
+            }
+
+            return this;
+        }
+
+        public override AbsDbExpression Delete(string table)
+        {
+            if (String.IsNullOrEmpty(table))
+            {
+                throw new Exception("表名不能为空");
+            }
+
+            table = table.Trim();
+
+            this._keyObject.DeleteTable = table;
+            return this;
+        }
+
+
+        public override AbsDbExpression Insert(string table)
+        {
+            if (String.IsNullOrEmpty(table))
+            {
+                throw new Exception("表名不能为空");
+            }
+
+            table = table.Trim();
+
+            this._keyObject.InsertTable = table;
+            return this;
+        }
+
+        public override AbsDbExpression InsertColoums(params string[] coloums)
+        {
+            _keyObject.InsertColoums.Clear();
+
+            foreach (string coloum in coloums)
+            {
+                _keyObject.InsertColoums.Add(coloum, null);
+            }
+
+            return this;
+        }
+
+        public override AbsDbExpression InsertColoums(IEnumerable<string> coloums)
+        {
+            _keyObject.InsertColoums.Clear();
+
+            foreach (string coloum in coloums)
+            {
+                _keyObject.InsertColoums.Add(coloum, null);
+            }
+
+            return this;
+        }
+
+        public override AbsDbExpression InsertValues(params object[] value)
+        {
+            if (value.Count() != _keyObject.InsertColoums.Count)
+                throw new Exception("insert :VALUES 子句中值的数目必须与 INSERT 语句中指定的列的数目匹配");
+
+            for (int i = 0; i < _keyObject.InsertColoums.Count; i++)
+            {
+                String key = _keyObject.InsertColoums.Keys.ElementAt(i);
+                _keyObject.InsertColoums[key] = value.ElementAt(i);
+            }
+
+            return this;
+        }
+
+        public override AbsDbExpression InsertValues(IEnumerable<object> value)
+        {
+            if (value.Count() != _keyObject.InsertColoums.Count)
+                throw new Exception("insert :VALUES 子句中值的数目必须与 INSERT 语句中指定的列的数目匹配");
+
+            for (int i = 0; i < _keyObject.InsertColoums.Count; i++)
+            {
+                String key = _keyObject.InsertColoums.Keys.ElementAt(i);
+                _keyObject.InsertColoums[key] = value.ElementAt(i);
+            }
+
+            return this;
+        }
+
+        public override AbsDbExpression InsertObject(object obj)
+        {
+            var thisObjType=obj.GetType();
+
+            var properties = thisObjType.GetProperties();
+
+            var tableMappings = thisObjType.GetCustomAttributes(true);
+            var tableMapping= tableMappings.FirstOrDefault(attr =>
+            { return 
+                attr is DBTableMappingAttribute; 
+            });
+            if (tableMapping == null)
+                _keyObject.InsertTable = thisObjType.Name;
+            else
+                _keyObject.InsertTable = (tableMapping as DBTableMappingAttribute).DBTableName;
+
+            foreach (var p in properties)
+            {
+                var feildAttributes = p.GetCustomAttributes(true);
+
+                var colMapping = feildAttributes.FirstOrDefault(attr =>
+                {
+                    return
+                      attr is DBColunmMappingAttribute;
+                });
+
+                object val = p.GetValue(obj, null);
+
+                if (colMapping == null)
+                {
+                    _keyObject.InsertColoums.Add(p.Name,val);
+                }
+                else {
+                    _keyObject.InsertColoums.Add((colMapping as DBColunmMappingAttribute).ColounmName, val);
+                }   
+            }
+
+            return this;
+        }
+
+        public override AbsDbExpression InsertColoumValue(Dictionary<string, object> dictionary)
+        {
+            foreach (var d in dictionary)
+            {
+                _keyObject.InsertColoums.Add(d.Key, d.Value);
             }
 
             return this;

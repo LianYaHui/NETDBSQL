@@ -25,6 +25,24 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract AbsDbExpression Update(String tb);
 
+        public abstract AbsDbExpression Delete(string table);
+
+        public abstract AbsDbExpression Insert(string table);
+
+        public abstract AbsDbExpression InsertColoums(params String[] coloums);
+
+        public abstract AbsDbExpression InsertColoums(IEnumerable<String> coloums);
+
+        public abstract AbsDbExpression InsertValues(params Object[] value);
+
+        public abstract AbsDbExpression InsertValues(IEnumerable<Object> value);
+
+        public abstract AbsDbExpression InsertObject(Object obj);
+
+        public abstract AbsDbExpression InsertColoumValue(Dictionary<String, Object> dictionary);
+
+
+
         public abstract AbsDbExpression Set(String sql);
 
         public abstract AbsDbExpression From(String tableName, String AsTableName = null);
@@ -34,6 +52,8 @@ namespace FoxzyDBSql.DBInterface
         public abstract AbsDbExpression Select(IEnumerable<DBSelectComponent> Component);
 
         public abstract AbsDbExpression Select(String selectStr = null);
+
+        public abstract AbsDbExpression Into(String intoTable);
 
         public abstract AbsDbExpression Where(String where);
 
@@ -86,6 +106,9 @@ namespace FoxzyDBSql.DBInterface
 
             public List<System.Data.IDataParameter> DataParameters { set; get; }
 
+            public Dictionary<String, Object> InsertColoums { set; get; }
+
+
             public HashSet<String> GroupByField { set; get; }
 
             public String UpdateTable { set; get; }
@@ -99,6 +122,7 @@ namespace FoxzyDBSql.DBInterface
                 Join = new Hashtable();
 
                 Set = new Hashtable();
+                InsertColoums = new Dictionary<String, Object>();
 
                 DataParameters = new List<System.Data.IDataParameter>();
                 GroupByField = new HashSet<string>();
@@ -110,6 +134,12 @@ namespace FoxzyDBSql.DBInterface
             }
 
             public string HavingSql { get; set; }
+
+            public string DeleteTable { get; set; }
+
+            public string IntoTable { get; set; }
+
+            public object InsertTable { get; set; }
         }
 
     }

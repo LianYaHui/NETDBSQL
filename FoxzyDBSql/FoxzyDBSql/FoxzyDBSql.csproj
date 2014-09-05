@@ -47,9 +47,7 @@
     <Compile Include="Common\SqlExecType.cs" />
     <Compile Include="Common\SqlFunctionAttribute.cs" />
     <Compile Include="DBInterface\AbsDbExpression.cs" />
-    <Compile Include="DBInterface\DBColunmMappingAttribute.cs" />
     <Compile Include="DBInterface\DbManage.cs" />
-    <Compile Include="DBInterface\DBTableMappingAttribute.cs" />
     <Compile Include="DBInterface\IDBOnExpression.cs" />
     <Compile Include="DBInterface\IDBFunction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

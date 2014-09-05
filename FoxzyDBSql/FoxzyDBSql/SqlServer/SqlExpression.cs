@@ -129,6 +129,7 @@ namespace FoxzyDBSql.SqlServer
                     throw new Exception("没有制定表");
 
                 initSelect(sb_sql);
+                initInto(sb_sql);
                 initFrom(sb_sql);
                 initJoin(sb_sql);
                 initWhere(sb_sql);
@@ -158,7 +159,9 @@ namespace FoxzyDBSql.SqlServer
             if (_keyObject.SqlType == Common.SqlExceType.Insert)
             {
                 initInsert(sb_sql);
-                initWhere(sb_sql);
+                initInsertColunmVal(sb_sql);
+
+
 
                 return sb_sql.ToString();
             }
@@ -318,7 +321,45 @@ namespace FoxzyDBSql.SqlServer
 
         private void initInsert(StringBuilder sb_sql)
         {
+            if (String.IsNullOrEmpty(this._keyObject.InsertTable))
+                throw new Exception("insert 表为空");
+
             sb_sql.AppendFormat("insert {0} ", this._keyObject.InsertTable);
+        }
+
+        void initInsertColunmVal(StringBuilder sb_sql)
+        {
+            if (_keyObject.InsertColoums.Count > 0)
+            {
+                sb_sql.AppendFormat("({0}) ", String.Join(",", _keyObject.InsertColoums));
+
+                initSelect(sb_sql);
+                initFrom(sb_sql);
+                initJoin(sb_sql);
+                initWhere(sb_sql);
+                initGroup(sb_sql);
+                initHaving(sb_sql);
+                initSort(sb_sql);
+            }
+            else if (_keyObject.OperateObject.Count > 0)
+            {
+                List<String> clo=new List<string>();
+                List<String> vals=new List<string>();
+
+                foreach(System.Collections.DictionaryEntry  d in this._keyObject.OperateObject)
+                {
+                    clo.Add(Convert.ToString(d.Key));
+                    vals.Add("@" +Convert.ToString(d.Key));
+
+                    this._keyObject.DataParameters.Add(new SqlParameter("@"+d.Key,d.Value));
+                }
+
+                sb_sql.AppendFormat("({0}) values ({1})",
+                    String.Join(",",clo),
+                    String.Join(",", vals));
+            }
+            else
+                throw new Exception("这个你还是看下ToSql就知道了");
         }
 
         #endregion
@@ -326,7 +367,6 @@ namespace FoxzyDBSql.SqlServer
 
         public override System.Data.DataSet ToDataSet()
         {
-
             try
             {
                 return db.FillDataSet(this.ToSql(), this._keyObject.DataParameters);
@@ -527,7 +567,7 @@ namespace FoxzyDBSql.SqlServer
 
             foreach (string coloum in coloums)
             {
-                _keyObject.InsertColoums.Add(coloum, null);
+                _keyObject.InsertColoums.Add(coloum);
             }
 
             return this;
@@ -536,88 +576,36 @@ namespace FoxzyDBSql.SqlServer
         public override AbsDbExpression InsertColoums(IEnumerable<string> coloums)
         {
             _keyObject.InsertColoums.Clear();
-
-            foreach (string coloum in coloums)
-            {
-                _keyObject.InsertColoums.Add(coloum, null);
-            }
+            _keyObject.InsertColoums.AddRange(coloums);
 
             return this;
         }
 
-        public override AbsDbExpression InsertValues(params object[] value)
+        public override AbsDbExpression SetObject(object obj)
         {
-            if (value.Count() != _keyObject.InsertColoums.Count)
-                throw new Exception("insert :VALUES 子句中值的数目必须与 INSERT 语句中指定的列的数目匹配");
-
-            for (int i = 0; i < _keyObject.InsertColoums.Count; i++)
-            {
-                String key = _keyObject.InsertColoums.Keys.ElementAt(i);
-                _keyObject.InsertColoums[key] = value.ElementAt(i);
-            }
-
-            return this;
-        }
-
-        public override AbsDbExpression InsertValues(IEnumerable<object> value)
-        {
-            if (value.Count() != _keyObject.InsertColoums.Count)
-                throw new Exception("insert :VALUES 子句中值的数目必须与 INSERT 语句中指定的列的数目匹配");
-
-            for (int i = 0; i < _keyObject.InsertColoums.Count; i++)
-            {
-                String key = _keyObject.InsertColoums.Keys.ElementAt(i);
-                _keyObject.InsertColoums[key] = value.ElementAt(i);
-            }
-
-            return this;
-        }
-
-        public override AbsDbExpression InsertObject(object obj)
-        {
-            var thisObjType=obj.GetType();
-
-            var properties = thisObjType.GetProperties();
-
-            var tableMappings = thisObjType.GetCustomAttributes(true);
-            var tableMapping= tableMappings.FirstOrDefault(attr =>
-            { return 
-                attr is DBTableMappingAttribute; 
-            });
-            if (tableMapping == null)
-                _keyObject.InsertTable = thisObjType.Name;
-            else
-                _keyObject.InsertTable = (tableMapping as DBTableMappingAttribute).DBTableName;
+            var properties = obj.GetType().GetProperties();
 
             foreach (var p in properties)
             {
-                var feildAttributes = p.GetCustomAttributes(true);
-
-                var colMapping = feildAttributes.FirstOrDefault(attr =>
-                {
-                    return
-                      attr is DBColunmMappingAttribute;
-                });
-
                 object val = p.GetValue(obj, null);
 
-                if (colMapping == null)
-                {
-                    _keyObject.InsertColoums.Add(p.Name,val);
-                }
-                else {
-                    _keyObject.InsertColoums.Add((colMapping as DBColunmMappingAttribute).ColounmName, val);
-                }   
+                if (_keyObject.OperateObject.ContainsKey(p.Name))
+                    throw new Exception(String.Format("已经指定列 {0} ", p.Name));
+
+                _keyObject.OperateObject.Add(p.Name, val);
             }
 
             return this;
         }
 
-        public override AbsDbExpression InsertColoumValue(Dictionary<string, object> dictionary)
+        public override AbsDbExpression SetDictionary(Dictionary<string, object> dictionary)
         {
             foreach (var d in dictionary)
             {
-                _keyObject.InsertColoums.Add(d.Key, d.Value);
+                if (_keyObject.OperateObject.ContainsKey(d.Key))
+                    throw new Exception(String.Format("已经指定列 {0} ", d.Key));
+
+                _keyObject.OperateObject.Add(d.Key, d.Value);
             }
 
             return this;

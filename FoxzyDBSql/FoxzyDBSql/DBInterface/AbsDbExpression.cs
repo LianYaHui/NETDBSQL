@@ -33,15 +33,9 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract AbsDbExpression InsertColoums(IEnumerable<String> coloums);
 
-        public abstract AbsDbExpression InsertValues(params Object[] value);
+        public abstract AbsDbExpression SetObject(Object obj);
 
-        public abstract AbsDbExpression InsertValues(IEnumerable<Object> value);
-
-        public abstract AbsDbExpression InsertObject(Object obj);
-
-        public abstract AbsDbExpression InsertColoumValue(Dictionary<String, Object> dictionary);
-
-
+        public abstract AbsDbExpression SetDictionary(Dictionary<String, Object> dictionary);
 
         public abstract AbsDbExpression Set(String sql);
 
@@ -106,7 +100,9 @@ namespace FoxzyDBSql.DBInterface
 
             public List<System.Data.IDataParameter> DataParameters { set; get; }
 
-            public Dictionary<String, Object> InsertColoums { set; get; }
+            public Hashtable OperateObject { set; get; }
+
+            public List<String> InsertColoums { set; get; }
 
 
             public HashSet<String> GroupByField { set; get; }
@@ -122,7 +118,9 @@ namespace FoxzyDBSql.DBInterface
                 Join = new Hashtable();
 
                 Set = new Hashtable();
-                InsertColoums = new Dictionary<String, Object>();
+
+                OperateObject = new Hashtable();
+                InsertColoums = new List<string>();
 
                 DataParameters = new List<System.Data.IDataParameter>();
                 GroupByField = new HashSet<string>();
@@ -139,7 +137,7 @@ namespace FoxzyDBSql.DBInterface
 
             public string IntoTable { get; set; }
 
-            public object InsertTable { get; set; }
+            public string InsertTable { get; set; }
         }
 
     }

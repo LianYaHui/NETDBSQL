@@ -15,6 +15,6 @@ namespace FoxzyDBSql.Common
             TableName = table;
         }
 
-        public List<DBExpression> Expressions { set; get; }
+        public List<DBExpression> Expressions22 { set; get; }
     }
 }

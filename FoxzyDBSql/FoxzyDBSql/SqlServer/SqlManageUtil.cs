@@ -22,6 +22,8 @@ namespace FoxzyDBSql.SqlServer
 
             if (ConncetionString == null)
             {
+                ConnectionStringIsNull();
+
                 //当连接字符串为空的时候进行默认操作
                 return _opneResult;
             }

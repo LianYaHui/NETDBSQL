@@ -433,9 +433,6 @@ namespace FoxzyDBSql.SqlServer
                 this._keyObject.Tables.Add(ex.TableName, null);
             }
 
-
-
-
             return ex.Fill(this);
         }
 

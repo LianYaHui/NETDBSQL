@@ -11,6 +11,15 @@ namespace FoxzyDBSql.DBInterface
     {
         protected DbConnection Connection;
 
+        public event Action<DbManage> OnConnectionStringIsNull;
+
+        protected void ConnectionStringIsNull()
+        {
+            if (OnConnectionStringIsNull != null)
+                OnConnectionStringIsNull(this);
+        }
+
+
         public DbCommand Command { get; set; }
 
         protected DbDataAdapter DataAdapter;

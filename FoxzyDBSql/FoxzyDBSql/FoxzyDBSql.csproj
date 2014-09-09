@@ -40,7 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Coloum.cs" />
-    <Compile Include="Common\DbColunmList.cs" />
     <Compile Include="Common\DBExpression.cs" />
     <Compile Include="Common\DBSelectComponent.cs" />
     <Compile Include="Common\SqlExecType.cs" />

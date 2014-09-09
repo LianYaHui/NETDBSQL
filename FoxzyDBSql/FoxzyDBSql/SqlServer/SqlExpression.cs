@@ -308,10 +308,18 @@ namespace FoxzyDBSql.SqlServer
 
         void initset(StringBuilder sb)
         {
-            if (this._keyObject.Set.Count == 0)
+            List<String> vals = this._keyObject.Set.Values.OfType<String>().ToList();
+
+            foreach (System.Collections.DictionaryEntry d in this._keyObject.OperateObject)
+            {
+                vals.Add(d.Key + "= @" + Convert.ToString(d.Key));
+                this._keyObject.DataParameters.Add(new SqlParameter("@" + d.Key, d.Value));
+            }
+
+            if (vals.Count == 0)
                 throw new Exception("至少制定一个Set可供更新");
 
-            sb.AppendFormat("set {0}", String.Join(",", this._keyObject.Set.Values.OfType<String>()));
+            sb.AppendFormat("set {0}", String.Join(",", vals));
         }
 
         private void initDelete(StringBuilder sb)
@@ -343,19 +351,19 @@ namespace FoxzyDBSql.SqlServer
             }
             else if (_keyObject.OperateObject.Count > 0)
             {
-                List<String> clo=new List<string>();
-                List<String> vals=new List<string>();
+                List<String> clo = new List<string>();
+                List<String> vals = new List<string>();
 
-                foreach(System.Collections.DictionaryEntry  d in this._keyObject.OperateObject)
+                foreach (System.Collections.DictionaryEntry d in this._keyObject.OperateObject)
                 {
                     clo.Add(Convert.ToString(d.Key));
-                    vals.Add("@" +Convert.ToString(d.Key));
+                    vals.Add("@" + Convert.ToString(d.Key));
 
-                    this._keyObject.DataParameters.Add(new SqlParameter("@"+d.Key,d.Value));
+                    this._keyObject.DataParameters.Add(new SqlParameter("@" + d.Key, d.Value));
                 }
 
                 sb_sql.AppendFormat("({0}) values ({1})",
-                    String.Join(",",clo),
+                    String.Join(",", clo),
                     String.Join(",", vals));
             }
             else

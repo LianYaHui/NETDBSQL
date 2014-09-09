@@ -18,12 +18,13 @@ namespace FoxzyDBSql.SqlServer
 
         public override bool OpenConncetion()
         {
+            bool _opneResult = false;
+
             if (ConncetionString == null)
             {
                 //当连接字符串为空的时候进行默认操作
+                return _opneResult;
             }
-
-            bool _opneResult = false;
             try
             {
                 Connection = new SqlConnection(ConncetionString);
@@ -111,9 +112,8 @@ namespace FoxzyDBSql.SqlServer
             try
             {
                 DataAdapter.Fill(DBDataSet);
-                var Ds = DBDataSet.Copy();
                 Dispose();
-                return Ds;
+                return DBDataSet;
             }
             catch (Exception ex)
             {

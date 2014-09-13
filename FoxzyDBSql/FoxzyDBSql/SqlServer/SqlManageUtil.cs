@@ -8,7 +8,6 @@ using System.Text;
 
 namespace FoxzyDBSql.SqlServer
 {
-
     public class SqlManageUtil : DbManage
     {
         static SqlManageUtil()
@@ -94,6 +93,20 @@ namespace FoxzyDBSql.SqlServer
                 throw new Exception();
             }
         }
+
+        public override T ExecuteScalar<T>(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text)
+        {
+            try
+            {
+                var obj = ExecuteScalar(command, pars, type);
+                return (T)(obj);
+            }
+            catch
+            {
+                throw new Exception();
+            }
+        }
+
 
         public override void Dispose()
         {

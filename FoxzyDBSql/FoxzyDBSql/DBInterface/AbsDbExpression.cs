@@ -81,6 +81,12 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract int ExecuteNonQuery();
 
+        public abstract AbsDbExpression Limit(int skipNum, int returnNum);
+
+        public abstract AbsDbExpression Top(int count);
+
+        public abstract AbsDbExpression RowPagination(int beginRowNumber, int endRowNumber);
+
         public class DBSqlKeyObject
         {
             public SqlExceType SqlType { set; get; }
@@ -138,6 +144,8 @@ namespace FoxzyDBSql.DBInterface
             public string IntoTable { get; set; }
 
             public string InsertTable { get; set; }
+
+            public int Top { get; set; }
         }
 
     }

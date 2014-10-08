@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{49DA4633-9FB2-433B-A706-E2B612C514A0}</ProjectGuid>
+    <ProjectGuid>{EB8DF664-0866-4156-B491-D58E52B4C96F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FoxzyDBSql</RootNamespace>
-    <AssemblyName>FoxzyDBSql</AssemblyName>
+    <RootNamespace>FoxzyForMySql</RootNamespace>
+    <AssemblyName>FoxzyForMySql</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,27 +30,26 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data">
+      <HintPath>..\..\..\CMS_Lian\Bin\MySql.Data.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Coloum.cs" />
-    <Compile Include="Common\DBExpression.cs" />
-    <Compile Include="Common\DBSelectComponent.cs" />
-    <Compile Include="Common\SqlExecType.cs" />
-    <Compile Include="DBInterface\AbsDbExpression.cs" />
-    <Compile Include="DBInterface\DbManage.cs" />
-    <Compile Include="DBInterface\IDBOnExpression.cs" />
-    <Compile Include="DBInterface\IDBFunction.cs" />
+    <Compile Include="MySqlExpression.cs" />
+    <Compile Include="MySqlManageUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SqlServer\SqlDBOnExpression.cs" />
-    <Compile Include="SqlServer\SqlExpression.cs" />
-    <Compile Include="SqlServer\SqlManageUtil.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FoxzyDBSql\FoxzyDBSql.csproj">
+      <Project>{49da4633-9fb2-433b-a706-e2b612c514a0}</Project>
+      <Name>FoxzyDBSql</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

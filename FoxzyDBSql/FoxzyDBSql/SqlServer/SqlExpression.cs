@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data.SqlClient;
+using System.Data;
 
 namespace FoxzyDBSql.SqlServer
 {
@@ -178,6 +179,10 @@ namespace FoxzyDBSql.SqlServer
         {
             List<String> select_sql = new List<string>();
             sb_sql.Append("select ");
+
+            if (_keyObject.Top != 0)
+                sb_sql.AppendFormat("top {0} ", _keyObject.Top);
+
             //Select
             if (!String.IsNullOrEmpty(_keyObject.SelectStr) || _keyObject.Selects != null)
             {
@@ -198,7 +203,7 @@ namespace FoxzyDBSql.SqlServer
                             select_sql.Add(_select);
                         }
                     }
-                    sb_sql.AppendFormat(String.Join(",", select_sql));
+                    sb_sql.AppendFormat(String.Join(",", select_sql.ToArray()));
                     return;
                 }
 
@@ -220,7 +225,7 @@ namespace FoxzyDBSql.SqlServer
                         select_sql.Add(tb.Value + ".*");
                 }
 
-                sb_sql.AppendLine(String.Join(",", select_sql));
+                sb_sql.AppendLine(String.Join(",", select_sql.ToArray()));
             }
         }
 
@@ -267,7 +272,7 @@ namespace FoxzyDBSql.SqlServer
                 }
             }
 
-            sb.Append(String.Join(",", orderSql));
+            sb.Append(String.Join(",", orderSql.ToArray()));
         }
 
         void initJoin(StringBuilder sb)
@@ -289,7 +294,7 @@ namespace FoxzyDBSql.SqlServer
             if (this._keyObject.GroupByField.Count == 0)
                 return;
 
-            sb.AppendFormat(" group by {0}", String.Join(",", this._keyObject.GroupByField));
+            sb.AppendFormat(" group by {0}", String.Join(",", this._keyObject.GroupByField.ToArray()));
         }
 
         void initHaving(StringBuilder sb)
@@ -319,7 +324,7 @@ namespace FoxzyDBSql.SqlServer
             if (vals.Count == 0)
                 throw new Exception("至少制定一个Set可供更新");
 
-            sb.AppendFormat("set {0}", String.Join(",", vals));
+            sb.AppendFormat("set {0}", String.Join(",", vals.ToArray()));
         }
 
         private void initDelete(StringBuilder sb)
@@ -339,7 +344,7 @@ namespace FoxzyDBSql.SqlServer
         {
             if (_keyObject.InsertColoums.Count > 0)
             {
-                sb_sql.AppendFormat("({0}) ", String.Join(",", _keyObject.InsertColoums));
+                sb_sql.AppendFormat("({0}) ", String.Join(",", _keyObject.InsertColoums.ToArray()));
 
                 initSelect(sb_sql);
                 initFrom(sb_sql);
@@ -363,8 +368,8 @@ namespace FoxzyDBSql.SqlServer
                 }
 
                 sb_sql.AppendFormat("({0}) values ({1})",
-                    String.Join(",", clo),
-                    String.Join(",", vals));
+                    String.Join(",", clo.ToArray()),
+                    String.Join(",", vals.ToArray()));
             }
             else
                 throw new Exception("这个你还是看下ToSql就知道了");
@@ -494,7 +499,7 @@ namespace FoxzyDBSql.SqlServer
 
         public override AbsDbExpression SetParameter(IEnumerable<SqlParameter> pars)
         {
-            this._keyObject.DataParameters.AddRange(pars);
+            this._keyObject.DataParameters.AddRange(pars.OfType<IDataParameter>());
             return this;
         }
 
@@ -614,6 +619,26 @@ namespace FoxzyDBSql.SqlServer
             }
 
             return this;
+        }
+
+        public override AbsDbExpression Limit(int skipNum, int returnNum = 0)
+        {
+            throw new Exception("SqlServer 不支持 limit 语句");
+        }
+
+        public override AbsDbExpression Top(int count)
+        {
+            if (count <= 0)
+                throw new Exception("top参数不能为负数");
+
+            _keyObject.Top = count;
+
+            return this;
+        }
+
+        public override AbsDbExpression RowPagination(int beginRowNumber, int endRowNumber)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoxzyDBSql", "FoxzyDBSql\FoxzyDBSql.csproj", "{49DA4633-9FB2-433B-A706-E2B612C514A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoxzyForMySql", "FoxzyForMySql\FoxzyForMySql.csproj", "{EB8DF664-0866-4156-B491-D58E52B4C96F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{49DA4633-9FB2-433B-A706-E2B612C514A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49DA4633-9FB2-433B-A706-E2B612C514A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49DA4633-9FB2-433B-A706-E2B612C514A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB8DF664-0866-4156-B491-D58E52B4C96F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB8DF664-0866-4156-B491-D58E52B4C96F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB8DF664-0866-4156-B491-D58E52B4C96F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB8DF664-0866-4156-B491-D58E52B4C96F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

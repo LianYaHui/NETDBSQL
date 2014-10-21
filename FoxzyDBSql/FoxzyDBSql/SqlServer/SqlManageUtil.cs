@@ -184,9 +184,9 @@ namespace FoxzyDBSql.SqlServer
             return new SqlExpression(this, Common.SqlExceType.Delete).Delete(table);
         }
 
-        public override AbsDbExpression CreateInsert()
+        public override AbsDbExpression CreateInsert(String table)
         {
-            return new SqlExpression(this, Common.SqlExceType.Insert);
+            return new SqlExpression(this, Common.SqlExceType.Insert).Insert(table);
         }
     }
 }

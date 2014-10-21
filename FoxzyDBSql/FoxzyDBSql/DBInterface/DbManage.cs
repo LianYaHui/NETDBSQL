@@ -48,7 +48,7 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract AbsDbExpression CreateDelete(String table);
 
-        public abstract AbsDbExpression CreateInsert();
+        public abstract AbsDbExpression CreateInsert(String table);
 
         public virtual void Dispose()
         {

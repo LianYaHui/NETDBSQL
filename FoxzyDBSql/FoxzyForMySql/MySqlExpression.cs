@@ -377,7 +377,7 @@ namespace FoxzyForMySql
             throw new NotImplementedException();
         }
 
-        
+
 
         public override System.Data.DataSet ToDataSet()
         {
@@ -417,7 +417,14 @@ namespace FoxzyForMySql
 
         public override AbsDbExpression Limit(int skipNum, int returnNum)
         {
-            throw new NotImplementedException();
+            StringBuilder limitBuilder = new StringBuilder();
+            limitBuilder.Append(Convert.ToString(skipNum));
+
+            if (returnNum > 0)
+                limitBuilder.AppendFormat(",{0}", returnNum);
+
+            this._keyObject.Limit = limitBuilder.ToString();
+            return this;
         }
 
         public override AbsDbExpression Top(int count)
@@ -636,7 +643,8 @@ namespace FoxzyForMySql
 
         private void initLimit(StringBuilder sb_sql)
         {
-            sb_sql.AppendFormat("limit {0}");
+            if (!String.IsNullOrEmpty(this._keyObject.Limit))
+                sb_sql.AppendFormat("limit {0}", this._keyObject.Limit);
         }
 
         #endregion

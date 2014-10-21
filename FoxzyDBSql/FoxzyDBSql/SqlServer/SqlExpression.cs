@@ -491,13 +491,13 @@ namespace FoxzyDBSql.SqlServer
             return ex.Fill(this);
         }
 
-        public override AbsDbExpression SetParameter(params SqlParameter[] pars)
+        public override AbsDbExpression SetParameter(params IDataParameter[] pars)
         {
             this._keyObject.DataParameters.AddRange(pars);
             return this;
         }
 
-        public override AbsDbExpression SetParameter(IEnumerable<SqlParameter> pars)
+        public override AbsDbExpression SetParameter(IEnumerable<IDataParameter> pars)
         {
             this._keyObject.DataParameters.AddRange(pars.OfType<IDataParameter>());
             return this;

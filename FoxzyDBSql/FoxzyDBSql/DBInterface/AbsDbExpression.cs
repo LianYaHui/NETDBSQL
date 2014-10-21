@@ -59,9 +59,9 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract AbsDbExpression GropuBy(params String[] field);
 
-        public abstract AbsDbExpression SetParameter(params SqlParameter[] pars);
+        public abstract AbsDbExpression SetParameter(params IDataParameter[] pars);
 
-        public abstract AbsDbExpression SetParameter(IEnumerable<SqlParameter> pars);
+        public abstract AbsDbExpression SetParameter(IEnumerable<IDataParameter> pars);
 
         public abstract AbsDbExpression SetParameter(String replaceText, object value);
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using MySql.Data.MySqlClient;
 using System.Data;
+using FoxzyDBSql.Common;
 
 namespace FoxzyForMySql
 {
@@ -92,7 +93,7 @@ namespace FoxzyForMySql
             }
             catch
             {
-                throw new Exception();
+                throw;
             }
         }
 
@@ -131,22 +132,23 @@ namespace FoxzyForMySql
 
         public override AbsDbExpression CreateSelect()
         {
-            throw new NotImplementedException();
+            var _sql = new MySqlExpression(this, SqlExceType.Select);
+            return _sql;
         }
 
         public override AbsDbExpression CreateUpdate(string table)
         {
-            throw new NotImplementedException();
+            return new MySqlExpression(this, SqlExceType.Update).Update(table);
         }
 
         public override AbsDbExpression CreateDelete(string table)
         {
-            throw new NotImplementedException();
+            return new MySqlExpression(this, SqlExceType.Delete).Delete(table);
         }
 
-        public override AbsDbExpression CreateInsert()
+        public override AbsDbExpression CreateInsert(string table)
         {
-            throw new NotImplementedException();
+            return new MySqlExpression(this, SqlExceType.Insert).Insert(table);
         }
     }
 }

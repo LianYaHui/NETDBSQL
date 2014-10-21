@@ -111,6 +111,8 @@ namespace FoxzyDBSql.DBInterface
 
             public Hashtable Set { set; get; }
 
+            public String Limit { set; get; }
+
             public DBSqlKeyObject()
             {
                 Tables = new Dictionary<string, string>();

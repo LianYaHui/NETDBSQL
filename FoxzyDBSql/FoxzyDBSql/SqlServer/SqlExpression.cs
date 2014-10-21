@@ -477,7 +477,6 @@ namespace FoxzyDBSql.SqlServer
             {
                 ex.TableName = joinTable.Substring(0, joinTable.IndexOf(" "));
                 ex.AsName = joinTable.Substring(joinTable.LastIndexOf(" "));
-
                 this._keyObject.Tables.Add(ex.TableName, ex.AsName);
             }
             else
@@ -499,7 +498,7 @@ namespace FoxzyDBSql.SqlServer
 
         public override AbsDbExpression SetParameter(IEnumerable<IDataParameter> pars)
         {
-            this._keyObject.DataParameters.AddRange(pars.OfType<IDataParameter>());
+            this._keyObject.DataParameters.AddRange(pars);
             return this;
         }
 

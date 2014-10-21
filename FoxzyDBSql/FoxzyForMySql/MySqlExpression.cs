@@ -1,6 +1,8 @@
 ﻿using FoxzyDBSql.DBInterface;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 
@@ -10,42 +12,112 @@ namespace FoxzyForMySql
     {
         public override AbsDbExpression Update(string tb)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(tb))
+            {
+                throw new Exception("表名不能为空");
+            }
+
+            tb = tb.Trim();
+
+            this._keyObject.UpdateTable = tb;
+
+            return this;
         }
 
         public override AbsDbExpression Delete(string table)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(table))
+            {
+                throw new Exception("表名不能为空");
+            }
+
+            table = table.Trim();
+
+            this._keyObject.DeleteTable = table;
+            return this;
         }
 
         public override AbsDbExpression Insert(string table)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(table))
+            {
+                throw new Exception("表名不能为空");
+            }
+
+            table = table.Trim();
+
+            this._keyObject.InsertTable = table;
+            return this;
         }
 
         public override AbsDbExpression InsertColoums(params string[] coloums)
         {
-            throw new NotImplementedException();
+            _keyObject.InsertColoums.Clear();
+
+            foreach (string coloum in coloums)
+            {
+                _keyObject.InsertColoums.Add(coloum);
+            }
+
+            return this;
         }
 
         public override AbsDbExpression InsertColoums(IEnumerable<string> coloums)
         {
-            throw new NotImplementedException();
+            _keyObject.InsertColoums.Clear();
+            _keyObject.InsertColoums.AddRange(coloums);
+
+            return this;
         }
 
         public override AbsDbExpression SetObject(object obj)
         {
-            throw new NotImplementedException();
+            var properties = obj.GetType().GetProperties();
+
+            foreach (var p in properties)
+            {
+                object val = p.GetValue(obj, null);
+
+                if (_keyObject.OperateObject.ContainsKey(p.Name))
+                    throw new Exception(String.Format("已经指定列 {0} ", p.Name));
+
+                _keyObject.OperateObject.Add(p.Name, val);
+            }
+
+            return this;
         }
 
         public override AbsDbExpression SetDictionary(Dictionary<string, object> dictionary)
         {
-            throw new NotImplementedException();
+            foreach (var d in dictionary)
+            {
+                if (_keyObject.OperateObject.ContainsKey(d.Key))
+                    throw new Exception(String.Format("已经指定列 {0} ", d.Key));
+
+                _keyObject.OperateObject.Add(d.Key, d.Value);
+            }
+
+            return this;
         }
 
         public override AbsDbExpression Set(string sql)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(sql))
+            {
+                throw new Exception("set 参数不能为空");
+            }
+
+            foreach (String set in sql.Split(','))
+            {
+                String key = set.Substring(0, set.IndexOf("="));
+
+                if (this._keyObject.Set.ContainsKey(key))
+                    throw new Exception(String.Format("在 SET 子句中多次指定了列名 '{0}'", key));
+
+                this._keyObject.Set.Add(key, set);
+            }
+
+            return this;
         }
 
         public override AbsDbExpression From(string tableName, string AsTableName = null)
@@ -103,19 +175,22 @@ namespace FoxzyForMySql
             throw new NotImplementedException();
         }
 
-        public override AbsDbExpression SetParameter(params System.Data.SqlClient.SqlParameter[] pars)
+        public override AbsDbExpression SetParameter(params IDataParameter[] pars)
         {
-            throw new NotImplementedException();
+            this._keyObject.DataParameters.AddRange(pars);
+            return this;
         }
 
-        public override AbsDbExpression SetParameter(IEnumerable<System.Data.SqlClient.SqlParameter> pars)
+        public override AbsDbExpression SetParameter(IEnumerable<IDataParameter> pars)
         {
-            throw new NotImplementedException();
+            this._keyObject.DataParameters.AddRange(pars);
+            return this;
         }
 
         public override AbsDbExpression SetParameter(string replaceText, object value)
         {
-            throw new NotImplementedException();
+            this._keyObject.DataParameters.Add(new MySqlParameter(replaceText, value));
+            return this;
         }
 
         public override AbsDbExpression Having(string havingsql)
@@ -155,7 +230,14 @@ namespace FoxzyForMySql
 
         public override int ExecuteNonQuery()
         {
-            throw new NotImplementedException();
+            try
+            {
+                return db.ExecuteNonQuery(this.ToSql(), this._keyObject.DataParameters);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public override AbsDbExpression Limit(int skipNum, int returnNum)

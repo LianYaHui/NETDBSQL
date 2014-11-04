@@ -28,7 +28,7 @@ namespace FoxzyForMySql
                 Connection.Open();
                 _opneResult = true;
             }
-            catch (Exception ex) { throw; }
+            catch (Exception ex) { throw ex; }
             return _opneResult;
         }
 

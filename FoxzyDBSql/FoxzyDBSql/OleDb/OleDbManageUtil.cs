@@ -94,9 +94,9 @@ namespace FoxzyDBSql.OleDb
                 var obj = ExecuteScalar(command, pars, type);
                 return (T)(obj);
             }
-            catch
+            catch (Exception ex)
             {
-                throw new Exception();
+                throw ex;
             }
         }
 

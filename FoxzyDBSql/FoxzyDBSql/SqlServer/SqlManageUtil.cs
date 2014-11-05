@@ -18,8 +18,13 @@ namespace FoxzyDBSql.SqlServer
         public override bool OpenConncetion()
         {
             bool _opneResult = false;
+            String _conStr = ConncetionString;
 
-            if (ConncetionString == null)
+            if (String.IsNullOrEmpty(_conStr))
+                _conStr = DefaultConncetionString;
+
+
+            if (_conStr == null)
             {
                 ConnectionStringIsNull();
 
@@ -28,7 +33,7 @@ namespace FoxzyDBSql.SqlServer
             }
             try
             {
-                Connection = new SqlConnection(ConncetionString);
+                Connection = new SqlConnection(_conStr);
                 Connection.Open();
                 _opneResult = true;
             }
@@ -88,9 +93,9 @@ namespace FoxzyDBSql.SqlServer
                 Dispose();
                 return _result;
             }
-            catch
+            catch (Exception ex)
             {
-                throw new Exception();
+                throw ex;
             }
         }
 

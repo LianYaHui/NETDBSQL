@@ -78,9 +78,9 @@ namespace FoxzyForMySql
                 Dispose();
                 return _result;
             }
-            catch
+            catch (Exception ex)
             {
-                throw new Exception();
+                throw ex;
             }
         }
 
@@ -91,9 +91,9 @@ namespace FoxzyForMySql
                 var obj = ExecuteScalar(command, pars, type);
                 return (T)(obj);
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
 

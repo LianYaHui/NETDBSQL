@@ -628,7 +628,7 @@ namespace FoxzyForMySql
                 foreach (System.Collections.DictionaryEntry d in this._keyObject.OperateObject)
                 {
                     clo.Add(Convert.ToString(d.Key));
-                    vals.Add("@" + Convert.ToString(d.Key));
+                    vals.Add("?" + Convert.ToString(d.Key));
 
                     this._keyObject.DataParameters.Add(new MySqlParameter("?" + d.Key, d.Value));
                 }

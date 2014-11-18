@@ -44,6 +44,13 @@ namespace FoxzyForMySql
             Command.Parameters.AddRange(pars.ToArray());
         }
 
+        /// <summary>
+        ///  执行语句或者存储过程,返回收影响的行
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="pars"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public override int ExecuteNonQuery(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text)
         {
             try
@@ -59,6 +66,13 @@ namespace FoxzyForMySql
             }
         }
 
+        /// <summary>
+        ///  执行语句或者存储过程,放回IDataReader对象
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="pars"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public override System.Data.IDataReader ExecuteDataReader(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text)
         {
             InitCommand(command, pars, type);
@@ -69,6 +83,13 @@ namespace FoxzyForMySql
             catch (Exception ex) { throw ex; }
         }
 
+        /// <summary>
+        /// 执行语句或者存储过程,返回第一行第一列的值
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="pars"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public override object ExecuteScalar(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text)
         {
             try
@@ -84,6 +105,14 @@ namespace FoxzyForMySql
             }
         }
 
+        /// <summary>
+        /// 执行语句或者存储过程,返回第一行第一列的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="command"></param>
+        /// <param name="pars"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public override T ExecuteScalar<T>(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text)
         {
             try
@@ -97,6 +126,13 @@ namespace FoxzyForMySql
             }
         }
 
+        /// <summary>
+        /// 用语句或者存储过程填充DataSet
+        /// </summary>
+        /// <param name="command">Sql命令</param>
+        /// <param name="pars">参数化集合</param>
+        /// <param name="type">指明CommandType</param>
+        /// <returns>填充的DataSet</returns>
         public override System.Data.DataSet FillDataSet(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text)
         {
             DataAdapter = new MySqlDataAdapter();
@@ -117,6 +153,9 @@ namespace FoxzyForMySql
             }
         }
 
+        /// <summary>
+        /// 释放资源和链接
+        /// </summary>
         public override void Dispose()
         {
             if (Connection != null) Connection.Dispose();
@@ -130,22 +169,41 @@ namespace FoxzyForMySql
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// 创建一个Select语句
+        /// </summary>
+        /// <returns></returns>
         public override AbsDbExpression CreateSelect()
         {
             var _sql = new MySqlExpression(this, SqlExceType.Select);
             return _sql;
         }
 
+        /// <summary>
+        /// 创建一个Update 语句，支持多表连接更新
+        /// </summary>
+        /// <param name="table">表名</param>
+        /// <returns>表达式对象。</returns>
         public override AbsDbExpression CreateUpdate(string table)
         {
             return new MySqlExpression(this, SqlExceType.Update).Update(table);
         }
 
+        /// <summary>
+        /// 创建一个Delete语句
+        /// </summary>
+        /// <param name="table">要删除的表</param>
+        /// <returns>表达式对象。注意请使用Where 子句构建条件</returns>
         public override AbsDbExpression CreateDelete(string table)
         {
             return new MySqlExpression(this, SqlExceType.Delete).Delete(table);
         }
 
+        /// <summary>
+        /// 创建一个Insert语句
+        /// </summary>
+        /// <param name="table">要insert的表名</param>
+        /// <returns>表达式对象</returns>
         public override AbsDbExpression CreateInsert(string table)
         {
             return new MySqlExpression(this, SqlExceType.Insert).Insert(table);

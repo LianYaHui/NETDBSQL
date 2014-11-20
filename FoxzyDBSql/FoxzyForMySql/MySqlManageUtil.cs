@@ -11,6 +11,18 @@ namespace FoxzyForMySql
 {
     public class MySqlManageUtil : DbManage
     {
+        public static List<MySqlParameter> CloneParameter(IEnumerable<IDataParameter> pars)
+        {
+            List<MySqlParameter> list = new List<MySqlParameter>();
+            foreach (var p in pars)
+            {
+                list.Add(new MySqlParameter(p.ParameterName, p.Value));
+            }
+            return list;
+        }
+
+
+
         public override bool OpenConncetion()
         {
             bool _opneResult = false;

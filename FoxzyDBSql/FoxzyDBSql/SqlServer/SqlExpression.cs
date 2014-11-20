@@ -181,9 +181,6 @@ namespace FoxzyDBSql.SqlServer
             List<String> select_sql = new List<string>();
             sb_sql.Append("select ");
 
-            if (_keyObject.Top != 0)
-                sb_sql.AppendFormat("top {0} ", _keyObject.Top);
-
             //Select
             if (!String.IsNullOrEmpty(_keyObject.SelectStr) || _keyObject.Selects != null)
             {
@@ -643,24 +640,53 @@ namespace FoxzyDBSql.SqlServer
             return this;
         }
 
-        public override AbsDbExpression Limit(int skipNum, int returnNum = 0)
+        public override DataSet Pagination(int PageIndex, int PageSize, out int RowsCount)
         {
-            throw new Exception("SqlServer 不支持 limit 语句");
-        }
+            if (PageIndex < 1)
+                throw new Exception("页码PageIndex 必须从1开始");
 
-        public override AbsDbExpression Top(int count)
-        {
-            if (count <= 0)
-                throw new Exception("top参数不能为负数");
+            if (PageSize < 1)
+                throw new Exception("每页显示的数量 PageSize 不能小于1");
 
-            _keyObject.Top = count;
+            if (this._keyObject.Sort.Count == 0)
+                throw new Exception("必须指定排序的列,调用此方法前必须s");
 
-            return this;
-        }
+            StringBuilder sb_sql = new StringBuilder();
 
-        public override AbsDbExpression RowPagination(int beginRowNumber, int endRowNumber)
-        {
-            throw new NotImplementedException();
+
+            List<String> orderSql = new List<string>();
+            //sb.Append(" order by ");
+            foreach (String key in _keyObject.Sort.Keys)
+            {
+                if ((bool)(_keyObject.Sort[key]))
+                {
+                    orderSql.Add(String.Format("{0} asc", key));
+                }
+                else
+                {
+                    orderSql.Add(String.Format("{0} desc", key));
+                }
+            }
+
+            initSelect(sb_sql);
+            sb_sql.AppendFormat(",row_number() over(order by {0}) as Num ", String.Join(",", orderSql.ToArray()));
+            initFrom(sb_sql);
+            initJoin(sb_sql);
+            initWhere(sb_sql);
+            initGroup(sb_sql);
+            initHaving(sb_sql);
+
+            String baseSql = sb_sql.ToString();
+
+            String getCountSql =
+                String.Format("select count(*) from ({0}) as count_table", baseSql);
+
+            RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, this._keyObject.DataParameters, CommandType.Text));
+
+            String ReturnDataSql = String.Format("select * from ({0}) as t where t.Num>{1} and t.Num<= {2} ", baseSql, (PageIndex - 1) * PageSize, PageIndex * PageSize);
+
+            List<SqlParameter> newPars = SqlManageUtil.CloneParameter(this._keyObject.DataParameters);
+            return db.FillDataSet(ReturnDataSql, newPars as IEnumerable<IDataParameter>, CommandType.Text);
         }
     }
 }

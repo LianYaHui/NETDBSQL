@@ -375,7 +375,6 @@ namespace FoxzyForMySql
                 initGroup(sb_sql);
                 initHaving(sb_sql);
                 initSort(sb_sql);
-                initLimit(sb_sql);
 
                 return sb_sql.ToString();
             }
@@ -400,9 +399,6 @@ namespace FoxzyForMySql
             {
                 initInsert(sb_sql);
                 initInsertColunmVal(sb_sql);
-
-
-
                 return sb_sql.ToString();
             }
 
@@ -446,39 +442,11 @@ namespace FoxzyForMySql
             }
         }
 
-        public override AbsDbExpression Limit(int skipNum, int returnNum)
-        {
-            StringBuilder limitBuilder = new StringBuilder();
-            limitBuilder.Append(Convert.ToString(skipNum));
-
-            if (returnNum > 0)
-                limitBuilder.AppendFormat(",{0}", returnNum);
-
-            this._keyObject.Limit = limitBuilder.ToString();
-            return this;
-        }
-
-        public override AbsDbExpression Top(int count)
-        {
-            throw new Exception("Mysql不支持Top语句");
-        }
-
-        public override AbsDbExpression RowPagination(int beginRowNumber, int endRowNumber)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
-
         #region 私有方法
         private void initSelect(StringBuilder sb_sql)
         {
             List<String> select_sql = new List<string>();
             sb_sql.Append("select ");
-
-            if (_keyObject.Top != 0)
-                sb_sql.AppendFormat("top {0} ", _keyObject.Top);
 
             //Select
             if (!String.IsNullOrEmpty(_keyObject.SelectStr) || _keyObject.Selects != null)
@@ -671,13 +639,37 @@ namespace FoxzyForMySql
             else
                 throw new Exception("这个你还是看下ToSql就知道了");
         }
-
-        private void initLimit(StringBuilder sb_sql)
-        {
-            if (!String.IsNullOrEmpty(this._keyObject.Limit))
-                sb_sql.AppendFormat("limit {0}", this._keyObject.Limit);
-        }
-
         #endregion
+
+        public override DataSet Pagination(int PageIndex, int PageSize, out int RowsCount)
+        {
+            if (PageIndex < 1)
+                throw new Exception("页码PageIndex 必须从1开始");
+
+            if (PageSize < 1)
+                throw new Exception("每页显示的数量 PageSize 不能小于1");
+
+            StringBuilder sb_sql = new StringBuilder();
+
+            initSelect(sb_sql);
+            initFrom(sb_sql);
+            initJoin(sb_sql);
+            initWhere(sb_sql);
+            initGroup(sb_sql);
+            initHaving(sb_sql);
+            initSort(sb_sql);
+
+            String baseSql = sb_sql.ToString();
+
+            String getCountSql =
+                String.Format("select count(*) from ({0}) as count_table", baseSql);
+
+            RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, this._keyObject.DataParameters, CommandType.Text));
+
+            String ReturnDataSql = String.Format("{0} limit {1},{2}", baseSql, (PageIndex - 1) * PageSize, PageSize);
+
+            List<MySqlParameter> newPars = MySqlManageUtil.CloneParameter(this._keyObject.DataParameters);
+            return db.FillDataSet(ReturnDataSql, newPars as IEnumerable<IDataParameter>, CommandType.Text);
+        }
     }
 }

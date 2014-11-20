@@ -191,6 +191,15 @@ namespace FoxzyForMySql
             return this;
         }
 
+        public override AbsDbExpression Where(Func<string> Fun)
+        {
+            if (Fun == null)
+                throw new ArgumentNullException("Fun");
+
+            this._keyObject.WhereSql = Fun();
+            return this;
+        }
+
         public override AbsDbExpression OrderBy(string field)
         {
             this._keyObject.Sort.Add(field.ToLower(), true);
@@ -241,6 +250,30 @@ namespace FoxzyForMySql
         public override AbsDbExpression SetParameter(string replaceText, object value)
         {
             this._keyObject.DataParameters.Add(new MySqlParameter(replaceText, value));
+            return this;
+        }
+
+
+        public override AbsDbExpression SetParameter(object parsObj)
+        {
+            var properties = parsObj.GetType().GetProperties();
+
+            foreach (var p in properties)
+            {
+                object val = p.GetValue(parsObj, null);
+                _keyObject.DataParameters.Add(new MySqlParameter("?" + p.Name, val));
+            }
+
+            return this;
+        }
+
+        public override AbsDbExpression SetParameter(Dictionary<string, object> parsObj)
+        {
+            foreach (var d in parsObj)
+            {
+                _keyObject.DataParameters.Add(new MySqlParameter("?" + d.Key, d.Value));
+            }
+
             return this;
         }
 
@@ -376,8 +409,6 @@ namespace FoxzyForMySql
 
             throw new NotImplementedException();
         }
-
-
 
         public override System.Data.DataSet ToDataSet()
         {
@@ -648,6 +679,5 @@ namespace FoxzyForMySql
         }
 
         #endregion
-
     }
 }

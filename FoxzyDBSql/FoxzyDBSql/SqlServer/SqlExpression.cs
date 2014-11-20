@@ -79,6 +79,15 @@ namespace FoxzyDBSql.SqlServer
             return this;
         }
 
+        public override AbsDbExpression Where(Func<String> Fun)
+        {
+            if (Fun == null)
+                throw new ArgumentNullException("Fun");
+
+            this._keyObject.WhereSql = Fun();
+            return this;
+        }
+
         public override AbsDbExpression OrderBy(String faild)
         {
             this._keyObject.Sort.Add(faild.ToLower(), true);
@@ -161,18 +170,10 @@ namespace FoxzyDBSql.SqlServer
             {
                 initInsert(sb_sql);
                 initInsertColunmVal(sb_sql);
-
-
-
                 return sb_sql.ToString();
             }
-
-
             throw new NotImplementedException();
         }
-
-
-
 
         #region 私有方法
         private void initSelect(StringBuilder sb_sql)
@@ -508,6 +509,29 @@ namespace FoxzyDBSql.SqlServer
             return this;
         }
 
+        public override AbsDbExpression SetParameter(object parsObj)
+        {
+            var properties = parsObj.GetType().GetProperties();
+
+            foreach (var p in properties)
+            {
+                object val = p.GetValue(parsObj, null);
+                _keyObject.DataParameters.Add(new SqlParameter("&" + p.Name, val));
+            }
+
+            return this;
+        }
+
+        public override AbsDbExpression SetParameter(Dictionary<string, object> dict)
+        {
+            foreach (var d in dict)
+            {
+                _keyObject.DataParameters.Add(new SqlParameter("&" + d.Key, d.Value));
+            }
+
+            return this;
+        }
+
 
         public override AbsDbExpression Update(String tb)
         {
@@ -555,7 +579,6 @@ namespace FoxzyDBSql.SqlServer
             this._keyObject.DeleteTable = table;
             return this;
         }
-
 
         public override AbsDbExpression Insert(string table)
         {

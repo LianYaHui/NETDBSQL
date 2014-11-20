@@ -50,6 +50,8 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract AbsDbExpression Where(String where);
 
+        public abstract AbsDbExpression Where(Func<String> Fun);
+
         public abstract AbsDbExpression OrderBy(String field);
         public abstract AbsDbExpression OrderBy(String field, String tableName);
 
@@ -63,6 +65,10 @@ namespace FoxzyDBSql.DBInterface
         public abstract AbsDbExpression SetParameter(IEnumerable<IDataParameter> pars);
 
         public abstract AbsDbExpression SetParameter(String replaceText, object value);
+
+        public abstract AbsDbExpression SetParameter(object parsObj);
+
+        public abstract AbsDbExpression SetParameter(Dictionary<String, Object> parsObj);
 
         public abstract AbsDbExpression Having(String havingsql);
 

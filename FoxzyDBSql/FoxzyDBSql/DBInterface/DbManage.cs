@@ -26,6 +26,8 @@ namespace FoxzyDBSql.DBInterface
 
         protected DataSet DBDataSet;
 
+        public static String DefaultConncetionString { set; get; }
+
         public static string ConncetionString { set; get; }
 
         public abstract bool OpenConncetion();

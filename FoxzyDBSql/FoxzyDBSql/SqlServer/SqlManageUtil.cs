@@ -15,6 +15,17 @@ namespace FoxzyDBSql.SqlServer
 
         }
 
+        public static List<SqlParameter> CloneParameter(IEnumerable<IDataParameter> pars)
+        {
+            List<SqlParameter> list = new List<SqlParameter>();
+            foreach (var p in pars)
+            {
+                list.Add(new SqlParameter(p.ParameterName, p.Value));
+            }
+            return list;
+        }
+
+
         public override bool OpenConncetion()
         {
             bool _opneResult = false;
@@ -47,6 +58,9 @@ namespace FoxzyDBSql.SqlServer
 
             Command = new SqlCommand(command, (Connection as SqlConnection));
             Command.CommandType = type;
+
+            Command.Parameters.Clear();
+
 
             if (pars == null) return;
             Command.Parameters.AddRange(pars.ToArray());

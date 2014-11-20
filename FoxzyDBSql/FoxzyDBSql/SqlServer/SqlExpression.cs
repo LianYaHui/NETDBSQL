@@ -639,5 +639,54 @@ namespace FoxzyDBSql.SqlServer
 
             return this;
         }
+
+        public override DataSet Pagination(int PageIndex, int PageSize, out int RowsCount)
+        {
+            if (PageIndex < 1)
+                throw new Exception("页码PageIndex 必须从1开始");
+
+            if (PageSize < 1)
+                throw new Exception("每页显示的数量 PageSize 不能小于1");
+
+            if (this._keyObject.Sort.Count == 0)
+                throw new Exception("必须指定排序的列,调用此方法前必须s");
+
+            StringBuilder sb_sql = new StringBuilder();
+
+
+            List<String> orderSql = new List<string>();
+            //sb.Append(" order by ");
+            foreach (String key in _keyObject.Sort.Keys)
+            {
+                if ((bool)(_keyObject.Sort[key]))
+                {
+                    orderSql.Add(String.Format("{0} asc", key));
+                }
+                else
+                {
+                    orderSql.Add(String.Format("{0} desc", key));
+                }
+            }
+
+            initSelect(sb_sql);
+            sb_sql.AppendFormat(",row_number() over(order by {0}) as Num ", String.Join(",", orderSql));
+            initFrom(sb_sql);
+            initJoin(sb_sql);
+            initWhere(sb_sql);
+            initGroup(sb_sql);
+            initHaving(sb_sql);
+
+            String baseSql = sb_sql.ToString();
+
+            String getCountSql =
+                String.Format("select count(*) from ({0}) as count_table", baseSql);
+
+            RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, this._keyObject.DataParameters, CommandType.Text));
+
+            String ReturnDataSql = String.Format("select * from ({0}) as t where t.Num>{1} and t.Num<= {2} ", baseSql, (PageIndex - 1) * PageSize, PageIndex * PageSize);
+
+            List<SqlParameter> newPars = SqlManageUtil.CloneParameter(this._keyObject.DataParameters);
+            return db.FillDataSet(ReturnDataSql, newPars, CommandType.Text);
+        }
     }
 }

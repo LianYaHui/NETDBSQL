@@ -79,6 +79,11 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract IDBOnExpression InnerJoin(String joinTable);
 
+        /// <summary>
+        /// 分页
+        /// </summary>
+        public abstract DataSet Pagination(int PageIndex, int PageSize, out int RowsCount);
+
         public abstract String ToSql();
 
         public abstract DataSet ToDataSet();

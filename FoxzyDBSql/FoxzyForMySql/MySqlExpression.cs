@@ -443,140 +443,8 @@ namespace FoxzyForMySql
         }
 
         #region 私有方法
-        private void initSelect(StringBuilder sb_sql)
-        {
-            List<String> select_sql = new List<string>();
-            sb_sql.Append("select ");
 
-            //Select
-            if (!String.IsNullOrEmpty(_keyObject.SelectStr) || _keyObject.Selects != null)
-            {
-                if (_keyObject.Selects != null)
-                {
-                    foreach (var c in _keyObject.Selects)
-                    {
-                        String tableName = c.TableName;
-                        foreach (var col in c.Colunms)
-                        {
-                            String _select = String.IsNullOrEmpty(col.AsName) ?
-                                String.Format("$${0}", col.ColunmName) :
-                                String.Format("$${0} as {1}", col.ColunmName, col.AsName);
-
-                            if (String.IsNullOrEmpty(tableName)) _select = _select.Replace("$$", "");
-                            else _select = _select.Replace("$$", tableName + ".");
-
-                            select_sql.Add(_select);
-                        }
-                    }
-                    sb_sql.AppendFormat(String.Join(",", select_sql.ToArray()));
-                    return;
-                }
-
-                if (!String.IsNullOrEmpty(_keyObject.SelectStr))
-                {
-                    sb_sql.Append(_keyObject.SelectStr);
-                }
-            }
-            else
-            {
-                //没有定义字段，则查询出表的所有字段　［ｔａｂｌｅ］．＊
-                //多表
-                //连接
-                foreach (var tb in _keyObject.Tables)
-                {
-                    if (String.IsNullOrEmpty(tb.Value))
-                        select_sql.Add(tb.Key + ".*");
-                    else
-                        select_sql.Add(tb.Value + ".*");
-                }
-
-                sb_sql.AppendLine(String.Join(",", select_sql.ToArray()));
-            }
-        }
-
-        void initInto(StringBuilder sb_sql)
-        {
-            if (!String.IsNullOrEmpty(_keyObject.IntoTable))
-            {
-                sb_sql.AppendFormat(" into {0}", _keyObject.IntoTable);
-            }
-        }
-
-
-        void initFrom(StringBuilder sb)
-        {
-            sb.AppendFormat(" from {0}", this._keyObject.FromTable);
-        }
-
-        void initWhere(StringBuilder sb)
-        {
-            if (!String.IsNullOrEmpty(this._keyObject.WhereSql))
-            {
-                sb.Append(" where ");
-                sb.Append(this._keyObject.WhereSql);
-            }
-        }
-
-        void initSort(StringBuilder sb)
-        {
-            if (this._keyObject.Sort.Count == 0)
-                return;
-
-            List<String> orderSql = new List<string>();
-            sb.Append(" order by ");
-
-            foreach (String key in _keyObject.Sort.Keys)
-            {
-                if ((bool)(_keyObject.Sort[key]))
-                {
-                    orderSql.Add(String.Format("{0} asc", key));
-                }
-                else
-                {
-                    orderSql.Add(String.Format("{0} desc", key));
-                }
-            }
-
-            sb.Append(String.Join(",", orderSql.ToArray()));
-        }
-
-        void initJoin(StringBuilder sb)
-        {
-            if (this._keyObject.Join.Count == 0)
-                return;
-
-            foreach (String key in _keyObject.Join.Keys)
-            {
-                var onExp = _keyObject.Join[key] as IDBOnExpression;
-
-                sb.Append(onExp.ToString());
-            }
-
-        }
-
-        void initGroup(StringBuilder sb)
-        {
-            if (this._keyObject.GroupByField.Count == 0)
-                return;
-
-            sb.AppendFormat(" group by {0}", String.Join(",", this._keyObject.GroupByField.ToArray()));
-        }
-
-        void initHaving(StringBuilder sb)
-        {
-            if (!String.IsNullOrEmpty(this._keyObject.HavingSql))
-            {
-                sb.Append(" having ");
-                sb.Append(this._keyObject.HavingSql);
-            }
-        }
-
-        void initUpdate(StringBuilder sb)
-        {
-            sb.AppendFormat("update {0} ", this._keyObject.UpdateTable);
-        }
-
-        void initset(StringBuilder sb)
+        new void initset(StringBuilder sb)
         {
             List<String> vals = this._keyObject.Set.Values.OfType<String>().ToList();
 
@@ -592,20 +460,7 @@ namespace FoxzyForMySql
             sb.AppendFormat("set {0}", String.Join(",", vals.ToArray()));
         }
 
-        private void initDelete(StringBuilder sb)
-        {
-            sb.AppendFormat("delete {0} ", this._keyObject.DeleteTable);
-        }
-
-        private void initInsert(StringBuilder sb_sql)
-        {
-            if (String.IsNullOrEmpty(this._keyObject.InsertTable))
-                throw new Exception("insert 表为空");
-
-            sb_sql.AppendFormat("insert {0} ", this._keyObject.InsertTable);
-        }
-
-        void initInsertColunmVal(StringBuilder sb_sql)
+        new void initInsertColunmVal(StringBuilder sb_sql)
         {
             if (_keyObject.InsertColoums.Count > 0)
             {

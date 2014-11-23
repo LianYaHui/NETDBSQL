@@ -52,6 +52,8 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract AbsDbExpression CreateInsert(String table);
 
+        public abstract PaginationSelect CreatePagination();
+
         public virtual void Dispose()
         {
 

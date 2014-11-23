@@ -443,7 +443,6 @@ namespace FoxzyForMySql
         }
 
         #region 私有方法
-
         new void initset(StringBuilder sb)
         {
             List<String> vals = this._keyObject.Set.Values.OfType<String>().ToList();
@@ -498,12 +497,6 @@ namespace FoxzyForMySql
 
         public override DataSet Pagination(int PageIndex, int PageSize, out int RowsCount)
         {
-            if (PageIndex < 1)
-                throw new Exception("页码PageIndex 必须从1开始");
-
-            if (PageSize < 1)
-                throw new Exception("每页显示的数量 PageSize 不能小于1");
-
             StringBuilder sb_sql = new StringBuilder();
 
             initSelect(sb_sql);
@@ -516,15 +509,12 @@ namespace FoxzyForMySql
 
             String baseSql = sb_sql.ToString();
 
-            String getCountSql =
-                String.Format("select count(*) from ({0}) as count_table", baseSql);
+            var _Pagination = new MySqlPaginationSelect(db);
 
-            RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, this._keyObject.DataParameters, CommandType.Text));
+            _Pagination.Set(baseSql, this._keyObject.DataParameters);
 
-            String ReturnDataSql = String.Format("{0} limit {1},{2}", baseSql, (PageIndex - 1) * PageSize, PageSize);
+            return _Pagination.Pagination(PageIndex, PageSize, out RowsCount, null);
 
-            List<MySqlParameter> newPars = MySqlManageUtil.CloneParameter(this._keyObject.DataParameters);
-            return db.FillDataSet(ReturnDataSql, newPars as IEnumerable<IDataParameter>, CommandType.Text);
         }
     }
 }

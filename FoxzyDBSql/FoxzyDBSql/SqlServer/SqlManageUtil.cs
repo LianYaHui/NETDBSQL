@@ -48,7 +48,7 @@ namespace FoxzyDBSql.SqlServer
                 Connection.Open();
                 _opneResult = true;
             }
-            catch (Exception ex) { throw; }
+            catch { throw; }
             return _opneResult;
         }
 
@@ -206,6 +206,11 @@ namespace FoxzyDBSql.SqlServer
         public override AbsDbExpression CreateInsert(String table)
         {
             return new SqlExpression(this, Common.SqlExceType.Insert).Insert(table);
+        }
+
+        public override PaginationSelect CreatePagination()
+        {
+            return new SqlPaginationSelect(this);
         }
     }
 }

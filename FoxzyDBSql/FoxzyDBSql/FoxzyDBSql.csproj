@@ -47,11 +47,13 @@
     <Compile Include="DBInterface\DbManage.cs" />
     <Compile Include="DBInterface\IDBOnExpression.cs" />
     <Compile Include="DBInterface\IDBFunction.cs" />
+    <Compile Include="DBInterface\PaginationSelect.cs" />
     <Compile Include="OleDb\OleDbManageUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlServer\SqlDBOnExpression.cs" />
     <Compile Include="SqlServer\SqlExpression.cs" />
     <Compile Include="SqlServer\SqlManageUtil.cs" />
+    <Compile Include="SqlServer\SqlPaginationSelect.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

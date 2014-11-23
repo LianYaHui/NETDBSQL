@@ -40,7 +40,7 @@ namespace FoxzyForMySql
                 Connection.Open();
                 _opneResult = true;
             }
-            catch (Exception ex) { throw ex; }
+            catch { throw; }
             return _opneResult;
         }
 
@@ -219,6 +219,11 @@ namespace FoxzyForMySql
         public override AbsDbExpression CreateInsert(string table)
         {
             return new MySqlExpression(this, SqlExceType.Insert).Insert(table);
+        }
+
+        public override PaginationSelect CreatePagination()
+        {
+            return new MySqlPaginationSelect(this);
         }
     }
 }

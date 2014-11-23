@@ -45,6 +45,7 @@
     <Compile Include="MySqlDBOnExpression.cs" />
     <Compile Include="MySqlExpression.cs" />
     <Compile Include="MySqlManageUtil.cs" />
+    <Compile Include="MySqlPaginationSelect.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

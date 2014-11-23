@@ -17,10 +17,12 @@ namespace FoxzyDBSql.DBInterface
             this.db = db;
         }
 
-        public void Set(String baseSql, IEnumerable<IDataParameter> pars)
+        public PaginationSelect Set(String baseSql, IEnumerable<IDataParameter> pars)
         {
             this.BaseSql = baseSql;
             this.DataParameters = pars;
+
+            return this;
         }
 
         public abstract DataSet Pagination(int PageIndex, int PageSize, out int RowsCount, String order);

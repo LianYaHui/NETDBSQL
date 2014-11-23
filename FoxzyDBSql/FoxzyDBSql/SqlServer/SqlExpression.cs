@@ -442,17 +442,7 @@ namespace FoxzyDBSql.SqlServer
 
         public override DataSet Pagination(int PageIndex, int PageSize, out int RowsCount)
         {
-            if (PageIndex < 1)
-                throw new Exception("页码PageIndex 必须从1开始");
-
-            if (PageSize < 1)
-                throw new Exception("每页显示的数量 PageSize 不能小于1");
-
-            if (this._keyObject.Sort.Count == 0)
-                throw new Exception("必须指定排序的列,调用此方法前必须s");
-
             StringBuilder sb_sql = new StringBuilder();
-
 
             List<String> orderSql = new List<string>();
             //sb.Append(" order by ");
@@ -469,7 +459,6 @@ namespace FoxzyDBSql.SqlServer
             }
 
             initSelect(sb_sql);
-            sb_sql.AppendFormat(",row_number() over(order by {0}) as Num ", String.Join(",", orderSql));
             initFrom(sb_sql);
             initJoin(sb_sql);
             initWhere(sb_sql);
@@ -478,15 +467,11 @@ namespace FoxzyDBSql.SqlServer
 
             String baseSql = sb_sql.ToString();
 
-            String getCountSql =
-                String.Format("select count(*) from ({0}) as count_table", baseSql);
+            var _Pagination = new SqlPaginationSelect(db);
 
-            RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, this._keyObject.DataParameters, CommandType.Text));
+            _Pagination.Set(baseSql, this._keyObject.DataParameters);
 
-            String ReturnDataSql = String.Format("select * from ({0}) as t where t.Num>{1} and t.Num<= {2} ", baseSql, (PageIndex - 1) * PageSize, PageIndex * PageSize);
-
-            List<SqlParameter> newPars = SqlManageUtil.CloneParameter(this._keyObject.DataParameters);
-            return db.FillDataSet(ReturnDataSql, newPars, CommandType.Text);
+            return _Pagination.Pagination(PageIndex, PageSize, out RowsCount, String.Join(",", orderSql));
         }
     }
 }

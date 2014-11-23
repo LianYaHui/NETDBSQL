@@ -152,5 +152,10 @@ namespace FoxzyDBSql.OleDb
             if (DataAdapter != null) DataAdapter.Dispose();
             if (DBDataSet != null) DBDataSet.Dispose();
         }
+
+        public override PaginationSelect CreatePagination()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

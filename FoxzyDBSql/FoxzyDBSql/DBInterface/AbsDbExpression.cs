@@ -79,6 +79,10 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract IDBOnExpression InnerJoin(String joinTable);
 
+
+
+
+
         /// <summary>
         /// 分页
         /// </summary>

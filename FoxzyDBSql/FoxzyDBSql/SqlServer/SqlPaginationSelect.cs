@@ -44,8 +44,13 @@ namespace FoxzyDBSql.SqlServer
 
             String ReturnDataSql = String.Format("select * from ({0}) as t where t.Num>{1} and t.Num<= {2} ", this.BaseSql, (PageIndex - 1) * PageSize, PageIndex * PageSize);
 
-            IEnumerable<SqlParameter> newPars = SqlManageUtil.CloneParameter(this.DataParameters.Select(p => p as IDataParameter));
-            return db.FillDataSet(ReturnDataSql, newPars.Select(p => p as IDataParameter), CommandType.Text);
+            IEnumerable<SqlParameter> newPars = SqlManageUtil.CloneParameter(this.DataParameters);
+
+            IEnumerable<IDataParameter> DataPars = null;
+            if (newPars != null)
+                DataPars = newPars.Select(p => p as IDataParameter);
+
+            return db.FillDataSet(ReturnDataSql, DataPars, CommandType.Text);
         }
     }
 }

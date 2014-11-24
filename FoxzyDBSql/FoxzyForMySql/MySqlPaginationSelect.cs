@@ -31,8 +31,8 @@ namespace FoxzyForMySql
 
             String ReturnDataSql = String.Format("{0} limit {1},{2}", baseSql, (PageIndex - 1) * PageSize, PageSize);
 
-            List<MySqlParameter> newPars = MySqlManageUtil.CloneParameter(this.DataParameters);
-            return db.FillDataSet(ReturnDataSql, newPars as IEnumerable<IDataParameter>, CommandType.Text);
+            IEnumerable<IDataParameter> newPars = MySqlManageUtil.CloneParameter(this.DataParameters);
+            return db.FillDataSet(ReturnDataSql, newPars, CommandType.Text);
         }
     }
 }

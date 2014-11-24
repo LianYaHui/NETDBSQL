@@ -17,6 +17,9 @@ namespace FoxzyDBSql.SqlServer
 
         public static IEnumerable<SqlParameter> CloneParameter(IEnumerable<IDataParameter> pars)
         {
+            if (pars == null)
+                return null;
+
             List<SqlParameter> list = new List<SqlParameter>();
             foreach (var p in pars)
             {

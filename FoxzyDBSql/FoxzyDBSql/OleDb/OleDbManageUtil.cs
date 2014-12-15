@@ -120,11 +120,6 @@ namespace FoxzyDBSql.OleDb
             }
         }
 
-        public override int BulkCopyInsert(string tabelName, System.Data.DataTable data)
-        {
-            throw new NotImplementedException();
-        }
-
         public override AbsDbExpression CreateSelect()
         {
             throw new NotImplementedException();

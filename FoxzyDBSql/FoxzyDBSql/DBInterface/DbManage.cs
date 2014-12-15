@@ -20,7 +20,7 @@ namespace FoxzyDBSql.DBInterface
         }
 
 
-        public DbCommand Command { get; set; }
+        protected DbCommand Command { get; set; }
 
         protected DbDataAdapter DataAdapter;
 

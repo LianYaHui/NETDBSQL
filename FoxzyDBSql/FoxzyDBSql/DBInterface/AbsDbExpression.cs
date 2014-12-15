@@ -15,12 +15,12 @@ namespace FoxzyDBSql.DBInterface
 
         public void ReSet()
         {
-            _keyObject = new DBSqlKeyObject();
+            _keyObject = DBSqlKeyObject.Create();
         }
 
         public AbsDbExpression()
         {
-            this._keyObject = new DBSqlKeyObject();
+            this._keyObject = DBSqlKeyObject.Create();
         }
 
         public abstract AbsDbExpression Update(String tb);
@@ -306,7 +306,7 @@ namespace FoxzyDBSql.DBInterface
             sb.AppendFormat("set {0}", String.Join(",", vals));
         }
 
-        protected  void initDelete(StringBuilder sb)
+        protected void initDelete(StringBuilder sb)
         {
             sb.AppendFormat("delete {0} ", this._keyObject.DeleteTable);
         }

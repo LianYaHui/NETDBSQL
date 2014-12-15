@@ -10,11 +10,6 @@ namespace FoxzyDBSql.SqlServer
 {
     public class SqlManageUtil : DbManage
     {
-        static SqlManageUtil()
-        {
-
-        }
-
         public static IEnumerable<SqlParameter> CloneParameter(IEnumerable<IDataParameter> pars)
         {
             if (pars == null)
@@ -156,38 +151,6 @@ namespace FoxzyDBSql.SqlServer
             {
                 throw ex;
             }
-
-
-        }
-
-        public override int BulkCopyInsert(String tabelName, DataTable data)
-        {
-            SqlBulkCopy _bulkcopy = init_bulkcopy(tabelName, data.Rows.Count);
-
-            try
-            {
-                _bulkcopy.WriteToServer(data);
-                return 1;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                _bulkcopy.Close();
-                Dispose();
-            }
-        }
-
-        private static SqlBulkCopy init_bulkcopy(String tabelName, int count)
-        {
-            SqlBulkCopy _bulkcopy = new SqlBulkCopy(ConncetionString, SqlBulkCopyOptions.UseInternalTransaction);
-
-            _bulkcopy.BatchSize = count;
-
-            _bulkcopy.DestinationTableName = tabelName;
-            return _bulkcopy;
         }
 
         public override AbsDbExpression CreateSelect()

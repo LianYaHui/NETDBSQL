@@ -42,8 +42,6 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract DataSet FillDataSet(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text);
 
-        public abstract int BulkCopyInsert(String tabelName, DataTable data);
-
         public abstract AbsDbExpression CreateSelect();
 
         public abstract AbsDbExpression CreateUpdate(String table);

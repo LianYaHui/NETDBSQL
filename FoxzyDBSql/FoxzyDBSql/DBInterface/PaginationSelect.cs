@@ -14,11 +14,17 @@ namespace FoxzyDBSql.DBInterface
 
         public PaginationSelect(DbManage db)
         {
+            if (db == null)
+                throw new ArgumentNullException("db");
+
             this.db = db;
         }
 
         public PaginationSelect Set(String baseSql, IEnumerable<IDataParameter> pars)
         {
+            if (String.IsNullOrEmpty(baseSql))
+                throw new ArgumentNullException("baseSql");
+
             this.BaseSql = baseSql;
             this.DataParameters = pars;
 

@@ -21,8 +21,6 @@ namespace FoxzyDBSql.OleDb
 
             if (_conStr == null)
             {
-                ConnectionStringIsNull();
-
                 //当连接字符串为空的时候进行默认操作
                 return _opneResult;
             }
@@ -32,7 +30,7 @@ namespace FoxzyDBSql.OleDb
                 Connection.Open();
                 _opneResult = true;
             }
-            catch (Exception ex) { throw; }
+            catch { throw; }
             return _opneResult;
         }
 

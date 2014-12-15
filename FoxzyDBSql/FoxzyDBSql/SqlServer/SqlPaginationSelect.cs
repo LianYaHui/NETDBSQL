@@ -18,9 +18,8 @@ namespace FoxzyDBSql.SqlServer
         }
 
         /// <summary>
-        /// Ms数据库的分页,查询的语句中比如含有 $$RowNumber,
-        /// 如 select *,$$RowNumber from table
-        /// 并且原表中不能含有Num列
+        /// Ms数据库的分页
+        /// 如 select * from table
         /// </summary>
         /// <param name="PageIndex">页码</param>
         /// <param name="PageSize">要显示的记录数</param>
@@ -35,12 +34,17 @@ namespace FoxzyDBSql.SqlServer
             PageIndex = PageIndex < 1 ? 1 : PageIndex;
 
             if (String.IsNullOrEmpty(order))
-                throw new Exception("必须指定排序的列,调用此方法前必须s");
+                throw new Exception("必须指定排序的列,对于MS的数据库，这是必须的 ");
 
             String getCountSql =
                 String.Format("select count(*) from ({0}) as count_table", this.BaseSql);
 
-            this.BaseSql = this.BaseSql.Replace("$$RowNumber", String.Format(" row_number() over(order by {0}) as Num ", order));
+            //TODO
+            //正则提取 from 子句
+            String _sql = this.BaseSql.ToUpper();
+            int fromIndex = _sql.IndexOf("FROM ");
+
+            this.BaseSql = this.BaseSql.Insert(fromIndex, String.Format(",row_number() over(order by {0}) as Num ", order));
 
             RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, this.DataParameters, CommandType.Text));
 

@@ -10,7 +10,8 @@ namespace FoxzyDBSql.SqlServer
 {
     public class SqlManageUtil : DbManage
     {
-        static SqlManageUtil()
+        public SqlManageUtil(String ConnetionString)
+            : base(ConnetionString)
         {
 
         }
@@ -28,23 +29,10 @@ namespace FoxzyDBSql.SqlServer
             return list;
         }
 
-
         public override bool OpenConncetion()
         {
             bool _opneResult = false;
             String _conStr = ConncetionString;
-
-            if (String.IsNullOrEmpty(_conStr))
-                _conStr = DefaultConncetionString;
-
-
-            if (_conStr == null)
-            {
-                ConnectionStringIsNull();
-
-                //当连接字符串为空的时候进行默认操作
-                return _opneResult;
-            }
             try
             {
                 Connection = new SqlConnection(_conStr);
@@ -156,38 +144,6 @@ namespace FoxzyDBSql.SqlServer
             {
                 throw ex;
             }
-
-
-        }
-
-        public override int BulkCopyInsert(String tabelName, DataTable data)
-        {
-            SqlBulkCopy _bulkcopy = init_bulkcopy(tabelName, data.Rows.Count);
-
-            try
-            {
-                _bulkcopy.WriteToServer(data);
-                return 1;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                _bulkcopy.Close();
-                Dispose();
-            }
-        }
-
-        private static SqlBulkCopy init_bulkcopy(String tabelName, int count)
-        {
-            SqlBulkCopy _bulkcopy = new SqlBulkCopy(ConncetionString, SqlBulkCopyOptions.UseInternalTransaction);
-
-            _bulkcopy.BatchSize = count;
-
-            _bulkcopy.DestinationTableName = tabelName;
-            return _bulkcopy;
         }
 
         public override AbsDbExpression CreateSelect()

@@ -11,24 +11,22 @@ namespace FoxzyDBSql.DBInterface
     {
         protected DbConnection Connection;
 
-        public event Action<DbManage> OnConnectionStringIsNull;
-
-        protected void ConnectionStringIsNull()
-        {
-            if (OnConnectionStringIsNull != null)
-                OnConnectionStringIsNull(this);
-        }
-
-
-        public DbCommand Command { get; set; }
+        protected DbCommand Command;
 
         protected DbDataAdapter DataAdapter;
 
         protected DataSet DBDataSet;
 
-        public static String DefaultConncetionString { set; get; }
+        public string ConncetionString { private set; get; }
 
-        public static string ConncetionString { set; get; }
+        public DbManage(String conntionString)
+        {
+            if (String.IsNullOrEmpty(conntionString))
+                throw new ArgumentNullException("conntionString");
+
+
+            this.ConncetionString = conntionString;
+        }
 
         public abstract bool OpenConncetion();
 
@@ -41,8 +39,6 @@ namespace FoxzyDBSql.DBInterface
         public abstract T ExecuteScalar<T>(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text);
 
         public abstract DataSet FillDataSet(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text);
-
-        public abstract int BulkCopyInsert(String tabelName, DataTable data);
 
         public abstract AbsDbExpression CreateSelect();
 

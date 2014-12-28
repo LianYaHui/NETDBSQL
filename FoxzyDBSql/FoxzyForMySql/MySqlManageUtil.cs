@@ -11,6 +11,10 @@ namespace FoxzyForMySql
 {
     public class MySqlManageUtil : DbManage
     {
+        public MySqlManageUtil(String ConnetionString)
+            : base(ConnetionString)
+        { }
+
         public static IEnumerable<IDataParameter> CloneParameter(IEnumerable<IDataParameter> pars)
         {
             if (pars == null)
@@ -29,14 +33,6 @@ namespace FoxzyForMySql
         public override bool OpenConncetion()
         {
             bool _opneResult = false;
-
-            if (ConncetionString == null)
-            {
-                ConnectionStringIsNull();
-
-                //当连接字符串为空的时候进行默认操作
-                return _opneResult;
-            }
             try
             {
                 Connection = new MySqlConnection(ConncetionString);
@@ -177,11 +173,6 @@ namespace FoxzyForMySql
             if (Command != null) Command.Dispose();
             if (DataAdapter != null) DataAdapter.Dispose();
             if (DBDataSet != null) DBDataSet.Dispose();
-        }
-
-        public override int BulkCopyInsert(string tabelName, System.Data.DataTable data)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>

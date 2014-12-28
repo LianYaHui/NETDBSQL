@@ -15,12 +15,12 @@ namespace FoxzyDBSql.DBInterface
 
         public void ReSet()
         {
-            _keyObject = new DBSqlKeyObject();
+            _keyObject = DBSqlKeyObject.Create();
         }
 
         public AbsDbExpression()
         {
-            this._keyObject = new DBSqlKeyObject();
+            this._keyObject = DBSqlKeyObject.Create();
         }
 
         public abstract AbsDbExpression Update(String tb);

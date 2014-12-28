@@ -16,15 +16,8 @@ namespace FoxzyDBSql.OleDb
             String _conStr = ConncetionString;
 
             if (String.IsNullOrEmpty(_conStr))
-                _conStr = DefaultConncetionString;
-
-
-            if (_conStr == null)
             {
-                ConnectionStringIsNull();
-
-                //当连接字符串为空的时候进行默认操作
-                return _opneResult;
+                throw new ArgumentNullException("ConncetionString");
             }
             try
             {
@@ -32,8 +25,14 @@ namespace FoxzyDBSql.OleDb
                 Connection.Open();
                 _opneResult = true;
             }
-            catch (Exception ex) { throw; }
+            catch { throw; }
             return _opneResult;
+        }
+
+        public OleDbManageUtil(String ConnetionString)
+            : base(ConnetionString)
+        {
+
         }
 
         protected override void InitCommand(string command, IEnumerable<IDataParameter> pars, CommandType type)
@@ -118,11 +117,6 @@ namespace FoxzyDBSql.OleDb
             {
                 throw ex;
             }
-        }
-
-        public override int BulkCopyInsert(string tabelName, System.Data.DataTable data)
-        {
-            throw new NotImplementedException();
         }
 
         public override AbsDbExpression CreateSelect()

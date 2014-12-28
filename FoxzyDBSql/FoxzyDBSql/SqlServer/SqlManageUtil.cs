@@ -10,6 +10,12 @@ namespace FoxzyDBSql.SqlServer
 {
     public class SqlManageUtil : DbManage
     {
+        public SqlManageUtil(String ConnetionString)
+            : base(ConnetionString)
+        {
+
+        }
+
         public static IEnumerable<SqlParameter> CloneParameter(IEnumerable<IDataParameter> pars)
         {
             if (pars == null)
@@ -23,21 +29,10 @@ namespace FoxzyDBSql.SqlServer
             return list;
         }
 
-
         public override bool OpenConncetion()
         {
             bool _opneResult = false;
             String _conStr = ConncetionString;
-
-            if (String.IsNullOrEmpty(_conStr))
-                _conStr = DefaultConncetionString;
-
-
-            if (_conStr == null)
-            {
-                //当连接字符串为空的时候进行默认操作
-                return _opneResult;
-            }
             try
             {
                 Connection = new SqlConnection(_conStr);

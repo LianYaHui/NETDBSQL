@@ -515,5 +515,10 @@ namespace FoxzyForMySql
 
             return _Pagination.Pagination(PageIndex, PageSize, out RowsCount, null);
         }
+
+        public override string ToString()
+        {
+            return ToSql();
+        }
     }
 }

@@ -73,11 +73,11 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract AbsDbExpression Having(String havingsql);
 
-        public abstract IDBOnExpression LeftJoin(String joinTable);
+        public abstract DBOnExpression LeftJoin(String joinTable);
 
-        public abstract IDBOnExpression RightJoin(String joinTable);
+        public abstract DBOnExpression RightJoin(String joinTable);
 
-        public abstract IDBOnExpression InnerJoin(String joinTable);
+        public abstract DBOnExpression InnerJoin(String joinTable);
 
 
 
@@ -261,7 +261,7 @@ namespace FoxzyDBSql.DBInterface
 
             foreach (String key in _keyObject.Join.Keys)
             {
-                var onExp = _keyObject.Join[key] as IDBOnExpression;
+                var onExp = _keyObject.Join[key] as DBOnExpression;
 
                 sb.Append(onExp.ToString());
             }

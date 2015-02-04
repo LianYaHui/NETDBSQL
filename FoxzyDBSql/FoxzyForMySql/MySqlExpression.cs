@@ -283,12 +283,12 @@ namespace FoxzyForMySql
             return this;
         }
 
-        public override IDBOnExpression LeftJoin(string joinTable)
+        public override DBOnExpression LeftJoin(string joinTable)
         {
             joinTable = joinTable.Trim();
-            IDBOnExpression ex = new MySqlDBOnExpression();
+            DBOnExpression ex = new MySqlDBOnExpression();
 
-            ex.Type = "left join";
+            ex.JoinType = SqlJoinType.LeftJoin;
 
             if (joinTable.IndexOf(" ") > 1)
             {
@@ -308,12 +308,12 @@ namespace FoxzyForMySql
             return ex.Fill(this);
         }
 
-        public override IDBOnExpression RightJoin(string joinTable)
+        public override DBOnExpression RightJoin(string joinTable)
         {
             joinTable = joinTable.Trim();
-            IDBOnExpression ex = new MySqlDBOnExpression();
+            DBOnExpression ex = new MySqlDBOnExpression();
 
-            ex.Type = "right join";
+            ex.JoinType = SqlJoinType.RightJoin;
 
             if (joinTable.IndexOf(" ") > 1)
             {
@@ -333,12 +333,12 @@ namespace FoxzyForMySql
             return ex.Fill(this);
         }
 
-        public override IDBOnExpression InnerJoin(string joinTable)
+        public override DBOnExpression InnerJoin(string joinTable)
         {
             joinTable = joinTable.Trim();
-            IDBOnExpression ex = new MySqlDBOnExpression();
+            DBOnExpression ex = new MySqlDBOnExpression();
 
-            ex.Type = "inner join";
+            ex.JoinType = SqlJoinType.InnerJoin;
 
             if (joinTable.IndexOf(" ") > 1)
             {
@@ -514,7 +514,6 @@ namespace FoxzyForMySql
             _Pagination.Set(baseSql, this._keyObject.DataParameters);
 
             return _Pagination.Pagination(PageIndex, PageSize, out RowsCount, null);
-
         }
     }
 }

@@ -36,7 +36,7 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract object ExecuteScalar(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text);
 
-        public abstract T ExecuteScalar<T>(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text);
+        public abstract T ExecuteScalar<T>(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text) where T : class;
 
         public abstract DataSet FillDataSet(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text);
 

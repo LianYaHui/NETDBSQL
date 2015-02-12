@@ -10,12 +10,21 @@ namespace FoxzyDBSql.SqlServer
 {
     public class SqlManageUtil : DbManage
     {
+        /// <summary>
+        /// 用连接字符串初始化新的实例
+        /// </summary>
+        /// <param name="ConnetionString">ADO.NET连接字符串</param>
         public SqlManageUtil(String ConnetionString)
             : base(ConnetionString)
         {
 
         }
 
+        /// <summary>
+        /// 克隆一个DataParameter序列,用于同一Sql语句应用于不同的两个执行语句
+        /// </summary>
+        /// <param name="pars">要克隆的参数集</param>
+        /// <returns></returns>
         public static IEnumerable<SqlParameter> CloneParameter(IEnumerable<IDataParameter> pars)
         {
             if (pars == null)
@@ -29,6 +38,10 @@ namespace FoxzyDBSql.SqlServer
             return list;
         }
 
+        /// <summary>
+        /// 重载基类方法,打开数据库连接
+        /// </summary>
+        /// <returns></returns>
         public override bool OpenConncetion()
         {
             bool _opneResult = false;
@@ -74,6 +87,13 @@ namespace FoxzyDBSql.SqlServer
             catch (Exception ex) { throw ex; }
         }
 
+        /// <summary>
+        /// 执行一段Sql,返回受影响的行数
+        /// </summary>
+        /// <param name="command">sql 语句</param>
+        /// <param name="pars">参数集</param>
+        /// <param name="type">CommandType 指定执行的是sql,还是存储过程</param>
+        /// <returns>受影响的行数。</returns>
         public override int ExecuteNonQuery(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text)
         {
             try
@@ -89,6 +109,13 @@ namespace FoxzyDBSql.SqlServer
             }
         }
 
+        /// <summary>
+        /// 执行查询，并返回查询所返回的结果集中第一行的第一列。所有其他的列和行将被忽略。
+        /// </summary>
+        /// <param name="command">sql 语句</param>
+        /// <param name="pars">参数集</param>
+        /// <param name="type">CommandType 指定执行的是sql,还是存储过程</param>
+        /// <returns>结果集中第一行的第一列。</returns>
         public override object ExecuteScalar(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text)
         {
             try
@@ -106,18 +133,15 @@ namespace FoxzyDBSql.SqlServer
 
         public override T ExecuteScalar<T>(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text)
         {
-            try
-            {
-                var obj = ExecuteScalar(command, pars, type);
-                return (T)(obj);
-            }
-            catch
-            {
-                throw new Exception();
-            }
+            Type t = typeof(T);
+
+            var obj = ExecuteScalar(command, pars, type);
+            return Convert.ChangeType(obj, t) as T;
         }
 
-
+        /// <summary>
+        /// 释放所有打开的资源
+        /// </summary>
         public override void Dispose()
         {
             if (Connection != null) Connection.Dispose();
@@ -126,6 +150,13 @@ namespace FoxzyDBSql.SqlServer
             if (DBDataSet != null) DBDataSet.Dispose();
         }
 
+        /// <summary>
+        /// 执行一个查询
+        /// </summary>
+        /// <param name="command">sql 语句</param>
+        /// <param name="pars">参数集</param>
+        /// <param name="type">CommandType 指定执行的是sql,还是存储过程</param>
+        /// <returns>执行sql生成的数据集。</returns>
         public override DataSet FillDataSet(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text)
         {
             DataAdapter = new SqlDataAdapter();
@@ -146,27 +177,50 @@ namespace FoxzyDBSql.SqlServer
             }
         }
 
+        /// <summary>
+        /// 开始生成一个SELECT语句
+        /// </summary>
+        /// <returns></returns>
         public override AbsDbExpression CreateSelect()
         {
             var _sql = new SqlExpression(this, Common.SqlExceType.Select);
             return _sql;
         }
 
+        /// <summary>
+        /// 开始生成一个Update语句
+        /// </summary>
+        /// <param name="table"></param>
+        /// <returns></returns>
         public override AbsDbExpression CreateUpdate(String table)
         {
             return new SqlExpression(this, Common.SqlExceType.Update).Update(table);
         }
 
+        /// <summary>
+        /// 开始生成一个Delete语句
+        /// </summary>
+        /// <param name="table">要Delete的表名</param>
+        /// <returns></returns>
         public override AbsDbExpression CreateDelete(String table)
         {
             return new SqlExpression(this, Common.SqlExceType.Delete).Delete(table);
         }
 
+        /// <summary>
+        /// 开始生成一个Insert语句
+        /// </summary>
+        /// <param name="table">要Insert的表名</param>
+        /// <returns></returns>
         public override AbsDbExpression CreateInsert(String table)
         {
             return new SqlExpression(this, Common.SqlExceType.Insert).Insert(table);
         }
 
+        /// <summary>
+        /// 创建一个要分页查询的执行器
+        /// </summary>
+        /// <returns></returns>
         public override PaginationSelect CreatePagination()
         {
             return new SqlPaginationSelect(this);

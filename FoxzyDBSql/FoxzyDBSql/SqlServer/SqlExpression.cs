@@ -213,12 +213,12 @@ namespace FoxzyDBSql.SqlServer
 
 
 
-        public override IDBOnExpression LeftJoin(String joinTable)
+        public override DBOnExpression LeftJoin(String joinTable)
         {
             joinTable = joinTable.Trim();
-            IDBOnExpression ex = new SqlDBOnExpression();
+            DBOnExpression ex = new SqlDBOnExpression();
 
-            ex.Type = "left join";
+            ex.JoinType = SqlJoinType.LeftJoin;
 
             if (joinTable.IndexOf(" ") > 1)
             {
@@ -238,12 +238,12 @@ namespace FoxzyDBSql.SqlServer
             return ex.Fill(this);
         }
 
-        public override IDBOnExpression RightJoin(String joinTable)
+        public override DBOnExpression RightJoin(String joinTable)
         {
             joinTable = joinTable.Trim();
-            IDBOnExpression ex = new SqlDBOnExpression();
+            DBOnExpression ex = new SqlDBOnExpression();
 
-            ex.Type = "right join";
+            ex.JoinType = SqlJoinType.RightJoin;
 
             if (joinTable.IndexOf(" ") > 1)
             {
@@ -263,12 +263,12 @@ namespace FoxzyDBSql.SqlServer
             return ex.Fill(this);
         }
 
-        public override IDBOnExpression InnerJoin(String joinTable)
+        public override DBOnExpression InnerJoin(String joinTable)
         {
             joinTable = joinTable.Trim();
-            IDBOnExpression ex = new SqlDBOnExpression();
+            DBOnExpression ex = new SqlDBOnExpression();
 
-            ex.Type = "inner join";
+            ex.JoinType = SqlJoinType.InnerJoin;
 
             if (joinTable.IndexOf(" ") > 1)
             {

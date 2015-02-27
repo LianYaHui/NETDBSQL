@@ -90,11 +90,11 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract String ToSql();
 
-        public abstract DataSet ToDataSet();
+        public abstract DataSet ToDataSet(bool isDispose = false);
 
-        public abstract Object ExecuteScalar();
+        public abstract Object ExecuteScalar(bool isDispose = false);
 
-        public abstract int ExecuteNonQuery();
+        public abstract int ExecuteNonQuery(bool isDispose = false);
 
         public class DBSqlKeyObject
         {

@@ -46,7 +46,8 @@ namespace FoxzyDBSql.OleDb
             Command.Parameters.AddRange(pars.ToArray());
         }
 
-        public override int ExecuteNonQuery(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text)
+        public override int ExecuteNonQuery(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text,
+            bool isDispose = true)
         {
             try
             {
@@ -71,7 +72,8 @@ namespace FoxzyDBSql.OleDb
             catch (Exception ex) { throw ex; }
         }
 
-        public override object ExecuteScalar(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text)
+        public override object ExecuteScalar(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text,
+            bool isDispose = true)
         {
             try
             {
@@ -86,20 +88,8 @@ namespace FoxzyDBSql.OleDb
             }
         }
 
-        public override T ExecuteScalar<T>(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text)
-        {
-            try
-            {
-                var obj = ExecuteScalar(command, pars, type);
-                return (T)(obj);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public override System.Data.DataSet FillDataSet(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text)
+        public override System.Data.DataSet FillDataSet(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text,
+            bool isDispose = true)
         {
             DataAdapter = new OleDbDataAdapter();
             DBDataSet = new DataSet();
@@ -148,6 +138,11 @@ namespace FoxzyDBSql.OleDb
         }
 
         public override PaginationSelect CreatePagination()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool ExecTranstion(Action<DbManage> action, IsolationLevel isolationLevel = IsolationLevel.Unspecified)
         {
             throw new NotImplementedException();
         }

@@ -5,11 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using FoxzyDBSql.SqlServer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Data.SqlClient;
 namespace FoxzyDBSql.SqlServer.Tests
 {
     [TestClass()]
     public class SqlManageUtilTests
     {
+        SqlManageUtil db = new SqlManageUtil("Data Source=.;Initial Catalog=HRM_XX;Integrated Security=True");
+
+
         [TestMethod()]
         public void SqlManageUtilTest()
         {
@@ -85,13 +89,20 @@ namespace FoxzyDBSql.SqlServer.Tests
         [TestMethod()]
         public void CreateInsertTest()
         {
-            Assert.Fail();
+            int result = db.CreateInsert("xx_Log").SetObject(new
+            {
+                ID = -100
+                ,
+                Contont = "test1",
+                CreateTime = DateTime.Now
+            }).ExecuteNonQuery();
+
+            Assert.AreEqual(result, 1);
         }
 
         [TestMethod()]
         public void CreatePaginationTest()
         {
-            SqlManageUtil db = new SqlManageUtil("Data Source=.;Initial Catalog=HRM_XX;Integrated Security=True");
             int c = 0;
 
             db.CreatePagination()
@@ -100,6 +111,39 @@ namespace FoxzyDBSql.SqlServer.Tests
 
             Assert.AreEqual(c, 24);
 
+        }
+
+        [TestMethod()]
+        public void ExecTranstionTest()
+        {
+            Action<FoxzyDBSql.DBInterface.DbManage> action = (dbUtil) =>
+            {
+                dbUtil.CreateInsert("xx_Log").SetObject(new
+                {
+                    Contont = "test12",
+                    CreateTime = DateTime.Now,
+                    ID = -126
+                }).ExecuteNonQuery();
+
+                dbUtil.CreateInsert("xx_Log").SetObject(new
+                {
+                    Contont = "test22",
+                    CreateTime = DateTime.Now,
+                    ID = -127
+                }).ExecuteNonQuery();
+
+                dbUtil.CreateInsert("xx_Log").SetObject(new
+                {
+                    Contont = "test333333",
+                    CreateTime = DateTime.Now,
+                    ID = -128
+                }).ExecuteNonQuery();
+
+            };
+
+            var f = db.ExecTranstion(action);
+
+            Assert.AreEqual<bool>(f, true);
         }
     }
 }

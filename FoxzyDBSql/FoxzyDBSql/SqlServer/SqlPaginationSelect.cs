@@ -46,7 +46,7 @@ namespace FoxzyDBSql.SqlServer
             String ReturnDataSql = String.Format("select * from ({0}) as t where t.Num>{1} and t.Num<= {2} ", this.BaseSql, (PageIndex - 1) * PageSize, PageIndex * PageSize);
 
 
-            DataSet execData = db.FillDataSet(ReturnDataSql, this.DataParameters, CommandType.Text);
+            DataSet execData = db.FillDataSet(ReturnDataSql, this.DataParameters, CommandType.Text, false);
 
 
             RowsCount = execData.Tables[0].Rows.Count;
@@ -55,10 +55,9 @@ namespace FoxzyDBSql.SqlServer
                 String getCountSql =
                        String.Format("select count(*) from ({0}) as count_table", this.BaseSql);
 
-
                 IEnumerable<SqlParameter> newPars = SqlManageUtil.CloneParameter(this.DataParameters);
 
-                RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, newPars, CommandType.Text));
+                RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, newPars, CommandType.Text, false));
             }
 
 

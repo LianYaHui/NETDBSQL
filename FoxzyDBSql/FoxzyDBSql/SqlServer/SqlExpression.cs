@@ -175,11 +175,13 @@ namespace FoxzyDBSql.SqlServer
             throw new NotImplementedException();
         }
 
-        public override System.Data.DataSet ToDataSet()
+        public override System.Data.DataSet ToDataSet(bool isDispose = false)
         {
             try
             {
-                return db.FillDataSet(this.ToSql(), this._keyObject.DataParameters);
+                return db.FillDataSet(this.ToSql(), this._keyObject.DataParameters,
+                    CommandType.Text,
+                    isDispose);
             }
             catch (Exception)
             {
@@ -187,11 +189,13 @@ namespace FoxzyDBSql.SqlServer
             }
         }
 
-        public override object ExecuteScalar()
+        public override object ExecuteScalar(bool isDispose = false)
         {
             try
             {
-                return db.ExecuteScalar(this.ToSql(), this._keyObject.DataParameters);
+                return db.ExecuteScalar(this.ToSql(), this._keyObject.DataParameters,
+                    CommandType.Text,
+                    isDispose);
             }
             catch (Exception)
             {
@@ -199,11 +203,14 @@ namespace FoxzyDBSql.SqlServer
             }
         }
 
-        public override int ExecuteNonQuery()
+        public override int ExecuteNonQuery(bool isDispose = false)
         {
             try
             {
-                return db.ExecuteNonQuery(this.ToSql(), this._keyObject.DataParameters);
+                return db.ExecuteNonQuery(this.ToSql(),
+                    this._keyObject.DataParameters,
+                    CommandType.Text,
+                    isDispose);
             }
             catch (Exception)
             {

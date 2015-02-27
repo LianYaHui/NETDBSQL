@@ -48,8 +48,11 @@ namespace FoxzyDBSql.SqlServer
             String _conStr = ConncetionString;
             try
             {
-                Connection = new SqlConnection(_conStr);
-                Connection.Open();
+                if (Connection == null)
+                    Connection = new SqlConnection(_conStr);
+                if (Connection.State != ConnectionState.Open)
+                    Connection.Open();
+
                 _opneResult = true;
             }
             catch { throw; }
@@ -60,9 +63,12 @@ namespace FoxzyDBSql.SqlServer
         {
             OpenConncetion();
 
-            Command = new SqlCommand(command, (Connection as SqlConnection));
-            Command.CommandType = type;
+            if (Command == null)
+                Command = new SqlCommand();
 
+            Command.CommandText = command;
+            Command.Connection = (Connection as SqlConnection);
+            Command.CommandType = type;
             Command.Parameters.Clear();
 
 
@@ -77,7 +83,9 @@ namespace FoxzyDBSql.SqlServer
         /// <param name="pars"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public override IDataReader ExecuteDataReader(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text)
+        public override IDataReader ExecuteDataReader(string command,
+            IEnumerable<IDataParameter> pars = null,
+            CommandType type = CommandType.Text)
         {
             InitCommand(command, pars, type);
             try
@@ -94,13 +102,16 @@ namespace FoxzyDBSql.SqlServer
         /// <param name="pars">参数集</param>
         /// <param name="type">CommandType 指定执行的是sql,还是存储过程</param>
         /// <returns>受影响的行数。</returns>
-        public override int ExecuteNonQuery(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text)
+        public override int ExecuteNonQuery(string command,
+            IEnumerable<IDataParameter> pars = null,
+            CommandType type = CommandType.Text,
+            bool isDispose = true)
         {
             try
             {
                 InitCommand(command, pars, type);
                 int _result = Command.ExecuteNonQuery();
-                Dispose();
+                if (isDispose) Dispose();
                 return _result;
             }
             catch (Exception ex)
@@ -116,27 +127,22 @@ namespace FoxzyDBSql.SqlServer
         /// <param name="pars">参数集</param>
         /// <param name="type">CommandType 指定执行的是sql,还是存储过程</param>
         /// <returns>结果集中第一行的第一列。</returns>
-        public override object ExecuteScalar(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text)
+        public override object ExecuteScalar(string command,
+            IEnumerable<IDataParameter> pars = null,
+            CommandType type = CommandType.Text,
+            bool isDispose = true)
         {
             try
             {
                 InitCommand(command, pars, type);
                 object _result = Command.ExecuteScalar();
-                Dispose();
+                if (isDispose) Dispose();
                 return _result;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-        }
-
-        public override T ExecuteScalar<T>(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text)
-        {
-            Type t = typeof(T);
-
-            var obj = ExecuteScalar(command, pars, type);
-            return Convert.ChangeType(obj, t) as T;
         }
 
         /// <summary>
@@ -157,7 +163,10 @@ namespace FoxzyDBSql.SqlServer
         /// <param name="pars">参数集</param>
         /// <param name="type">CommandType 指定执行的是sql,还是存储过程</param>
         /// <returns>执行sql生成的数据集。</returns>
-        public override DataSet FillDataSet(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text)
+        public override DataSet FillDataSet(string command,
+            IEnumerable<IDataParameter> pars = null,
+            CommandType type = CommandType.Text,
+            bool isDispose = true)
         {
             DataAdapter = new SqlDataAdapter();
             DBDataSet = new DataSet();
@@ -168,7 +177,7 @@ namespace FoxzyDBSql.SqlServer
             try
             {
                 DataAdapter.Fill(DBDataSet);
-                Dispose();
+                if (isDispose) Dispose();
                 return DBDataSet;
             }
             catch (Exception ex)
@@ -224,6 +233,43 @@ namespace FoxzyDBSql.SqlServer
         public override PaginationSelect CreatePagination()
         {
             return new SqlPaginationSelect(this);
+        }
+
+        /// <summary>
+        /// 开启一个事物
+        /// </summary>
+        /// <param name="action">事物中包含的动作</param>
+        /// <returns>是否执行成功</returns>
+        public override bool ExecTranstion(Action<DbManage> action, IsolationLevel isolationLevel = IsolationLevel.Unspecified)
+        {
+            if (action == null)
+                throw new ArgumentNullException("action");
+
+
+            OpenConncetion();
+
+            SqlConnection conn = Connection as SqlConnection;
+            var sqlTran = conn.BeginTransaction();
+
+            if (Command == null)
+                Command = new SqlCommand();
+
+            Command.Connection = conn;
+            Command.Transaction = sqlTran;
+
+            try
+            {
+                action.Invoke(this);
+                sqlTran.Commit();
+            }
+            catch
+            {
+                sqlTran.Rollback();
+                return false;
+            }
+
+
+            return true;
         }
     }
 }

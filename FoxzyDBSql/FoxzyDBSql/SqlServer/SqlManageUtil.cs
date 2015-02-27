@@ -267,6 +267,11 @@ namespace FoxzyDBSql.SqlServer
                 sqlTran.Rollback();
                 return false;
             }
+            finally
+            {
+                sqlTran.Dispose();
+                Dispose();
+            }
 
 
             return true;

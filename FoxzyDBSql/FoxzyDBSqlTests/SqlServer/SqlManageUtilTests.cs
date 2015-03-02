@@ -73,9 +73,9 @@ namespace FoxzyDBSql.SqlServer.Tests
         {
             var sql = db.CreateSelect()
                  .Select()
-                 .CrossJoin("xx_EndowmentInsurance i")
-                 .On(null)
-                 .From("xx_Employee e")
+                 .LeftJoin("xx_EndowmentInsurance    i")
+                 .On("i.EmpID = e.ID")
+                 .From("xx_Employee     e")
                  .ToSql();
 
 

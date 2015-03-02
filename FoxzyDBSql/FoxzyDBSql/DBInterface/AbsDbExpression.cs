@@ -206,7 +206,7 @@ namespace FoxzyDBSql.DBInterface
                         select_sql.Add(tb.Value + ".*");
                 }
 
-                sb_sql.AppendLine(String.Join(",", select_sql));
+                sb_sql.Append(String.Join(",", select_sql));
             }
         }
 

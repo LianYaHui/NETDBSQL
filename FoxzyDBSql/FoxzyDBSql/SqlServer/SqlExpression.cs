@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Data.SqlClient;
 using System.Data;
+using FoxzyDBSql.Common;
 
 namespace FoxzyDBSql.SqlServer
 {
@@ -38,6 +39,8 @@ namespace FoxzyDBSql.SqlServer
 
         public override AbsDbExpression From(string tablesql)
         {
+            tablesql = tablesql.ReplaceSpace();
+
             foreach (String table in tablesql.Split(','))
             {
                 if (table.IndexOf(" ") >= 0)
@@ -250,7 +253,7 @@ namespace FoxzyDBSql.SqlServer
 
         private DBOnExpression InitJoin(String joinTable, SqlJoinType type)
         {
-            joinTable = joinTable.Trim();
+            joinTable = joinTable.Trim().ReplaceSpace();
             DBOnExpression ex = new SqlDBOnExpression();
 
             ex.JoinType = type;
@@ -258,7 +261,7 @@ namespace FoxzyDBSql.SqlServer
             if (joinTable.IndexOf(" ") > 1)
             {
                 ex.TableName = joinTable.Substring(0, joinTable.IndexOf(" "));
-                ex.AsName = joinTable.Substring(joinTable.LastIndexOf(" "));
+                ex.AsName = joinTable.Substring(joinTable.LastIndexOf(" ") + 1);
 
                 this._keyObject.Tables.Add(ex.TableName, ex.AsName);
             }

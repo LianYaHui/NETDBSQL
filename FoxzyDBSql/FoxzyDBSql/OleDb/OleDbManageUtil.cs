@@ -10,6 +10,11 @@ namespace FoxzyDBSql.OleDb
 {
     public class OleDbManageUtil : DbManage
     {
+        OleDbConnection Connection = null;
+        OleDbCommand Command = null;
+        OleDbDataAdapter DataAdapter = null;
+
+
         public override bool OpenConncetion()
         {
             bool _opneResult = false;
@@ -92,7 +97,7 @@ namespace FoxzyDBSql.OleDb
             bool isDispose = true)
         {
             DataAdapter = new OleDbDataAdapter();
-            DBDataSet = new DataSet();
+            DataSet DBDataSet = new DataSet();
 
             InitCommand(command, pars, type);
             DataAdapter.SelectCommand = Command;
@@ -134,7 +139,6 @@ namespace FoxzyDBSql.OleDb
             if (Connection != null) Connection.Dispose();
             if (Command != null) Command.Dispose();
             if (DataAdapter != null) DataAdapter.Dispose();
-            if (DBDataSet != null) DBDataSet.Dispose();
         }
 
         public override PaginationSelect CreatePagination()

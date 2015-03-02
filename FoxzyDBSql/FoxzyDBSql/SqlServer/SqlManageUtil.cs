@@ -10,6 +10,10 @@ namespace FoxzyDBSql.SqlServer
 {
     public class SqlManageUtil : DbManage
     {
+        SqlConnection Connection = null;
+        SqlCommand Command = null;
+        SqlDataAdapter DataAdapter = null;
+
         /// <summary>
         /// 用连接字符串初始化新的实例
         /// </summary>
@@ -67,7 +71,7 @@ namespace FoxzyDBSql.SqlServer
                 Command = new SqlCommand();
 
             Command.CommandText = command;
-            Command.Connection = (Connection as SqlConnection);
+            Command.Connection = (Connection);
             Command.CommandType = type;
             Command.Parameters.Clear();
 
@@ -153,7 +157,6 @@ namespace FoxzyDBSql.SqlServer
             if (Connection != null) Connection.Dispose();
             if (Command != null) Command.Dispose();
             if (DataAdapter != null) DataAdapter.Dispose();
-            if (DBDataSet != null) DBDataSet.Dispose();
         }
 
         /// <summary>
@@ -169,7 +172,7 @@ namespace FoxzyDBSql.SqlServer
             bool isDispose = true)
         {
             DataAdapter = new SqlDataAdapter();
-            DBDataSet = new DataSet();
+            DataSet DBDataSet = new DataSet();
 
             InitCommand(command, pars, type);
             DataAdapter.SelectCommand = Command;
@@ -177,10 +180,9 @@ namespace FoxzyDBSql.SqlServer
             try
             {
                 DataAdapter.Fill(DBDataSet);
-                DataSet cloneSet = DBDataSet.Copy();
 
                 if (isDispose) Dispose();
-                return cloneSet;
+                return DBDataSet;
             }
             catch (Exception ex)
             {

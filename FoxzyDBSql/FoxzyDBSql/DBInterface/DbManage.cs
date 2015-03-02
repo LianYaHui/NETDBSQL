@@ -9,21 +9,12 @@ namespace FoxzyDBSql.DBInterface
 {
     public abstract class DbManage : IDisposable
     {
-        protected DbConnection Connection;
-
-        protected DbCommand Command;
-
-        protected DbDataAdapter DataAdapter;
-
-        protected DataSet DBDataSet;
-
         public string ConncetionString { private set; get; }
 
         public DbManage(String conntionString)
         {
             if (String.IsNullOrEmpty(conntionString))
                 throw new ArgumentNullException("conntionString");
-
 
             this.ConncetionString = conntionString;
         }

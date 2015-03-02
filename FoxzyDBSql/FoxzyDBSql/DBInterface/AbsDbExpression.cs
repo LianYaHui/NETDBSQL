@@ -79,7 +79,9 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract DBOnExpression InnerJoin(String joinTable);
 
+        public abstract DBOnExpression CrossJoin(String joinTable);
 
+        public abstract DBOnExpression FullJoin(String joinTable);
 
 
 

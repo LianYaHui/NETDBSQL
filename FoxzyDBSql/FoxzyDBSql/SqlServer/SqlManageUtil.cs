@@ -177,8 +177,10 @@ namespace FoxzyDBSql.SqlServer
             try
             {
                 DataAdapter.Fill(DBDataSet);
+                DataSet cloneSet = DBDataSet.Copy();
+
                 if (isDispose) Dispose();
-                return DBDataSet;
+                return cloneSet;
             }
             catch (Exception ex)
             {

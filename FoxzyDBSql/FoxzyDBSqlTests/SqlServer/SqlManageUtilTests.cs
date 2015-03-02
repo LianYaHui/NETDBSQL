@@ -71,6 +71,14 @@ namespace FoxzyDBSql.SqlServer.Tests
         [TestMethod()]
         public void CreateSelectTest()
         {
+            var sql = db.CreateSelect()
+                 .Select()
+                 .CrossJoin("xx_EndowmentInsurance i")
+                 .On(null)
+                 .From("xx_Employee e")
+                 .ToSql();
+
+
             Assert.Fail();
         }
 

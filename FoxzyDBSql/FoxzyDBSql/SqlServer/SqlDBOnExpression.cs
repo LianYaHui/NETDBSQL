@@ -11,7 +11,12 @@ namespace FoxzyDBSql.SqlServer
         public override string ToString()
         {
             String table = (this.TableName == this.AsName ? this.TableName : string.Format("{0} as {1}", this.TableName, this.AsName));
-            return String.Format(" {0} {1} on {2}", JoinTypeToString(this.JoinType), table, this.Expression);
+            String tmpStr = String.Format(" {0} {1}", JoinTypeToString(this.JoinType), table);
+
+            if (this.JoinType == SqlJoinType.CrossJoin)
+                return tmpStr;
+
+            return String.Format("{0} on {1}", tmpStr, Expression);
         }
     }
 }

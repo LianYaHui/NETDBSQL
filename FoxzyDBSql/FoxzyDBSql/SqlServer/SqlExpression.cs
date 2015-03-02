@@ -132,47 +132,50 @@ namespace FoxzyDBSql.SqlServer
         public override string ToSql()
         {
             StringBuilder sb_sql = new StringBuilder();
+            String _sql = String.Empty;
 
-            if (_keyObject.SqlType == Common.SqlExceType.Select)
+            switch (_keyObject.SqlType)
             {
-                if (String.IsNullOrEmpty(_keyObject.FromTable))
-                    throw new Exception("没有制定表");
+                case Common.SqlExceType.Select:
+                    if (String.IsNullOrEmpty(_keyObject.FromTable))
+                        throw new Exception("没有指定要查询的表");
 
-                initSelect(sb_sql);
-                initInto(sb_sql);
-                initFrom(sb_sql);
-                initJoin(sb_sql);
-                initWhere(sb_sql);
-                initGroup(sb_sql);
-                initHaving(sb_sql);
-                initSort(sb_sql);
+                    initSelect(sb_sql);
+                    initInto(sb_sql);
+                    initFrom(sb_sql);
+                    initJoin(sb_sql);
+                    initWhere(sb_sql);
+                    initGroup(sb_sql);
+                    initHaving(sb_sql);
+                    initSort(sb_sql);
 
-                return sb_sql.ToString();
+                    _sql = sb_sql.ToString();
+                    break;
+                case Common.SqlExceType.Update:
+
+                    initUpdate(sb_sql);
+                    initset(sb_sql);
+                    initWhere(sb_sql);
+
+                    _sql = sb_sql.ToString();
+                    break;
+
+                case Common.SqlExceType.Delete:
+
+                    initDelete(sb_sql);
+                    initWhere(sb_sql);
+
+
+                    _sql = sb_sql.ToString();
+                    break;
+                case Common.SqlExceType.Insert:
+
+                    initInsert(sb_sql);
+                    initInsertColunmVal(sb_sql);
+                    _sql = sb_sql.ToString();
+                    break;
             }
-            if (_keyObject.SqlType == Common.SqlExceType.Update)
-            {
-                initUpdate(sb_sql);
-                initset(sb_sql);
-                initWhere(sb_sql);
-
-
-                return sb_sql.ToString();
-            }
-            if (_keyObject.SqlType == Common.SqlExceType.Delete)
-            {
-                initDelete(sb_sql);
-                initWhere(sb_sql);
-
-                return sb_sql.ToString();
-            }
-
-            if (_keyObject.SqlType == Common.SqlExceType.Insert)
-            {
-                initInsert(sb_sql);
-                initInsertColunmVal(sb_sql);
-                return sb_sql.ToString();
-            }
-            throw new NotImplementedException();
+            return _sql;
         }
 
         public override System.Data.DataSet ToDataSet(bool isDispose = false)
@@ -222,60 +225,35 @@ namespace FoxzyDBSql.SqlServer
 
         public override DBOnExpression LeftJoin(String joinTable)
         {
-            joinTable = joinTable.Trim();
-            DBOnExpression ex = new SqlDBOnExpression();
-
-            ex.JoinType = SqlJoinType.LeftJoin;
-
-            if (joinTable.IndexOf(" ") > 1)
-            {
-                ex.TableName = joinTable.Substring(0, joinTable.IndexOf(" "));
-                ex.AsName = joinTable.Substring(joinTable.LastIndexOf(" "));
-
-                this._keyObject.Tables.Add(ex.TableName, ex.AsName);
-            }
-            else
-            {
-                ex.TableName = joinTable;
-                ex.AsName = joinTable;
-
-                this._keyObject.Tables.Add(ex.TableName, null);
-            }
-
-            return ex.Fill(this);
+            return InitJoin(joinTable, SqlJoinType.LeftJoin);
         }
 
         public override DBOnExpression RightJoin(String joinTable)
         {
-            joinTable = joinTable.Trim();
-            DBOnExpression ex = new SqlDBOnExpression();
-
-            ex.JoinType = SqlJoinType.RightJoin;
-
-            if (joinTable.IndexOf(" ") > 1)
-            {
-                ex.TableName = joinTable.Substring(0, joinTable.IndexOf(" "));
-                ex.AsName = joinTable.Substring(joinTable.LastIndexOf(" "));
-
-                this._keyObject.Tables.Add(ex.TableName, ex.AsName);
-            }
-            else
-            {
-                ex.TableName = joinTable;
-                ex.AsName = joinTable;
-
-                this._keyObject.Tables.Add(ex.TableName, null);
-            }
-
-            return ex.Fill(this);
+            return InitJoin(joinTable, SqlJoinType.RightJoin);
         }
 
         public override DBOnExpression InnerJoin(String joinTable)
         {
+            return InitJoin(joinTable, SqlJoinType.InnerJoin);
+        }
+
+        public override DBOnExpression CrossJoin(String joinTable)
+        {
+            return InitJoin(joinTable, SqlJoinType.CrossJoin);
+        }
+
+        public override DBOnExpression FullJoin(String joinTable)
+        {
+            return InitJoin(joinTable, SqlJoinType.FullJoin);
+        }
+
+        private DBOnExpression InitJoin(String joinTable, SqlJoinType type)
+        {
             joinTable = joinTable.Trim();
             DBOnExpression ex = new SqlDBOnExpression();
 
-            ex.JoinType = SqlJoinType.InnerJoin;
+            ex.JoinType = type;
 
             if (joinTable.IndexOf(" ") > 1)
             {
@@ -400,11 +378,7 @@ namespace FoxzyDBSql.SqlServer
         public override AbsDbExpression InsertColoums(params string[] coloums)
         {
             _keyObject.InsertColoums.Clear();
-
-            foreach (string coloum in coloums)
-            {
-                _keyObject.InsertColoums.Add(coloum);
-            }
+            _keyObject.InsertColoums.AddRange(coloums);
 
             return this;
         }

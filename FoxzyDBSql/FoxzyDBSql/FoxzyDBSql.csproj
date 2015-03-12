@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Common\Coloum.cs" />
     <Compile Include="Common\DBSelectComponent.cs" />
+    <Compile Include="Common\SqlConverter.cs" />
     <Compile Include="Common\SqlExecType.cs" />
     <Compile Include="Common\SqlString.cs" />
     <Compile Include="DBInterface\AbsDbExpression.cs" />

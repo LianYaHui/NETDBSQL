@@ -3,39 +3,6 @@ NETDBSQL
 
 C#操作数据库的方法合集
 
-<<<<<<< HEAD
-<table>
-    <tr>
-        <td>Foo</td>
-        <td></td>
-    </tr>
-</table>
-
-# 一级标题
-## 二级标题
-### 三级标题
-#### 四级标题
-##### 五级标题
-###### 六级标题
-
-- list
-- list2
-
-1. 文本1
-2. 文本2
-3. 文本3
-
-### 链接：
-[励志成为最好的Foxzy](https://lianyahui.github.io)
-
-### 图片
-![](http://ww4.sinaimg.cn/bmiddle/aa397b7fjw1dzplsgpdw5j.jpg)
-
-### 引用
-> 人生就像一场戏，不到最后都不知道会有怎样的精彩
-=======
- 配置 连接 字符串 
-
 SqlManageUtil.ConncetionString = "";//这里自行配制
 
 
@@ -124,4 +91,4 @@ var sql = db.CreateSelect().From("tb","t")
  select t.Name,t2.Date as d from tb as t inner join tb2 as t2 on t2.UserID = t.ID where t.ID=2 and t2.Sex=@sex
 
 其他连接，如left join ,right join 将代码改为LeftJoin ,RightJoin
->>>>>>> c2844b1a19a17f5988f4c5edf29c61392b159589
+

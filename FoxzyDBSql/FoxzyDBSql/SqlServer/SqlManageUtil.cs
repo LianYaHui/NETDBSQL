@@ -73,8 +73,6 @@ namespace FoxzyDBSql.SqlServer
             Command.CommandText = command;
             Command.Connection = (Connection);
             Command.CommandType = type;
-            Command.Parameters.Clear();
-
 
             if (pars == null) return;
             Command.Parameters.AddRange(pars.ToArray());

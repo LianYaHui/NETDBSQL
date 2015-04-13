@@ -36,15 +36,9 @@ namespace FoxzyDBSql.SqlServer
             if (String.IsNullOrEmpty(order))
                 throw new Exception("必须指定排序的列,对于MS的数据库，这是必须的 ");
 
-            //TODO
-            //正则提取 from 子句
-            String _sql = this.BaseSql.ToUpper();
-            int fromIndex = _sql.IndexOf("FROM ");
+            String RowNumberSql = String.Format("select row_number() over(order by {0}) as {1},* from ({2}) as {1}_table", order, DefaultRowNumber, this.BaseSql);
 
-            this.BaseSql = this.BaseSql.Insert(fromIndex, String.Format(",row_number() over(order by {0}) as Num ", order));
-
-            String ReturnDataSql = String.Format("select * from ({0}) as t where t.Num>{1} and t.Num<= {2} ", this.BaseSql, (PageIndex - 1) * PageSize, PageIndex * PageSize);
-
+            String ReturnDataSql = String.Format("select * from ({0}) as t where t.{1} > {2} and t.{1}<= {3} ", RowNumberSql, DefaultRowNumber, (PageIndex - 1) * PageSize, PageIndex * PageSize);
 
             DataSet execData = db.FillDataSet(ReturnDataSql, this.DataParameters, CommandType.Text, false);
 
@@ -55,11 +49,10 @@ namespace FoxzyDBSql.SqlServer
                 String getCountSql =
                        String.Format("select count(*) from ({0}) as count_table", this.BaseSql);
 
-                IEnumerable<SqlParameter> newPars = SqlManageUtil.CloneParameter(this.DataParameters);
-
-                RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, newPars, CommandType.Text, false));
+                RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, null, CommandType.Text, false));
             }
 
+            db.Dispose();
 
             return execData;
         }

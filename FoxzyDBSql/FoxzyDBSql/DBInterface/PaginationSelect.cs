@@ -8,6 +8,8 @@ namespace FoxzyDBSql.DBInterface
 {
     public abstract class PaginationSelect
     {
+        public static String DefaultRowNumber = "RowNum";
+
         protected string BaseSql = String.Empty;
         protected DbManage db = null;
         protected IEnumerable<IDataParameter> DataParameters;

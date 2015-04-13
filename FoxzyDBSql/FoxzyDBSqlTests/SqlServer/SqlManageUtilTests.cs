@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using FoxzyDBSql.SqlServer;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Data.SqlClient;
+using System.Collections;
+using System.Data;
 namespace FoxzyDBSql.SqlServer.Tests
 {
     [TestClass()]
@@ -113,8 +115,14 @@ namespace FoxzyDBSql.SqlServer.Tests
         {
             int c = 0;
 
+            List<IDataParameter>
+                pars = new List<IDataParameter>()
+                {
+                    new SqlParameter("@v","汉族")
+                };
+
             db.CreatePagination()
-                .Set("SELect * from xx_employee", null)
+                .Set("select * from XX_employee where Volk =@v", pars)
                 .Pagination(2, 5, out c, "ID");
 
             Assert.AreEqual(c, 24);

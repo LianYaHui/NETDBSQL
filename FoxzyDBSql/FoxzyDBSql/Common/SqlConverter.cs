@@ -8,7 +8,7 @@ namespace FoxzyDBSql.Common
 {
     public static class SqlConverter
     {
-        public static List<T> ToList<T>(DataTable table, this Func<DataRow, T> render)
+        public static List<T> ToList<T>(this DataTable table, Func<DataRow, T> render)
         {
             if (render == null)
                 throw new NullReferenceException("render");

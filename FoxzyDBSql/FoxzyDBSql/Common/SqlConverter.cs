@@ -22,5 +22,10 @@ namespace FoxzyDBSql.Common
 
             return data;
         }
+
+        public static int ToInt32(this object obj)
+        {
+            return Convert.ToInt32(obj);
+        }
     }
 }

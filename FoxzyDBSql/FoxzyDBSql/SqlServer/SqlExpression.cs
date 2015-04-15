@@ -16,7 +16,7 @@ namespace FoxzyDBSql.SqlServer
         public SqlExpression(DbManage db, Common.SqlExceType type)
         {
             if (db == null)
-                throw new Exception("DbManage is not null");
+                throw new ArgumentNullException("db");
 
             this.db = db;
             this._keyObject.SqlType = type;
@@ -427,19 +427,14 @@ namespace FoxzyDBSql.SqlServer
         public override DataSet Pagination(int PageIndex, int PageSize, out int RowsCount)
         {
             StringBuilder sb_sql = new StringBuilder();
-
             List<String> orderSql = new List<string>();
-            //sb.Append(" order by ");
+
             foreach (String key in _keyObject.Sort.Keys)
             {
                 if ((bool)(_keyObject.Sort[key]))
-                {
                     orderSql.Add(String.Format("{0} asc", key));
-                }
                 else
-                {
                     orderSql.Add(String.Format("{0} desc", key));
-                }
             }
 
             initSelect(sb_sql);

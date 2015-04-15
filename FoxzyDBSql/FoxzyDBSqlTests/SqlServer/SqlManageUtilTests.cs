@@ -121,9 +121,20 @@ namespace FoxzyDBSql.SqlServer.Tests
                     new SqlParameter("@v","汉族")
                 };
 
-            db.CreatePagination()
-                .Set("select * from XX_employee where Volk =@v", pars)
-                .Pagination(2, 5, out c, "ID");
+            //db.CreatePagination()
+            //    .Set("select * from XX_employee where Volk =@v", pars)
+            //    .Pagination(2, 5, out c, "ID");
+
+            int count = 0;
+
+            var dt = db.CreateSelect()
+                .From("XX_employee")
+                .OrderBy("ID")
+                .OrderByDesc("Name")
+                .Select()
+                .Where("Volk =@v")
+                .SetParameter(pars)
+                .Pagination(1, 10, out  count);
 
             Assert.AreEqual(c, 24);
 

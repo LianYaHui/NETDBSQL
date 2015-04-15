@@ -25,24 +25,6 @@ namespace FoxzyDBSql.SqlServer
         }
 
         /// <summary>
-        /// 克隆一个DataParameter序列,用于同一Sql语句应用于不同的两个执行语句
-        /// </summary>
-        /// <param name="pars">要克隆的参数集</param>
-        /// <returns></returns>
-        public static IEnumerable<SqlParameter> CloneParameter(IEnumerable<IDataParameter> pars)
-        {
-            if (pars == null)
-                return null;
-
-            List<SqlParameter> list = new List<SqlParameter>();
-            foreach (var p in pars)
-            {
-                list.Add(new SqlParameter(p.ParameterName, p.Value));
-            }
-            return list;
-        }
-
-        /// <summary>
         /// 重载基类方法,打开数据库连接
         /// </summary>
         /// <returns></returns>

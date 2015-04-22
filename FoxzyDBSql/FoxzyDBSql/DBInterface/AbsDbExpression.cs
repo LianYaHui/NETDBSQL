@@ -47,17 +47,17 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract AbsDbExpression Select(String selectStr = null);
 
+        public abstract AbsDbExpression Select(params String[] selectStr);
+
         public abstract AbsDbExpression Into(String intoTable);
 
         public abstract AbsDbExpression Where(String where);
 
         public abstract AbsDbExpression Where(Func<String> Fun);
 
-        public abstract AbsDbExpression OrderBy(String field);
-        public abstract AbsDbExpression OrderBy(String field, String tableName);
+        public abstract AbsDbExpression OrderBy(String field, String tableName = null);
 
-        public abstract AbsDbExpression OrderByDesc(String field);
-        public abstract AbsDbExpression OrderByDesc(String field, String tableName);
+        public abstract AbsDbExpression OrderByDesc(String field, String tableName = null);
 
         public abstract AbsDbExpression GropuBy(params String[] field);
 

@@ -13,7 +13,7 @@ namespace FoxzyDBSql.SqlServer.Tests
     [TestClass()]
     public class SqlManageUtilTests
     {
-        SqlManageUtil db = new SqlManageUtil("Data Source=.;Initial Catalog=HRM_XX;Integrated Security=True");
+        static SqlManageUtil db = new SqlManageUtil("Data Source=.;Initial Catalog=HRM_XX;Integrated Security=True");
 
 
         [TestMethod()]
@@ -74,8 +74,8 @@ namespace FoxzyDBSql.SqlServer.Tests
         public void CreateSelectTest()
         {
             var sql = db.CreateSelect()
-                 .Select()
-                 .LeftJoin("xx_EndowmentInsurance    i")
+                 .Select("ID", "EmpName")
+                 .LeftJoin("xx_EndowmentInsurance i")
                  .On("i.EmpID = e.ID")
                  .From("xx_Employee     e")
                  .ToSql();
@@ -87,6 +87,18 @@ namespace FoxzyDBSql.SqlServer.Tests
         [TestMethod()]
         public void CreateUpdateTest()
         {
+            var sql = db.CreateUpdate("xx_Employee")
+                .SetObject(new
+                {
+                    EmpName = "EmpTest"
+                }).ExecuteNonQuery();
+
+            var dt = db.CreateSelect()
+                .Select()
+                .From("xx_Employee")
+                .ToDataSet();
+
+
             Assert.Fail();
         }
 

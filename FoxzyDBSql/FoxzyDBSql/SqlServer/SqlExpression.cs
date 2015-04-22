@@ -69,6 +69,11 @@ namespace FoxzyDBSql.SqlServer
             this._keyObject.SelectStr = selectStr;
             return this;
         }
+        public override AbsDbExpression Select(params string[] selectStr)
+        {
+            this._keyObject.SelectStr = String.Join(",", selectStr);
+            return this;
+        }
 
         public override AbsDbExpression Into(string intoTable)
         {
@@ -91,30 +96,35 @@ namespace FoxzyDBSql.SqlServer
             return this;
         }
 
-        public override AbsDbExpression OrderBy(String faild)
+        public override AbsDbExpression OrderBy(string field, string tableName=null)
         {
-            this._keyObject.Sort.Add(faild.ToLower(), true);
+            if (String.IsNullOrEmpty(field))
+                throw new NullReferenceException("field");
+
+            if (String.IsNullOrEmpty(tableName))
+                this._keyObject.Sort.Add(field.ToLower(), true);
+            else
+            {
+                String col = String.Format("{0}.{1}", tableName, field);
+                this._keyObject.Sort.Add(col.ToLower(), true);
+            }
+
             return this;
         }
 
-        public override AbsDbExpression OrderBy(string field, string tableName)
+        public override AbsDbExpression OrderByDesc(string field, string tableName = null)
         {
-            String col = String.Format("{0}.{1}", tableName, field);
+            if (String.IsNullOrEmpty(field))
+                throw new NullReferenceException("field");
 
-            this._keyObject.Sort.Add(col.ToLower(), true);
-            return this;
-        }
+            if (String.IsNullOrEmpty(tableName))
+                this._keyObject.Sort.Add(field.ToLower(), false);
+            else
+            {
+                String col = String.Format("{0}.{1}", tableName, field);
+                this._keyObject.Sort.Add(col.ToLower(), false);
+            }
 
-        public override AbsDbExpression OrderByDesc(string field)
-        {
-            this._keyObject.Sort.Add(field.ToLower(), false);
-            return this;
-        }
-
-        public override AbsDbExpression OrderByDesc(string field, string tableName)
-        {
-            String col = String.Format("{0}.{1}", tableName, field);
-            this._keyObject.Sort.Add(col.ToLower(), false);
             return this;
         }
 

@@ -134,9 +134,14 @@ namespace FoxzyDBSql.SqlServer
         /// </summary>
         public override void Dispose()
         {
-            if (Connection != null) Connection.Dispose();
-            if (Command != null) Command.Dispose();
-            if (DataAdapter != null) DataAdapter.Dispose();
+            if (Connection != null)
+            {
+                Connection.Dispose();
+                Connection = null;
+            }
+            if (Command != null) { Command.Dispose(); Command = null; }
+            if (Command != null) { Command.Dispose(); Command = null; }
+            if (DataAdapter != null) { DataAdapter.Dispose(); DataAdapter = null; }
         }
 
         /// <summary>

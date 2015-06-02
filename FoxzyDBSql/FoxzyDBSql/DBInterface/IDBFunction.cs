@@ -22,5 +22,10 @@ namespace FoxzyDBSql.DBInterface
             return String.Format("Count({0})", field);
         }
 
+        public String Sum(String field)
+        {
+            return String.Format("Sum({0})", field);
+        }
+
     }
 }

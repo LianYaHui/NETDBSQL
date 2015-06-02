@@ -96,7 +96,7 @@ namespace FoxzyDBSql.SqlServer
             return this;
         }
 
-        public override AbsDbExpression OrderBy(string field, string tableName=null)
+        public override AbsDbExpression OrderBy(string field, string tableName = null)
         {
             if (String.IsNullOrEmpty(field))
                 throw new NullReferenceException("field");
@@ -195,7 +195,8 @@ namespace FoxzyDBSql.SqlServer
         {
             try
             {
-                return db.FillDataSet(this.ToSql(), this._keyObject.DataParameters,
+                return db.FillDataSet(this.ToSql(),
+                    this._keyObject.DataParameters,
                     CommandType.Text,
                     isDispose);
             }
@@ -209,7 +210,8 @@ namespace FoxzyDBSql.SqlServer
         {
             try
             {
-                return db.ExecuteScalar(this.ToSql(), this._keyObject.DataParameters,
+                return db.ExecuteScalar(this.ToSql(),
+                    this._keyObject.DataParameters,
                     CommandType.Text,
                     isDispose);
             }
@@ -460,7 +462,11 @@ namespace FoxzyDBSql.SqlServer
 
             _Pagination.Set(baseSql, this._keyObject.DataParameters);
 
-            return _Pagination.Pagination(PageIndex, PageSize, out RowsCount, String.Join(",", orderSql));
+            return _Pagination.Pagination(PageIndex,
+                                            PageSize,
+                                            out RowsCount,
+                                            String.Join(",", orderSql)
+                                            );
         }
     }
 }

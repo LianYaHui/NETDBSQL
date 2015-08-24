@@ -13,7 +13,7 @@ namespace FoxzyDBSql.SqlServer.Tests
     [TestClass()]
     public class SqlManageUtilTests
     {
-        static SqlManageUtil db = new SqlManageUtil("Data Source=.;Initial Catalog=HRM_XX;Integrated Security=True");
+        static SqlManageUtil db = new SqlManageUtil("Data Source=.;Initial Catalog=DBEHR;Integrated Security=True");
 
 
         [TestMethod()]

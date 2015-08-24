@@ -13,6 +13,52 @@ namespace FoxzyDBSql.SqlServer
     {
         private DbManage db;
 
+        private string _select()
+        {
+            StringBuilder sb_sql = new StringBuilder();
+
+            if (String.IsNullOrEmpty(_keyObject.FromTable))
+                throw new Exception("没有指定要查询的表");
+
+            initSelect(sb_sql);
+            initInto(sb_sql);
+            initFrom(sb_sql);
+            initJoin(sb_sql);
+            initWhere(sb_sql);
+            initGroup(sb_sql);
+            initHaving(sb_sql);
+            initSort(sb_sql);
+
+            return sb_sql.ToString();
+        }
+        private string _update()
+        {
+            StringBuilder sb_sql = new StringBuilder();
+
+            initUpdate(sb_sql);
+            initset(sb_sql);
+            initFrom(sb_sql);
+            initWhere(sb_sql);
+            return sb_sql.ToString();
+        }
+        private string _delete()
+        {
+            StringBuilder sb_sql = new StringBuilder();
+            initDelete(sb_sql);
+            initWhere(sb_sql);
+            return sb_sql.ToString();
+        }
+        private string _insert()
+        {
+            StringBuilder sb_sql = new StringBuilder();
+            initInsert(sb_sql);
+            initInsertColunmVal(sb_sql);
+            return sb_sql.ToString();
+        }
+
+        protected Dictionary<Common.SqlExceType, Func<string>> _ToSqlDict = null;
+
+
         public SqlExpression(DbManage db, Common.SqlExceType type)
         {
             if (db == null)
@@ -20,6 +66,27 @@ namespace FoxzyDBSql.SqlServer
 
             this.db = db;
             this._keyObject.SqlType = type;
+
+            _ToSqlDict = new Dictionary<SqlExceType, Func<string>>()
+            {
+                {
+                    SqlExceType.Select,
+                    new Func<string>(_select)
+                },
+                {
+                    SqlExceType.Delete,
+                    new Func<string>(_delete)
+                },
+                {
+                    SqlExceType.Update,
+                    new Func<string>(_update)
+                },
+                {
+                    SqlExceType.Insert,
+                    new Func<string>(_insert)
+                }
+            };
+
         }
 
         public override AbsDbExpression From(string tableName, string AsTableName = null)
@@ -144,51 +211,8 @@ namespace FoxzyDBSql.SqlServer
 
         public override string ToSql()
         {
-            StringBuilder sb_sql = new StringBuilder();
-            String _sql = String.Empty;
-
-            switch (_keyObject.SqlType)
-            {
-                case Common.SqlExceType.Select:
-                    if (String.IsNullOrEmpty(_keyObject.FromTable))
-                        throw new Exception("没有指定要查询的表");
-
-                    initSelect(sb_sql);
-                    initInto(sb_sql);
-                    initFrom(sb_sql);
-                    initJoin(sb_sql);
-                    initWhere(sb_sql);
-                    initGroup(sb_sql);
-                    initHaving(sb_sql);
-                    initSort(sb_sql);
-
-                    _sql = sb_sql.ToString();
-                    break;
-                case Common.SqlExceType.Update:
-
-                    initUpdate(sb_sql);
-                    initset(sb_sql);
-                    initWhere(sb_sql);
-
-                    _sql = sb_sql.ToString();
-                    break;
-
-                case Common.SqlExceType.Delete:
-
-                    initDelete(sb_sql);
-                    initWhere(sb_sql);
-
-
-                    _sql = sb_sql.ToString();
-                    break;
-                case Common.SqlExceType.Insert:
-
-                    initInsert(sb_sql);
-                    initInsertColunmVal(sb_sql);
-                    _sql = sb_sql.ToString();
-                    break;
-            }
-            return _sql;
+            Func<string> func = _ToSqlDict[_keyObject.SqlType];
+            return func.Invoke();
         }
 
         public override System.Data.DataSet ToDataSet(bool isDispose = false)
@@ -367,9 +391,7 @@ namespace FoxzyDBSql.SqlServer
         public override AbsDbExpression Delete(string table)
         {
             if (String.IsNullOrEmpty(table))
-            {
-                throw new Exception("表名不能为空");
-            }
+                throw new ArgumentNullException("table");
 
             table = table.Trim();
 
@@ -380,9 +402,7 @@ namespace FoxzyDBSql.SqlServer
         public override AbsDbExpression Insert(string table)
         {
             if (String.IsNullOrEmpty(table))
-            {
-                throw new Exception("表名不能为空");
-            }
+                throw new ArgumentNullException("table");
 
             table = table.Trim();
 

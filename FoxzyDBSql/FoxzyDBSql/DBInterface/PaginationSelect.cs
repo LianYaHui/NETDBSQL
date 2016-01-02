@@ -9,6 +9,7 @@ namespace FoxzyDBSql.DBInterface
     public abstract class PaginationSelect
     {
         public static String DefaultRowNumber = "RowNum";
+        public readonly static int selectLength = "select".Length;
 
         protected string BaseSql = String.Empty;
         protected DbManage db = null;

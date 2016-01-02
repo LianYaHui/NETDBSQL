@@ -41,7 +41,7 @@ namespace FoxzyDBSql.SqlServer
 
                 _opneResult = true;
             }
-            catch { throw; }
+            catch (Exception ex) { throw ex; }
             return _opneResult;
         }
 

@@ -20,7 +20,7 @@ namespace FoxzyDBSql.SqlServer
         /// <summary>
         /// Ms数据库的分页
         /// 如 select * from table
-        /// 不会释放资源 需要手动Dispose
+        /// 自动释放资源
         /// </summary>
         /// <param name="PageIndex">页码</param>
         /// <param name="PageSize">要显示的记录数</param>
@@ -37,16 +37,21 @@ namespace FoxzyDBSql.SqlServer
             if (String.IsNullOrEmpty(order))
                 throw new Exception("必须指定排序的列,对于MS的数据库，这是必须的");
 
-            String RowNumberSql = String.Format("select row_number() over(order by {0}) as {1},* from ({2}) as {1}_table", order, DefaultRowNumber, this.BaseSql);
+            string RowNumberStr = String.Format(" row_number() over(order by {0}) as {1},",
+                                                order,
+                                                DefaultRowNumber);
 
-            String ReturnDataSql = String.Format("select * from ({0}) as t where t.{1} > {2} and t.{1}<= {3} ", RowNumberSql, DefaultRowNumber, (PageIndex - 1) * PageSize, PageIndex * PageSize);
+            int selectWordIndex = BaseSql.ToLower().IndexOf("select");
+
+            String tempDataSql = BaseSql.Insert(selectWordIndex + selectLength, RowNumberStr);
+            String ReturnDataSql = String.Format("select * from ({0}) as t where t.{1} > {2} and t.{1}<= {3} ", tempDataSql, DefaultRowNumber, (PageIndex - 1) * PageSize, PageIndex * PageSize);
 
             DataSet execData = db.FillDataSet(ReturnDataSql, this.DataParameters, CommandType.Text, false);
 
             String getCountSql =
                    String.Format("select count(*) from ({0}) as count_table", this.BaseSql);
 
-            RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, null, CommandType.Text, false));
+            RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, null, CommandType.Text, true));
 
             return execData;
         }

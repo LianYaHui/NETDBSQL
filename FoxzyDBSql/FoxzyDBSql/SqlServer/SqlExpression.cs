@@ -337,7 +337,7 @@ namespace FoxzyDBSql.SqlServer
             foreach (var p in properties)
             {
                 object val = p.GetValue(parsObj, null);
-                _keyObject.DataParameters.Add(new SqlParameter("&" + p.Name, val));
+                _keyObject.DataParameters.Add(new SqlParameter("@" + p.Name, val));
             }
 
             return this;
@@ -347,7 +347,7 @@ namespace FoxzyDBSql.SqlServer
         {
             foreach (var d in dict)
             {
-                _keyObject.DataParameters.Add(new SqlParameter("&" + d.Key, d.Value));
+                _keyObject.DataParameters.Add(new SqlParameter("@" + d.Key, d.Value));
             }
 
             return this;

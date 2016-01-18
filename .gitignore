@@ -176,3 +176,6 @@ FakesAssemblies/
 
 */bin
 */obj
+
+FoxzyDBSql/FoxzyDBSqlTests/
+FoxzyDBSql/TestResults/

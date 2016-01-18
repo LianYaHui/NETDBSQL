@@ -60,6 +60,46 @@ namespace FoxzyDBSql.SqlServer
             Command.Parameters.AddRange(pars.ToArray());
         }
 
+        protected override void InitCommand(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text)
+        {
+            OpenConncetion();
+
+            if (Command == null)
+                Command = new SqlCommand();
+
+            Command.CommandText = command;
+            Command.Connection = (Connection);
+            Command.CommandType = type;
+
+            foreach (var d in pars)
+            {
+                Command.Parameters.Add(new SqlParameter("@" + d.Key, d.Value));
+            }
+        }
+
+        protected override void InitCommand(string command, object pars = null, CommandType type = CommandType.Text)
+        {
+            OpenConncetion();
+
+            if (Command == null)
+                Command = new SqlCommand();
+
+            Command.CommandText = command;
+            Command.Connection = (Connection);
+            Command.CommandType = type;
+
+            if (pars == null) return;
+
+            var properties = pars.GetType().GetProperties();
+
+            foreach (var p in properties)
+            {
+                object val = p.GetValue(pars, null);
+                Command.Parameters.Add(new SqlParameter("@" + p.Name, val));
+            }
+        }
+
+
         /// <summary>
         /// 执行SQL并返回DataReader,必须手动调用Dispose
         /// </summary>
@@ -78,6 +118,27 @@ namespace FoxzyDBSql.SqlServer
             }
             catch (Exception ex) { throw ex; }
         }
+        public override IDataReader ExecuteDataReader(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text)
+        {
+            InitCommand(command, pars, type);
+            try
+            {
+                return Command.ExecuteReader();
+            }
+            catch (Exception ex) { throw ex; }
+        }
+
+        public override IDataReader ExecuteDataReader(string command, object pars = null, CommandType type = CommandType.Text)
+        {
+            InitCommand(command, pars, type);
+            try
+            {
+                return Command.ExecuteReader();
+            }
+            catch (Exception ex) { throw ex; }
+        }
+
+
 
         /// <summary>
         /// 执行一段Sql,返回受影响的行数
@@ -104,6 +165,38 @@ namespace FoxzyDBSql.SqlServer
             }
         }
 
+        public override int ExecuteNonQuery(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
+        {
+            try
+            {
+                InitCommand(command, pars, type);
+                int _result = Command.ExecuteNonQuery();
+                if (isDispose) Dispose();
+                return _result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public override int ExecuteNonQuery(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
+        {
+            try
+            {
+                InitCommand(command, pars, type);
+                int _result = Command.ExecuteNonQuery();
+                if (isDispose) Dispose();
+                return _result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+
         /// <summary>
         /// 执行查询，并返回查询所返回的结果集中第一行的第一列。所有其他的列和行将被忽略。
         /// </summary>
@@ -128,6 +221,39 @@ namespace FoxzyDBSql.SqlServer
                 throw ex;
             }
         }
+
+        public override object ExecuteScalar(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
+        {
+            try
+            {
+                InitCommand(command, pars, type);
+                object _result = Command.ExecuteScalar();
+                if (isDispose) Dispose();
+                return _result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public override object ExecuteScalar(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
+        {
+            try
+            {
+                InitCommand(command, pars, type);
+                object _result = Command.ExecuteScalar();
+                if (isDispose) Dispose();
+                return _result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+
 
         /// <summary>
         /// 释放所有打开的资源
@@ -174,6 +300,50 @@ namespace FoxzyDBSql.SqlServer
                 throw ex;
             }
         }
+
+        public override DataSet FillDataSet(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
+        {
+            DataAdapter = new SqlDataAdapter();
+            DataSet DBDataSet = new DataSet();
+
+            InitCommand(command, pars, type);
+            DataAdapter.SelectCommand = Command;
+
+            try
+            {
+                DataAdapter.Fill(DBDataSet);
+
+                if (isDispose) Dispose();
+                return DBDataSet;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public override DataSet FillDataSet(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
+        {
+            DataAdapter = new SqlDataAdapter();
+            DataSet DBDataSet = new DataSet();
+
+            InitCommand(command, pars, type);
+            DataAdapter.SelectCommand = Command;
+
+            try
+            {
+                DataAdapter.Fill(DBDataSet);
+
+                if (isDispose) Dispose();
+                return DBDataSet;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
 
         /// <summary>
         /// 开始生成一个SELECT语句
@@ -265,5 +435,6 @@ namespace FoxzyDBSql.SqlServer
 
             return true;
         }
+
     }
 }

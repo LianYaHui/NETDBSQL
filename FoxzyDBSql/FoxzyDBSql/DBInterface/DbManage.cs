@@ -24,13 +24,33 @@ namespace FoxzyDBSql.DBInterface
         public abstract int ExecuteNonQuery(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text,
             bool isDispose = true);
 
+        public abstract int ExecuteNonQuery(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text,
+            bool isDispose = true);
+
+        public abstract int ExecuteNonQuery(string command, object pars = null, CommandType type = CommandType.Text,
+           bool isDispose = true);
+
+
         public abstract IDataReader ExecuteDataReader(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text);
+
+        public abstract IDataReader ExecuteDataReader(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text);
+
+        public abstract IDataReader ExecuteDataReader(string command, object pars = null, CommandType type = CommandType.Text);
 
         public abstract object ExecuteScalar(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text,
             bool isDispose = true);
 
+        public abstract object ExecuteScalar(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text,
+           bool isDispose = true);
+        public abstract object ExecuteScalar(string command, object pars = null, CommandType type = CommandType.Text,
+           bool isDispose = true);
+
         public abstract DataSet FillDataSet(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text,
             bool isDispose = true);
+        public abstract DataSet FillDataSet(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text,
+           bool isDispose = true);
+        public abstract DataSet FillDataSet(string command, object pars = null, CommandType type = CommandType.Text,
+           bool isDispose = true);
 
         public abstract bool ExecTranstion(Action<DbManage> action, IsolationLevel isolationLevel = IsolationLevel.Unspecified);
 
@@ -50,6 +70,14 @@ namespace FoxzyDBSql.DBInterface
         }
 
         protected virtual void InitCommand(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text)
+        {
+            OpenConncetion();
+        }
+        protected virtual void InitCommand(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text)
+        {
+            OpenConncetion();
+        }
+        protected virtual void InitCommand(string command, object pars = null, CommandType type = CommandType.Text)
         {
             OpenConncetion();
         }

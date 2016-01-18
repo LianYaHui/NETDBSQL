@@ -150,5 +150,45 @@ namespace FoxzyDBSql.OleDb
         {
             throw new NotImplementedException();
         }
+
+        public override int ExecuteNonQuery(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int ExecuteNonQuery(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IDataReader ExecuteDataReader(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IDataReader ExecuteDataReader(string command, object pars = null, CommandType type = CommandType.Text)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object ExecuteScalar(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override object ExecuteScalar(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override DataSet FillDataSet(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override DataSet FillDataSet(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

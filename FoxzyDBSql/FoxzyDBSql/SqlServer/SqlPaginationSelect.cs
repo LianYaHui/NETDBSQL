@@ -37,21 +37,17 @@ namespace FoxzyDBSql.SqlServer
             if (String.IsNullOrEmpty(order))
                 throw new Exception("必须指定排序的列,对于MS的数据库，这是必须的");
 
-            string RowNumberStr = String.Format(" row_number() over(order by {0}) as {1},",
-                                                order,
-                                                DefaultRowNumber);
+            String RowNumberSql = String.Format("select row_number() over(order by {0}) as {1},* from ({2}) as {1}_table", order, DefaultRowNumber, this.BaseSql);
 
-            int selectWordIndex = BaseSql.ToLower().IndexOf("select");
+            String ReturnDataSql = String.Format("select * from ({0}) as t where t.{1} > {2} and t.{1}<= {3} ", RowNumberSql, DefaultRowNumber, (PageIndex - 1) * PageSize, PageIndex * PageSize);
 
-            String tempDataSql = BaseSql.Insert(selectWordIndex + selectLength, RowNumberStr);
-            String ReturnDataSql = String.Format("select * from ({0}) as t where t.{1} > {2} and t.{1}<= {3} ", tempDataSql, DefaultRowNumber, (PageIndex - 1) * PageSize, PageIndex * PageSize);
 
             DataSet execData = db.FillDataSet(ReturnDataSql, this.DataParameters, CommandType.Text, false);
 
             String getCountSql =
                    String.Format("select count(*) from ({0}) as count_table", this.BaseSql);
 
-            RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, null, CommandType.Text, true));
+            RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, new Dictionary<string, object>(), CommandType.Text, true));
 
             return execData;
         }

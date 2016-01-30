@@ -163,6 +163,31 @@ namespace FoxzyDBSql.SqlServer
             return this;
         }
 
+        public override AbsDbExpression Order(string ordersql)
+        {
+            string descOrderStr = " desc";
+            string OrderStr = " asc";
+
+            if (String.IsNullOrEmpty(ordersql))
+                throw new NullReferenceException("ordersql");
+
+            var orders = from orderstr in ordersql.Split(',')
+                         select orderstr.Trim().ToLower();
+
+
+            foreach (string strOrder in orders)
+            {
+                if (strOrder.LastIndexOf(descOrderStr) == 0)
+                    OrderByDesc(strOrder.Replace(descOrderStr, ""));
+                else
+                    OrderBy(strOrder.Replace(OrderStr, ""));
+            }
+
+
+
+            return this;
+        }
+
         public override AbsDbExpression OrderBy(string field, string tableName = null)
         {
             if (String.IsNullOrEmpty(field))

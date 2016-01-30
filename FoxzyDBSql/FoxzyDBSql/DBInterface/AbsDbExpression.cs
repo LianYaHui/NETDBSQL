@@ -57,6 +57,8 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract AbsDbExpression OrderBy(String field, String tableName = null);
 
+        public abstract AbsDbExpression Order(string ordersql);
+
         public abstract AbsDbExpression OrderByDesc(String field, String tableName = null);
 
         public abstract AbsDbExpression GropuBy(params String[] field);

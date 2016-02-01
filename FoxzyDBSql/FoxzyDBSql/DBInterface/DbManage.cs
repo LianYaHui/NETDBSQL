@@ -19,7 +19,7 @@ namespace FoxzyDBSql.DBInterface
             this.ConncetionString = conntionString;
         }
 
-        public abstract bool OpenConncetion();
+        public abstract void OpenConncetion();
 
         public abstract int ExecuteNonQuery(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text,
             bool isDispose = true);

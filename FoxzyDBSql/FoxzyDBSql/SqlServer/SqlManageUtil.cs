@@ -28,21 +28,12 @@ namespace FoxzyDBSql.SqlServer
         /// 重载基类方法,打开数据库连接
         /// </summary>
         /// <returns></returns>
-        public override bool OpenConncetion()
+        public override void OpenConncetion()
         {
-            bool _opneResult = false;
-            String _conStr = ConncetionString;
-            try
-            {
-                if (Connection == null)
-                    Connection = new SqlConnection(_conStr);
-                if (Connection.State != ConnectionState.Open)
-                    Connection.Open();
-
-                _opneResult = true;
-            }
-            catch (Exception ex) { throw ex; }
-            return _opneResult;
+            if (Connection == null)
+                Connection = new SqlConnection(ConncetionString);
+            if (Connection.State != ConnectionState.Open)
+                Connection.Open();
         }
 
         protected override void InitCommand(string command, IEnumerable<IDataParameter> pars, CommandType type)
@@ -71,10 +62,12 @@ namespace FoxzyDBSql.SqlServer
             Command.Connection = (Connection);
             Command.CommandType = type;
 
+            if (pars == null)
+                return;
+
             foreach (var d in pars)
-            {
                 Command.Parameters.Add(new SqlParameter("@" + d.Key, d.Value));
-            }
+
         }
 
         protected override void InitCommand(string command, object pars = null, CommandType type = CommandType.Text)
@@ -421,10 +414,10 @@ namespace FoxzyDBSql.SqlServer
                 action.Invoke(this);
                 sqlTran.Commit();
             }
-            catch
+            catch (Exception ex)
             {
                 sqlTran.Rollback();
-                return false;
+                throw ex;
             }
             finally
             {

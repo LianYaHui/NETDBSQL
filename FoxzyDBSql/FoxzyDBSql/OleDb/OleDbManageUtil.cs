@@ -15,23 +15,10 @@ namespace FoxzyDBSql.OleDb
         OleDbDataAdapter DataAdapter = null;
 
 
-        public override bool OpenConncetion()
+        public override void OpenConncetion()
         {
-            bool _opneResult = false;
-            String _conStr = ConncetionString;
-
-            if (String.IsNullOrEmpty(_conStr))
-            {
-                throw new ArgumentNullException("ConncetionString");
-            }
-            try
-            {
-                Connection = new OleDbConnection(_conStr);
-                Connection.Open();
-                _opneResult = true;
-            }
-            catch { throw; }
-            return _opneResult;
+            Connection = new OleDbConnection(ConncetionString);
+            Connection.Open();
         }
 
         public OleDbManageUtil(String ConnetionString)
@@ -187,6 +174,16 @@ namespace FoxzyDBSql.OleDb
         }
 
         public override DataSet FillDataSet(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void InitCommand(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void InitCommand(string command, object pars = null, CommandType type = CommandType.Text)
         {
             throw new NotImplementedException();
         }

@@ -9,7 +9,7 @@ using FoxzyDBSql.Common;
 
 namespace FoxzyDBSql.SqlServer
 {
-    public class SqlExpression : AbsDbExpression
+    public class SqlExpression : AbsDbExpression, ISqlSkipTake
     {
         private DbManage db;
 
@@ -28,9 +28,28 @@ namespace FoxzyDBSql.SqlServer
             initGroup(sb_sql);
             initHaving(sb_sql);
             initSort(sb_sql);
+            initSkip(sb_sql);
+            initTake(sb_sql);
 
             return sb_sql.ToString();
         }
+
+        private void initTake(StringBuilder sb_sql)
+        {
+            if (_keyObject.TakeRows < 1)
+                return;
+
+            sb_sql.AppendFormat(" FETCH  next {0} rows only", _keyObject.TakeRows);
+        }
+
+        private void initSkip(StringBuilder sb_sql)
+        {
+            if (_keyObject.SkipRows < 1)
+                return;
+
+            sb_sql.AppendFormat(" OFFSet {0} rows", _keyObject.SkipRows);
+        }
+
         private string _update()
         {
             StringBuilder sb_sql = new StringBuilder();
@@ -512,6 +531,18 @@ namespace FoxzyDBSql.SqlServer
                                             out RowsCount,
                                             String.Join(",", orderSql)
                                             );
+        }
+
+        public AbsDbExpression Skip(int skipRowCount)
+        {
+            _keyObject.SkipRows = skipRowCount;
+            return this;
+        }
+
+        public AbsDbExpression Take(int takeRowCount)
+        {
+            _keyObject.TakeRows = takeRowCount;
+            return this;
         }
     }
 }

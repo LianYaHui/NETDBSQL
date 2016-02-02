@@ -132,6 +132,10 @@ namespace FoxzyDBSql.DBInterface
 
             public String Limit { set; get; }
 
+            public int SkipRows { set; get; }
+
+            public int TakeRows { set; get; }
+
             public DBSqlKeyObject()
             {
                 Tables = new Dictionary<string, string>();

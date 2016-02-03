@@ -17,6 +17,47 @@ namespace FoxzyDBSql.SqlServer
 
         }
 
+        public override PaginationSelect Set(string baseSql, object pars = null)
+        {
+            if (String.IsNullOrEmpty(baseSql))
+                throw new ArgumentNullException("baseSql");
+
+            this.BaseSql = baseSql;
+
+            if (pars != null)
+            {
+                var properties = pars.GetType().GetProperties();
+                List<SqlParameter> ListParas = new List<SqlParameter>();
+
+                foreach (var p in properties)
+                {
+                    object val = p.GetValue(pars, null);
+                    ListParas.Add(new SqlParameter("@" + p.Name, val));
+                }
+
+                this.DataParameters = ListParas;
+            }
+            return this;
+        }
+
+        public override PaginationSelect Set(string baseSql, Dictionary<string, object> pars = null)
+        {
+            if (String.IsNullOrEmpty(baseSql))
+                throw new ArgumentNullException("baseSql");
+
+            this.BaseSql = baseSql;
+            if (pars != null)
+            {
+                List<SqlParameter> ListParas = new List<SqlParameter>();
+                foreach (var d in pars)
+                    ListParas.Add(new SqlParameter("@" + d.Key, d.Value));
+                this.DataParameters = ListParas;
+            }
+
+            return this;
+        }
+
+
         /// <summary>
         /// Ms数据库的分页
         /// 如 select * from table
@@ -47,9 +88,10 @@ namespace FoxzyDBSql.SqlServer
             String getCountSql =
                    String.Format("select count(*) from ({0}) as count_table", this.BaseSql);
 
-            RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, new Dictionary<string, object>(), CommandType.Text, true));
+            RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, new Object()));
 
             return execData;
         }
+
     }
 }

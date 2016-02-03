@@ -33,6 +33,10 @@ namespace FoxzyDBSql.DBInterface
             return this;
         }
 
+        public abstract PaginationSelect Set(String baseSql, Dictionary<string, object> pars);
+
+        public abstract PaginationSelect Set(String baseSql, object pars);
+
         public abstract DataSet Pagination(int PageIndex, int PageSize, out int RowsCount, String order);
     }
 }

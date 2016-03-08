@@ -381,6 +381,7 @@ namespace FoxzyDBSql.SqlServer
             foreach (var p in properties)
             {
                 object val = p.GetValue(parsObj, null);
+                if (val == null) continue;
                 _keyObject.DataParameters.Add(new SqlParameter("@" + p.Name, val));
             }
 
@@ -477,6 +478,9 @@ namespace FoxzyDBSql.SqlServer
             foreach (var p in properties)
             {
                 object val = p.GetValue(obj, null);
+
+                if (val == null)
+                    continue;
 
                 if (_keyObject.OperateObject.ContainsKey(p.Name))
                     throw new Exception(String.Format("已经指定列 {0} ", p.Name));

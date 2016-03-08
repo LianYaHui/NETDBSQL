@@ -88,6 +88,7 @@ namespace FoxzyDBSql.SqlServer
             foreach (var p in properties)
             {
                 object val = p.GetValue(pars, null);
+                if (val == null) continue;
                 Command.Parameters.Add(new SqlParameter("@" + p.Name, val));
             }
         }

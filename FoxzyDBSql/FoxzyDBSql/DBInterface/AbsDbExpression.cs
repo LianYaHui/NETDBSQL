@@ -23,17 +23,17 @@ namespace FoxzyDBSql.DBInterface
             this._keyObject = DBSqlKeyObject.Create();
         }
 
-        public abstract AbsDbExpression Update(String tb);
+        public abstract AbsDbExpression Update(string tb);
 
         public abstract AbsDbExpression Delete(string table);
 
         public abstract AbsDbExpression Insert(string table);
 
-        public abstract AbsDbExpression InsertColoums(params String[] coloums);
+        public abstract AbsDbExpression InsertColoums(params string[] coloums);
 
         public abstract AbsDbExpression InsertColoums(IEnumerable<String> coloums);
 
-        public abstract AbsDbExpression SetObject(Object obj);
+        public abstract AbsDbExpression SetObject(Object obj,params string[] ignoreFields);
 
         public abstract AbsDbExpression SetDictionary(Dictionary<String, Object> dictionary);
 
@@ -304,7 +304,7 @@ namespace FoxzyDBSql.DBInterface
 
             foreach (System.Collections.DictionaryEntry d in this._keyObject.OperateObject)
             {
-                vals.Add(d.Key + "= @" + Convert.ToString(d.Key));
+                vals.Add(d.Key + " = @" + Convert.ToString(d.Key));
                 this._keyObject.DataParameters.Add(new SqlParameter("@" + d.Key, d.Value));
             }
 

@@ -56,7 +56,6 @@ namespace FoxzyDBSql.SqlServer
 
             initUpdate(sb_sql);
             initset(sb_sql);
-            initFrom(sb_sql);
             initWhere(sb_sql);
             return sb_sql.ToString();
         }
@@ -471,7 +470,7 @@ namespace FoxzyDBSql.SqlServer
             return this;
         }
 
-        public override AbsDbExpression SetObject(object obj)
+        public override AbsDbExpression SetObject(object obj, params string[] ignoreFields)
         {
             var properties = obj.GetType().GetProperties();
 
@@ -480,6 +479,8 @@ namespace FoxzyDBSql.SqlServer
                 object val = p.GetValue(obj, null);
 
                 if (val == null)
+                    continue;
+                if (ignoreFields.Contains(p.Name))
                     continue;
 
                 if (_keyObject.OperateObject.ContainsKey(p.Name))

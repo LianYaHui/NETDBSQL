@@ -33,7 +33,7 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract AbsDbExpression InsertColoums(IEnumerable<String> coloums);
 
-        public abstract AbsDbExpression SetObject(Object obj,params string[] ignoreFields);
+        public abstract AbsDbExpression SetObject(Object obj, params string[] ignoreFields);
 
         public abstract AbsDbExpression SetDictionary(Dictionary<String, Object> dictionary);
 
@@ -42,8 +42,6 @@ namespace FoxzyDBSql.DBInterface
         public abstract AbsDbExpression From(String tableName, String AsTableName = null);
 
         public abstract AbsDbExpression From(String tablesql);
-
-        public abstract AbsDbExpression Select(IEnumerable<DBSelectComponent> Component);
 
         public abstract AbsDbExpression Select(String selectStr = null);
 
@@ -104,7 +102,6 @@ namespace FoxzyDBSql.DBInterface
         {
             public SqlExceType SqlType { set; get; }
 
-            public IEnumerable<DBSelectComponent> Selects { set; get; }
             public String SelectStr { set; get; }
 
             public String FromTable { set; get; }
@@ -171,37 +168,13 @@ namespace FoxzyDBSql.DBInterface
             List<String> select_sql = new List<string>();
             sb_sql.Append("select ");
             //Select
-            if (!String.IsNullOrEmpty(_keyObject.SelectStr) || _keyObject.Selects != null)
+            if (!String.IsNullOrEmpty(_keyObject.SelectStr))
             {
-                if (_keyObject.Selects != null)
-                {
-                    foreach (var c in _keyObject.Selects)
-                    {
-                        String tableName = c.TableName;
-                        foreach (var col in c.Colunms)
-                        {
-                            String _select = String.IsNullOrEmpty(col.AsName) ?
-                                String.Format("$${0}", col.ColunmName) :
-                                String.Format("$${0} as {1}", col.ColunmName, col.AsName);
-
-                            if (String.IsNullOrEmpty(tableName)) _select = _select.Replace("$$", "");
-                            else _select = _select.Replace("$$", tableName + ".");
-
-                            select_sql.Add(_select);
-                        }
-                    }
-                    sb_sql.AppendFormat(String.Join(",", select_sql));
-                    return;
-                }
-
-                if (!String.IsNullOrEmpty(_keyObject.SelectStr))
-                {
-                    sb_sql.Append(_keyObject.SelectStr);
-                }
+                sb_sql.Append(_keyObject.SelectStr);
             }
             else
             {
-                //没有定义字段，则查询出表的所有字段　［ｔａｂｌｅ］．＊
+                //没有定义字段，则查询出表的所有字段　[table]．＊
                 //多表
                 //连接
                 foreach (var tb in _keyObject.Tables)

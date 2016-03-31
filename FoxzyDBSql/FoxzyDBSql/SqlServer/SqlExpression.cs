@@ -143,12 +143,6 @@ namespace FoxzyDBSql.SqlServer
             return this;
         }
 
-        public override AbsDbExpression Select(IEnumerable<Common.DBSelectComponent> Component)
-        {
-            this._keyObject.Selects = Component;
-            return this;
-        }
-
         public override AbsDbExpression Select(string selectStr = null)
         {
             this._keyObject.SelectStr = selectStr;

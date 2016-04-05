@@ -10,6 +10,11 @@ namespace FoxzyDBSql.DBInterface
     public abstract class DbManage : IDisposable
     {
         public string ConncetionString { private set; get; }
+        protected abstract IDbParameterConvert ParameterConvert
+        {
+            get;
+        }
+
 
         public DbManage(String conntionString)
         {
@@ -64,22 +69,10 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract PaginationSelect CreatePagination();
 
-        public virtual void Dispose()
-        {
+        protected abstract void InitCommand(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text);
+        protected abstract void InitCommand(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text);
+        protected abstract void InitCommand(string command, object pars = null, CommandType type = CommandType.Text);
 
-        }
-
-        protected virtual void InitCommand(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text)
-        {
-            OpenConncetion();
-        }
-        protected virtual void InitCommand(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text)
-        {
-            OpenConncetion();
-        }
-        protected virtual void InitCommand(string command, object pars = null, CommandType type = CommandType.Text)
-        {
-            OpenConncetion();
-        }
+        public abstract void Dispose();
     }
 }

@@ -10,9 +10,10 @@ namespace FoxzyDBSql.DBInterface
     {
         public static String DefaultRowNumber = "RowNum";
 
-        protected string BaseSql = String.Empty;
+        protected string BaseSql { get; set; }
         protected DbManage db = null;
-        protected IEnumerable<IDataParameter> DataParameters;
+        protected IEnumerable<IDataParameter> DataParameters { get; set; }
+        protected abstract IDbParameterConvert ParameterConvert { get; }
 
         public PaginationSelect(DbManage db)
         {
@@ -33,9 +34,27 @@ namespace FoxzyDBSql.DBInterface
             return this;
         }
 
-        public abstract PaginationSelect Set(String baseSql, Dictionary<string, object> pars);
+        public PaginationSelect Set(String baseSql, Dictionary<string, object> pars)
+        {
+            if (String.IsNullOrEmpty(baseSql))
+                throw new ArgumentNullException("baseSql");
 
-        public abstract PaginationSelect Set(String baseSql, object pars);
+            this.BaseSql = baseSql;
+            this.DataParameters = ParameterConvert.FromDictionaryToParameters(pars);
+
+            return this;
+        }
+
+        public PaginationSelect Set(String baseSql, object pars)
+        {
+            if (String.IsNullOrEmpty(baseSql))
+                throw new ArgumentNullException("baseSql");
+
+            this.BaseSql = baseSql;
+            this.DataParameters = ParameterConvert.FromObjectToParameters(pars);
+
+            return this;
+        }
 
         public abstract DataSet Pagination(int PageIndex, int PageSize, out int RowsCount, String order);
     }

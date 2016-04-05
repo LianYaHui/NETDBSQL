@@ -14,6 +14,16 @@ namespace FoxzyDBSql.SqlServer
         SqlCommand Command = null;
         SqlDataAdapter DataAdapter = null;
 
+
+        SqlParameterConvert _ParameterConvert = new SqlParameterConvert();
+        protected override IDbParameterConvert ParameterConvert
+        {
+            get
+            {
+                return _ParameterConvert;
+            }
+        }
+
         /// <summary>
         /// 用连接字符串初始化新的实例
         /// </summary>
@@ -62,12 +72,8 @@ namespace FoxzyDBSql.SqlServer
             Command.Connection = (Connection);
             Command.CommandType = type;
 
-            if (pars == null)
-                return;
-
-            foreach (var d in pars)
-                Command.Parameters.Add(new SqlParameter("@" + d.Key, d.Value));
-
+            var paraList = ParameterConvert.FromDictionaryToParameters(pars);
+            Command.Parameters.AddRange(paraList.ToArray());
         }
 
         protected override void InitCommand(string command, object pars = null, CommandType type = CommandType.Text)
@@ -81,16 +87,8 @@ namespace FoxzyDBSql.SqlServer
             Command.Connection = (Connection);
             Command.CommandType = type;
 
-            if (pars == null) return;
-
-            var properties = pars.GetType().GetProperties();
-
-            foreach (var p in properties)
-            {
-                object val = p.GetValue(pars, null);
-                if (val == null) continue;
-                Command.Parameters.Add(new SqlParameter("@" + p.Name, val));
-            }
+            var paraList = ParameterConvert.FromObjectToParameters(pars);
+            Command.Parameters.AddRange(paraList.ToArray());
         }
 
 

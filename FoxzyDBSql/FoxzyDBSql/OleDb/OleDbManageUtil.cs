@@ -14,6 +14,13 @@ namespace FoxzyDBSql.OleDb
         OleDbCommand Command = null;
         OleDbDataAdapter DataAdapter = null;
 
+        protected override IDbParameterConvert ParameterConvert
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public override void OpenConncetion()
         {

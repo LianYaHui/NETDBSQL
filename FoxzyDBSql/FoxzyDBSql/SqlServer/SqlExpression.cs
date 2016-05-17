@@ -488,12 +488,18 @@ namespace FoxzyDBSql.SqlServer
 
         public override AbsDbExpression SetDictionary(Dictionary<string, object> dictionary)
         {
-            foreach (var d in dictionary)
-            {
-                if (_keyObject.OperateObject.ContainsKey(d.Key))
-                    throw new Exception(String.Format("已经指定列 {0} ", d.Key));
+            if (dictionary == null)
+                throw new NullReferenceException(nameof(dictionary));
 
-                _keyObject.OperateObject.Add(d.Key, d.Value);
+            foreach (var dict in dictionary)
+            {
+                if (dict.Value == null)
+                    continue;
+
+                if (_keyObject.OperateObject.ContainsKey(dict.Key))
+                    throw new Exception(String.Format("已经指定列 {0} ", dict.Key));
+
+                _keyObject.OperateObject.Add(dict.Key, dict.Value);
             }
 
             return this;

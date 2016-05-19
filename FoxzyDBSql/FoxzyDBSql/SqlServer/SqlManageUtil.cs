@@ -104,30 +104,20 @@ namespace FoxzyDBSql.SqlServer
             CommandType type = CommandType.Text)
         {
             InitCommand(command, pars, type);
-            try
-            {
-                return Command.ExecuteReader();
-            }
-            catch (Exception ex) { throw ex; }
+
+            return Command.ExecuteReader();
         }
         public override IDataReader ExecuteDataReader(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text)
         {
             InitCommand(command, pars, type);
-            try
-            {
-                return Command.ExecuteReader();
-            }
-            catch (Exception ex) { throw ex; }
+            return Command.ExecuteReader();
         }
 
         public override IDataReader ExecuteDataReader(string command, object pars = null, CommandType type = CommandType.Text)
         {
             InitCommand(command, pars, type);
-            try
-            {
-                return Command.ExecuteReader();
-            }
-            catch (Exception ex) { throw ex; }
+
+            return Command.ExecuteReader();
         }
 
 
@@ -144,47 +134,26 @@ namespace FoxzyDBSql.SqlServer
             CommandType type = CommandType.Text,
             bool isDispose = true)
         {
-            try
-            {
-                InitCommand(command, pars, type);
-                int _result = Command.ExecuteNonQuery();
-                if (isDispose) Dispose();
-                return _result;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            InitCommand(command, pars, type);
+            int _result = Command.ExecuteNonQuery();
+            if (isDispose) Dispose();
+            return _result;
         }
 
         public override int ExecuteNonQuery(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
         {
-            try
-            {
-                InitCommand(command, pars, type);
-                int _result = Command.ExecuteNonQuery();
-                if (isDispose) Dispose();
-                return _result;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            InitCommand(command, pars, type);
+            int _result = Command.ExecuteNonQuery();
+            if (isDispose) Dispose();
+            return _result;
         }
 
         public override int ExecuteNonQuery(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
         {
-            try
-            {
-                InitCommand(command, pars, type);
-                int _result = Command.ExecuteNonQuery();
-                if (isDispose) Dispose();
-                return _result;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            InitCommand(command, pars, type);
+            int _result = Command.ExecuteNonQuery();
+            if (isDispose) Dispose();
+            return _result;
         }
 
 
@@ -201,47 +170,26 @@ namespace FoxzyDBSql.SqlServer
             CommandType type = CommandType.Text,
             bool isDispose = true)
         {
-            try
-            {
-                InitCommand(command, pars, type);
-                object _result = Command.ExecuteScalar();
-                if (isDispose) Dispose();
-                return _result;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            InitCommand(command, pars, type);
+            object _result = Command.ExecuteScalar();
+            if (isDispose) Dispose();
+            return _result;
         }
 
         public override object ExecuteScalar(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
         {
-            try
-            {
-                InitCommand(command, pars, type);
-                object _result = Command.ExecuteScalar();
-                if (isDispose) Dispose();
-                return _result;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            InitCommand(command, pars, type);
+            object _result = Command.ExecuteScalar();
+            if (isDispose) Dispose();
+            return _result;
         }
 
         public override object ExecuteScalar(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
         {
-            try
-            {
-                InitCommand(command, pars, type);
-                object _result = Command.ExecuteScalar();
-                if (isDispose) Dispose();
-                return _result;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            InitCommand(command, pars, type);
+            object _result = Command.ExecuteScalar();
+            if (isDispose) Dispose();
+            return _result;
         }
 
 

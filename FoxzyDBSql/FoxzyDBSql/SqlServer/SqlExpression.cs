@@ -254,47 +254,37 @@ namespace FoxzyDBSql.SqlServer
 
         public override System.Data.DataSet ToDataSet(bool isDispose = false)
         {
-            try
-            {
-                return db.FillDataSet(this.ToSql(),
-                    this._keyObject.DataParameters,
-                    CommandType.Text,
-                    isDispose);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return db.FillDataSet(this.ToSql(),
+                this._keyObject.DataParameters,
+                CommandType.Text,
+                isDispose);
+        }
+
+        public override DataTable QueryToTable(bool isDispose = false)
+        {
+            return ToDataSet(isDispose)
+                    .Tables[0];
+        }
+
+        public override List<T> QueryToEntityList<T>(bool isDispose = false)
+        {
+            return new EntityConvert(QueryToTable(isDispose)).ToEntity<T>();
         }
 
         public override object ExecuteScalar(bool isDispose = false)
         {
-            try
-            {
-                return db.ExecuteScalar(this.ToSql(),
-                    this._keyObject.DataParameters,
-                    CommandType.Text,
-                    isDispose);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return db.ExecuteScalar(this.ToSql(),
+                this._keyObject.DataParameters,
+                CommandType.Text,
+                isDispose);
         }
 
         public override int ExecuteNonQuery(bool isDispose = false)
         {
-            try
-            {
-                return db.ExecuteNonQuery(this.ToSql(),
-                    this._keyObject.DataParameters,
-                    CommandType.Text,
-                    isDispose);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return db.ExecuteNonQuery(this.ToSql(),
+                this._keyObject.DataParameters,
+                CommandType.Text,
+                isDispose);
         }
 
 

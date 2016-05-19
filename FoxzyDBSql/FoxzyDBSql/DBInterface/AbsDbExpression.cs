@@ -94,6 +94,10 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract DataSet ToDataSet(bool isDispose = false);
 
+        public abstract DataTable QueryToTable(bool isDispose = false);
+
+        public abstract List<T> QueryToEntityList<T>(bool isDispose = false) where T : new();
+
         public abstract Object ExecuteScalar(bool isDispose = false);
 
         public abstract int ExecuteNonQuery(bool isDispose = false);

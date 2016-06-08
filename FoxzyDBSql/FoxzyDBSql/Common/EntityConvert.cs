@@ -17,36 +17,38 @@ namespace FoxzyDBSql.Common
             this.parsTable = table;
         }
 
-        public List<TEntity> ToList<TEntity>(Func<DataRow, TEntity> render)
-        {
-            if (render == null)
-                throw new NullReferenceException(nameof(render));
-
-            List<TEntity> data = new List<TEntity>();
-
-            foreach (DataRow row in parsTable.Rows)
-            {
-                data.Add(render.Invoke(row));
-            }
-
-            return data;
-        }
-
-        public List<TEntity> ToEntity<TEntity>() where TEntity : new()
+        public List<TEntity> ToEntity<TEntity>(Dictionary<string, Func<DataRow, object>> farmat = null) where TEntity : new()
         {
             List<TEntity> resultList = new List<TEntity>();
             Type entityType = typeof(TEntity);
 
+            farmat = farmat ?? new Dictionary<string, Func<DataRow, object>>();
+
             foreach (DataRow row in parsTable.Rows)
             {
-                TEntity entity = default(TEntity);
+                TEntity entity = new TEntity();
 
                 foreach (var enProperty in entityType.GetProperties())
                 {
+                    string FieldName = enProperty.Name;
+                    object FiledValue = null;
+
                     try
                     {
-                        var rowVal = row[enProperty.Name];
-                        enProperty.SetValue(entity, rowVal, null);
+                        if (farmat.ContainsKey(FieldName))
+                        {
+                            var farmatAction = farmat[FieldName];
+                            if (farmatAction != null)
+                                FiledValue = farmatAction.Invoke(row);
+                        }
+                        else
+                        {
+                            if (parsTable.Columns.Contains(FieldName))
+                                FiledValue = row[enProperty.Name];
+                        }
+
+                        if (FiledValue != null)
+                            enProperty.SetValue(entity, FiledValue, null);
                     }
                     catch
                     {

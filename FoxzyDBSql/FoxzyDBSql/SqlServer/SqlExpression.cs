@@ -266,9 +266,9 @@ namespace FoxzyDBSql.SqlServer
                     .Tables[0];
         }
 
-        public override List<T> QueryToEntityList<T>(bool isDispose = false)
+        public override List<T> QueryToEntityList<T>(Dictionary<string, Func<DataRow, object>> farmat = null, bool isDispose = false)
         {
-            return new EntityConvert(QueryToTable(isDispose)).ToEntity<T>();
+            return new EntityConvert(QueryToTable(isDispose)).ToEntity<T>(farmat);
         }
 
         public override object ExecuteScalar(bool isDispose = false)
@@ -339,6 +339,11 @@ namespace FoxzyDBSql.SqlServer
             return ex.Fill(this);
         }
 
+        /// <summary>
+        /// 用于设置参数
+        /// </summary>
+        /// <param name="pars"></param>
+        /// <returns></returns>
         public override AbsDbExpression SetParameter(params IDataParameter[] pars)
         {
             this._keyObject.DataParameters.AddRange(pars);

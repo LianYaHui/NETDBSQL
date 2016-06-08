@@ -96,7 +96,7 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract DataTable QueryToTable(bool isDispose = false);
 
-        public abstract List<T> QueryToEntityList<T>(bool isDispose = false) where T : new();
+        public abstract List<T> QueryToEntityList<T>(Dictionary<string, Func<DataRow, object>> farmat = null, bool isDispose = false) where T : new();
 
         public abstract Object ExecuteScalar(bool isDispose = false);
 

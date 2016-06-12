@@ -228,17 +228,12 @@ namespace FoxzyDBSql.SqlServer
             InitCommand(command, pars, type);
             DataAdapter.SelectCommand = Command;
 
-            try
-            {
-                DataAdapter.Fill(DBDataSet);
 
-                if (isDispose) Dispose();
-                return DBDataSet;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            DataAdapter.Fill(DBDataSet);
+
+            if (isDispose) Dispose();
+            return DBDataSet;
+
         }
 
         public override DataSet FillDataSet(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
@@ -248,18 +243,11 @@ namespace FoxzyDBSql.SqlServer
 
             InitCommand(command, pars, type);
             DataAdapter.SelectCommand = Command;
+            DataAdapter.Fill(DBDataSet);
 
-            try
-            {
-                DataAdapter.Fill(DBDataSet);
+            if (isDispose) Dispose();
+            return DBDataSet;
 
-                if (isDispose) Dispose();
-                return DBDataSet;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
         }
 
         public override DataSet FillDataSet(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
@@ -270,19 +258,11 @@ namespace FoxzyDBSql.SqlServer
             InitCommand(command, pars, type);
             DataAdapter.SelectCommand = Command;
 
-            try
-            {
-                DataAdapter.Fill(DBDataSet);
+            DataAdapter.Fill(DBDataSet);
 
-                if (isDispose) Dispose();
-                return DBDataSet;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            if (isDispose) Dispose();
+            return DBDataSet;
         }
-
 
 
         /// <summary>

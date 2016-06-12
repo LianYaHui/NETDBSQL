@@ -6,25 +6,16 @@ using System.Text;
 
 namespace FoxzyDBSql.Common
 {
-    public class EntityConvert
+    public static class EntityHelper
     {
-        DataTable parsTable = null;
-
-        public EntityConvert(DataTable table)
-        {
-            if (table == null)
-                throw new NullReferenceException(nameof(table));
-            this.parsTable = table;
-        }
-
-        public List<TEntity> ToEntity<TEntity>(Dictionary<string, Func<DataRow, object>> farmat = null) where TEntity : new()
+        public static List<TEntity> ToEntity<TEntity>(this DataTable sourceTable, Dictionary<string, Func<DataRow, object>> farmat = null) where TEntity : new()
         {
             List<TEntity> resultList = new List<TEntity>();
             Type entityType = typeof(TEntity);
 
             farmat = farmat ?? new Dictionary<string, Func<DataRow, object>>();
 
-            foreach (DataRow row in parsTable.Rows)
+            foreach (DataRow row in sourceTable.Rows)
             {
                 TEntity entity = new TEntity();
 
@@ -43,7 +34,7 @@ namespace FoxzyDBSql.Common
                         }
                         else
                         {
-                            if (parsTable.Columns.Contains(FieldName))
+                            if (sourceTable.Columns.Contains(FieldName))
                                 FiledValue = row[enProperty.Name];
                         }
 

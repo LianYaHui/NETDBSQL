@@ -39,7 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DBInterface\IDbParameterConvert.cs" />
-    <Compile Include="Common\EntityConvert.cs" />
+    <Compile Include="Common\EntityHelper.cs" />
     <Compile Include="Common\SqlExecType.cs" />
     <Compile Include="Common\SqlString.cs" />
     <Compile Include="DBInterface\AbsDbExpression.cs" />

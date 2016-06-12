@@ -268,7 +268,7 @@ namespace FoxzyDBSql.SqlServer
 
         public override List<T> QueryToEntityList<T>(Dictionary<string, Func<DataRow, object>> farmat = null, bool isDispose = false)
         {
-            return new EntityConvert(QueryToTable(isDispose)).ToEntity<T>(farmat);
+            return QueryToTable(isDispose).ToEntity<T>(farmat);
         }
 
         public override object ExecuteScalar(bool isDispose = false)

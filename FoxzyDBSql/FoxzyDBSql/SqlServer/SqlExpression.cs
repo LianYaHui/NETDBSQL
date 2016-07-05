@@ -11,7 +11,11 @@ namespace FoxzyDBSql.SqlServer
 {
     public class SqlExpression : AbsDbExpression, ISqlSkipTake
     {
+        #region 私有
+
+
         private DbManage db;
+
 
         private string _select()
         {
@@ -73,6 +77,16 @@ namespace FoxzyDBSql.SqlServer
             initInsertColunmVal(sb_sql);
             return sb_sql.ToString();
         }
+
+
+        private IDbParameterConvert ParameterConvert
+        {
+            get
+            {
+                return new SqlParameterConvert();
+            }
+        }
+        #endregion
 
         protected Dictionary<Common.SqlExceType, Func<string>> _ToSqlDict = null;
 
@@ -358,7 +372,10 @@ namespace FoxzyDBSql.SqlServer
 
         public override AbsDbExpression SetParameter(string replaceText, object value)
         {
-            this._keyObject.DataParameters.Add(new SqlParameter(replaceText, value));
+            if (value == null)
+                throw new Exception("参数值不能为NULL");
+
+            this._keyObject.DataParameters.Add(new SqlParameter($"@{replaceText}", value));
             return this;
         }
 
@@ -461,42 +478,17 @@ namespace FoxzyDBSql.SqlServer
 
         public override AbsDbExpression SetObject(object obj, params string[] ignoreFields)
         {
-            var properties = obj.GetType().GetProperties();
+            var pars = ParameterConvert.FromObjectToParameters(obj, ignoreFields);
 
-            foreach (var p in properties)
-            {
-                object val = p.GetValue(obj, null);
-
-                if (val == null)
-                    continue;
-                if (ignoreFields.Contains(p.Name))
-                    continue;
-
-                if (_keyObject.OperateObject.ContainsKey(p.Name))
-                    throw new Exception(String.Format("已经指定列 {0} ", p.Name));
-
-                _keyObject.OperateObject.Add(p.Name, val);
-            }
-
+            _keyObject.OperateObjectParameters.AddRange(pars);
             return this;
         }
 
         public override AbsDbExpression SetDictionary(Dictionary<string, object> dictionary)
         {
-            if (dictionary == null)
-                throw new NullReferenceException(nameof(dictionary));
+            var pars = ParameterConvert.FromDictionaryToParameters(dictionary);
 
-            foreach (var dict in dictionary)
-            {
-                if (dict.Value == null)
-                    continue;
-
-                if (_keyObject.OperateObject.ContainsKey(dict.Key))
-                    throw new Exception(String.Format("已经指定列 {0} ", dict.Key));
-
-                _keyObject.OperateObject.Add(dict.Key, dict.Value);
-            }
-
+            _keyObject.OperateObjectParameters.AddRange(pars);
             return this;
         }
 

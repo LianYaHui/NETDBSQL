@@ -25,7 +25,7 @@ namespace FoxzyDBSql.SqlServer
             return ListParas;
         }
 
-        public IEnumerable<IDataParameter> FromObjectToParameters(object objPara)
+        public IEnumerable<IDataParameter> FromObjectToParameters(object objPara, params string[] ignoreFields)
         {
             List<SqlParameter> ListParas = new List<SqlParameter>();
             if (objPara == null)
@@ -35,6 +35,11 @@ namespace FoxzyDBSql.SqlServer
             foreach (var p in properties)
             {
                 object val = p.GetValue(objPara, null);
+
+                if (val == null)
+                    continue;
+                if (ignoreFields.Contains(p.Name))
+                    continue;
                 ListParas.Add(new SqlParameter("@" + p.Name, val));
             }
 

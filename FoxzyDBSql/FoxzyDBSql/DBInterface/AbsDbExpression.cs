@@ -120,7 +120,7 @@ namespace FoxzyDBSql.DBInterface
 
             public List<System.Data.IDataParameter> DataParameters { set; get; }
 
-            public Hashtable OperateObject { set; get; }
+            public List<System.Data.IDataParameter> OperateObjectParameters { set; get; }
 
             public List<String> InsertColoums { set; get; }
 
@@ -145,10 +145,10 @@ namespace FoxzyDBSql.DBInterface
 
                 Set = new Hashtable();
 
-                OperateObject = new Hashtable();
+                OperateObjectParameters = new List<IDataParameter>();
                 InsertColoums = new List<string>();
 
-                DataParameters = new List<System.Data.IDataParameter>();
+                DataParameters = new List<IDataParameter>();
                 GroupByField = new HashSet<string>();
             }
 
@@ -278,12 +278,7 @@ namespace FoxzyDBSql.DBInterface
         protected void initset(StringBuilder sb)
         {
             List<String> vals = this._keyObject.Set.Values.OfType<String>().ToList();
-
-            foreach (System.Collections.DictionaryEntry d in this._keyObject.OperateObject)
-            {
-                vals.Add(d.Key + " = @" + Convert.ToString(d.Key));
-                this._keyObject.DataParameters.Add(new SqlParameter("@" + d.Key, d.Value));
-            }
+            this._keyObject.DataParameters.AddRange(_keyObject.OperateObjectParameters);
 
             if (vals.Count == 0)
                 throw new Exception("至少制定一个Set可供更新");
@@ -318,19 +313,17 @@ namespace FoxzyDBSql.DBInterface
                 initHaving(sb_sql);
                 initSort(sb_sql);
             }
-            else if (_keyObject.OperateObject.Count > 0)
+            else if (_keyObject.OperateObjectParameters.Count > 0)
             {
                 List<String> clo = new List<string>();
                 List<String> vals = new List<string>();
 
-                foreach (System.Collections.DictionaryEntry d in this._keyObject.OperateObject)
+                foreach (var pars in this._keyObject.OperateObjectParameters)
                 {
-                    clo.Add(Convert.ToString(d.Key));
-                    vals.Add("@" + Convert.ToString(d.Key));
-
-                    this._keyObject.DataParameters.Add(new SqlParameter("@" + d.Key, d.Value));
+                    clo.Add(pars.ParameterName);
+                    vals.Add(pars.ParameterName);
                 }
-
+                _keyObject.DataParameters.AddRange(_keyObject.OperateObjectParameters);
                 sb_sql.AppendFormat("({0}) values ({1})",
                     String.Join(",", clo),
                     String.Join(",", vals));

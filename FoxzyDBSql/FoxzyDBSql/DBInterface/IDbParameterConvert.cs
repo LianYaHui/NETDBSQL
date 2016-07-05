@@ -13,7 +13,7 @@ namespace FoxzyDBSql.DBInterface
         /// </summary>
         /// <param name="objPara"></param>
         /// <returns></returns>
-        IEnumerable<IDataParameter> FromObjectToParameters(object objPara);
+        IEnumerable<IDataParameter> FromObjectToParameters(object objPara, params string[] ignoreFields);
 
         /// <summary>
         /// 从字典对象反射成为dbParameters参数集

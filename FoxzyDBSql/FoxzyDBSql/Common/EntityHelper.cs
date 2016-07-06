@@ -23,9 +23,17 @@ namespace FoxzyDBSql.Common
                 {
                     string FieldName = enProperty.Name;
                     object FiledValue = null;
+                    string farmatName = FieldName;
+
+                    var ValueConvert = enProperty.GetCustomAttributes(true).FirstOrDefault(attr => attr is ValueConvertAttribute);
+
+                    if (ValueConvert != null)
+                        farmatName = (ValueConvert as ValueConvertAttribute).ConvertToModel;
 
                     try
                     {
+
+
                         if (farmat.ContainsKey(FieldName))
                         {
                             var farmatAction = farmat[FieldName];

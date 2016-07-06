@@ -5,6 +5,7 @@ using FoxzyDBSql.DBInterface;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using FoxzyDBSql.Common;
 
 namespace FoxzyDBSql.SqlServer
 {
@@ -31,15 +32,36 @@ namespace FoxzyDBSql.SqlServer
             if (objPara == null)
                 return ListParas;
 
-            var properties = objPara.GetType().GetProperties();
+            Type enEntityType = objPara.GetType();
+            var properties = enEntityType.GetProperties();
             foreach (var p in properties)
             {
-                object val = p.GetValue(objPara, null);
+                if (ignoreFields.Contains(p.Name))
+                    continue;
+
+
+                var ValueConvert = p.GetCustomAttributes(true).FirstOrDefault(attr => attr is ValueConvertAttribute);
+
+                object val = null;
+                if (ValueConvert == null)
+                {
+                    val = p.GetValue(objPara, null);
+                }
+                else
+                {
+                    string convertFunctionName = (ValueConvert as ValueConvertAttribute).ConverToParameter;
+
+                    var methodInfo = enEntityType.GetMethod(convertFunctionName);
+
+                    if (methodInfo == null)
+                        throw new Exception($"反射{enEntityType.FullName}.{p.Name}找不到指定特性 ValueConvertAttribute 所指向的ConverFrom 属性的方法{convertFunctionName},请确保该类中具有公开的方法{convertFunctionName}");
+
+                    val = methodInfo.Invoke(objPara, null);
+                }
 
                 if (val == null)
                     continue;
-                if (ignoreFields.Contains(p.Name))
-                    continue;
+
                 ListParas.Add(new SqlParameter("@" + p.Name, val));
             }
 

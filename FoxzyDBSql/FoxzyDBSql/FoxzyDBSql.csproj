@@ -38,6 +38,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\ValueConvertAttribute.cs" />
     <Compile Include="DBInterface\IDbParameterConvert.cs" />
     <Compile Include="Common\EntityHelper.cs" />
     <Compile Include="Common\SqlExecType.cs" />

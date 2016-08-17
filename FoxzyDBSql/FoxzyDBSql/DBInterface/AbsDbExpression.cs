@@ -23,6 +23,11 @@ namespace FoxzyDBSql.DBInterface
             this._keyObject = DBSqlKeyObject.Create();
         }
 
+        public abstract string ParametersPlaceholder
+        {
+            get;
+        }
+
         public abstract AbsDbExpression Update(string tb);
 
         public abstract AbsDbExpression Delete(string table);
@@ -88,7 +93,7 @@ namespace FoxzyDBSql.DBInterface
         /// <summary>
         /// 分页
         /// </summary>
-        public abstract DataSet Pagination(int PageIndex, int PageSize, out int RowsCount);
+        public abstract DataTable Pagination(int PageIndex, int PageSize, out int RowsCount);
 
         public abstract String ToSql();
 
@@ -320,7 +325,7 @@ namespace FoxzyDBSql.DBInterface
 
                 foreach (var pars in this._keyObject.OperateObjectParameters)
                 {
-                    clo.Add(pars.ParameterName);
+                    clo.Add(pars.ParameterName.TrimStart(ParametersPlaceholder.ToCharArray()));
                     vals.Add(pars.ParameterName);
                 }
                 _keyObject.DataParameters.AddRange(_keyObject.OperateObjectParameters);

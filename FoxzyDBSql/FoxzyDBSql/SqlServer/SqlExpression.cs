@@ -13,6 +13,16 @@ namespace FoxzyDBSql.SqlServer
     {
         #region 私有
 
+        /// <summary>
+        /// 参数化的前导字符
+        /// </summary>
+        public override string ParametersPlaceholder
+        {
+            get
+            {
+                return "@";
+            }
+        }
 
         private DbManage db;
 
@@ -492,7 +502,7 @@ namespace FoxzyDBSql.SqlServer
             return this;
         }
 
-        public override DataSet Pagination(int PageIndex, int PageSize, out int RowsCount)
+        public override DataTable Pagination(int PageIndex, int PageSize, out int RowsCount)
         {
             StringBuilder sb_sql = new StringBuilder();
             List<String> orderSql = new List<string>();

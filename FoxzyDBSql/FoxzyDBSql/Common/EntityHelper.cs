@@ -32,9 +32,13 @@ namespace FoxzyDBSql.Common
 
                     try
                     {
+                        var convertMethod = entityType.GetMethod(farmatName);
 
-
-                        if (farmat.ContainsKey(FieldName))
+                        if (convertMethod != null)
+                        {
+                            FiledValue = convertMethod.Invoke(entity, new object[] { row });
+                        }
+                        else if (farmat.ContainsKey(FieldName))
                         {
                             var farmatAction = farmat[FieldName];
                             if (farmatAction != null)

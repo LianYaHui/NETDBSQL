@@ -56,6 +56,6 @@ namespace FoxzyDBSql.DBInterface
             return this;
         }
 
-        public abstract DataSet Pagination(int PageIndex, int PageSize, out int RowsCount, String order);
+        public abstract DataTable Pagination(int PageIndex, int PageSize, out int RowsCount, String order);
     }
 }

@@ -35,7 +35,7 @@ namespace FoxzyDBSql.SqlServer
         /// <param name="RowsCount">总行数</param>
         /// <param name="order">排序,对于MsSql来说这是必须的</param>
         /// <returns>DataSet</returns>
-        public override DataSet Pagination(int PageIndex, int PageSize, out int RowsCount, string order)
+        public override DataTable Pagination(int PageIndex, int PageSize, out int RowsCount, string order)
         {
             if (PageSize < 1)
                 throw new Exception("每页显示的数量 PageSize 不能小于1");
@@ -56,7 +56,7 @@ namespace FoxzyDBSql.SqlServer
 
             RowsCount = Convert.ToInt32(db.ExecuteScalar(getCountSql, new Object()));
 
-            return execData;
+            return execData.Tables[0];
         }
 
     }

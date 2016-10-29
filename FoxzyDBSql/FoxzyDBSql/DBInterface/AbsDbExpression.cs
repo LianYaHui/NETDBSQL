@@ -42,8 +42,6 @@ namespace FoxzyDBSql.DBInterface
 
         public abstract AbsDbExpression SetDictionary(Dictionary<String, Object> dictionary);
 
-        public abstract AbsDbExpression Set(String sql);
-
         public abstract AbsDbExpression From(String tableName, String AsTableName = null);
 
         public abstract AbsDbExpression From(String tablesql);
@@ -128,7 +126,6 @@ namespace FoxzyDBSql.DBInterface
             public List<System.Data.IDataParameter> OperateObjectParameters { set; get; }
 
             public List<String> InsertColoums { set; get; }
-
 
             public HashSet<String> GroupByField { set; get; }
 
@@ -280,13 +277,13 @@ namespace FoxzyDBSql.DBInterface
             sb.AppendFormat("update {0} ", this._keyObject.UpdateTable);
         }
 
-        protected void initset(StringBuilder sb)
+        protected void initSet(StringBuilder sb)
         {
-            List<String> vals = this._keyObject.Set.Values.OfType<String>().ToList();
-            this._keyObject.DataParameters.AddRange(_keyObject.OperateObjectParameters);
-
-            if (vals.Count == 0)
+            if (_keyObject.OperateObjectParameters.Count == 0)
                 throw new Exception("至少制定一个Set可供更新");
+
+            this._keyObject.DataParameters.AddRange(_keyObject.OperateObjectParameters);
+            var vals = _keyObject.OperateObjectParameters.Select(p => string.Format("{0} = {1}", p.ParameterName.Replace("@", ""), p.ParameterName));
 
             sb.AppendFormat("set {0}", String.Join(",", vals));
         }

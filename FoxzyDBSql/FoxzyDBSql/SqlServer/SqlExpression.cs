@@ -69,7 +69,7 @@ namespace FoxzyDBSql.SqlServer
             StringBuilder sb_sql = new StringBuilder();
 
             initUpdate(sb_sql);
-            initset(sb_sql);
+            initSet(sb_sql);
             initWhere(sb_sql);
             return sb_sql.ToString();
         }
@@ -424,26 +424,6 @@ namespace FoxzyDBSql.SqlServer
             tb = tb.Trim();
 
             this._keyObject.UpdateTable = tb;
-
-            return this;
-        }
-
-        public override AbsDbExpression Set(string sql)
-        {
-            if (String.IsNullOrEmpty(sql))
-            {
-                throw new Exception("set 参数不能为空");
-            }
-
-            foreach (String set in sql.Split(','))
-            {
-                String key = set.Substring(0, set.IndexOf("="));
-
-                if (this._keyObject.Set.ContainsKey(key))
-                    throw new Exception(String.Format("在 SET 子句中多次指定了列名 '{0}'", key));
-
-                this._keyObject.Set.Add(key, set);
-            }
 
             return this;
         }

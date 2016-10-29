@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 
 namespace FoxzyDBSql.Common
 {
-    public class ValueConvertAttribute : Attribute
+    public abstract class ValueConvertAttribute : Attribute
     {
-        public string ConvertToModel { get; set; }
+        public abstract object ConvertToModel(DataRow row, object rowValue);
 
-        public string ConverToParameter { get; set; }
+        public abstract object ConverToParameter(object entry, object value);
     }
 }

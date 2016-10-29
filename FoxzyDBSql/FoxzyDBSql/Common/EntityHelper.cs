@@ -27,28 +27,12 @@ namespace FoxzyDBSql.Common
 
                     var ValueConvert = enProperty.GetCustomAttributes(true).FirstOrDefault(attr => attr is ValueConvertAttribute);
 
-                    if (ValueConvert != null)
-                        farmatName = (ValueConvert as ValueConvertAttribute).ConvertToModel;
-
                     try
                     {
-                        var convertMethod = entityType.GetMethod(farmatName);
-
-                        if (convertMethod != null)
-                        {
-                            FiledValue = convertMethod.Invoke(entity, new object[] { row });
-                        }
-                        else if (farmat.ContainsKey(FieldName))
-                        {
-                            var farmatAction = farmat[FieldName];
-                            if (farmatAction != null)
-                                FiledValue = farmatAction.Invoke(row);
-                        }
-                        else
-                        {
-                            if (sourceTable.Columns.Contains(FieldName))
-                                FiledValue = row[enProperty.Name];
-                        }
+                        if (sourceTable.Columns.Contains(FieldName))
+                            FiledValue = row[FieldName];
+                        if (ValueConvert != null)
+                            FiledValue = (ValueConvert as ValueConvertAttribute).ConvertToModel(row, FiledValue);
 
                         if (FiledValue != null)
                             enProperty.SetValue(entity, FiledValue, null);

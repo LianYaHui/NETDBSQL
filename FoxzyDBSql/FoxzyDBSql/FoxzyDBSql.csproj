@@ -39,10 +39,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\ValueConvertAttribute.cs" />
+    <Compile Include="DBInterface\DBSqlKeyObject.cs" />
     <Compile Include="DBInterface\IDbParameterConvert.cs" />
     <Compile Include="Common\EntityHelper.cs" />
     <Compile Include="Common\SqlExecType.cs" />
-    <Compile Include="Common\SqlString.cs" />
+    <Compile Include="Common\SqlStringUtils.cs" />
     <Compile Include="DBInterface\AbsDbExpression.cs" />
     <Compile Include="DBInterface\DbManage.cs" />
     <Compile Include="DBInterface\DBOnExpression.cs" />

@@ -11,7 +11,7 @@ namespace FoxzyDBSql.DBInterface
 {
     public abstract class AbsDbExpression
     {
-        public DBSqlKeyObject _keyObject = DBSqlKeyObject.Create();
+        internal DBSqlKeyObject _keyObject = null;
 
         public void ReSet()
         {
@@ -20,7 +20,7 @@ namespace FoxzyDBSql.DBInterface
 
         public AbsDbExpression()
         {
-            this._keyObject = DBSqlKeyObject.Create();
+            ReSet();
         }
 
         public abstract string ParametersPlaceholder
@@ -55,6 +55,8 @@ namespace FoxzyDBSql.DBInterface
         public abstract AbsDbExpression Where(String where);
 
         public abstract AbsDbExpression Where(Func<String> Fun);
+
+        public abstract AbsDbExpression WhereFromObject(object whereEntity);
 
         public abstract AbsDbExpression OrderBy(String field, String tableName = null);
 
@@ -104,69 +106,6 @@ namespace FoxzyDBSql.DBInterface
         public abstract Object ExecuteScalar(bool isDispose = false);
 
         public abstract int ExecuteNonQuery(bool isDispose = false);
-
-        public class DBSqlKeyObject
-        {
-            public SqlExceType SqlType { set; get; }
-
-            public String SelectStr { set; get; }
-
-            public String FromTable { set; get; }
-
-            public Dictionary<String, String> Tables { set; get; }
-
-            public String WhereSql { set; get; }
-
-            public Hashtable Sort { set; get; }
-
-            public Hashtable Join { set; get; }
-
-            public List<System.Data.IDataParameter> DataParameters { set; get; }
-
-            public List<System.Data.IDataParameter> OperateObjectParameters { set; get; }
-
-            public List<String> InsertColoums { set; get; }
-
-            public HashSet<String> GroupByField { set; get; }
-
-            public String UpdateTable { set; get; }
-
-            public Hashtable Set { set; get; }
-
-            public String Limit { set; get; }
-
-            public int SkipRows { set; get; }
-
-            public int TakeRows { set; get; }
-
-            public DBSqlKeyObject()
-            {
-                Tables = new Dictionary<string, string>();
-                Sort = new Hashtable();
-                Join = new Hashtable();
-
-                Set = new Hashtable();
-
-                OperateObjectParameters = new List<IDataParameter>();
-                InsertColoums = new List<string>();
-
-                DataParameters = new List<IDataParameter>();
-                GroupByField = new HashSet<string>();
-            }
-
-            public static DBSqlKeyObject Create()
-            {
-                return new DBSqlKeyObject();
-            }
-
-            public string HavingSql { get; set; }
-
-            public string DeleteTable { get; set; }
-
-            public string IntoTable { get; set; }
-
-            public string InsertTable { get; set; }
-        }
 
         #region 私有方法
         protected void initSelect(StringBuilder sb_sql)
@@ -282,8 +221,9 @@ namespace FoxzyDBSql.DBInterface
             if (_keyObject.OperateObjectParameters.Count == 0)
                 throw new Exception("至少制定一个Set可供更新");
 
-            this._keyObject.DataParameters.AddRange(_keyObject.OperateObjectParameters);
-            var vals = _keyObject.OperateObjectParameters.Select(p => string.Format("{0} = {1}", p.ParameterName.Replace("@", ""), p.ParameterName));
+            SetParameter(_keyObject.OperateObjectParameters);
+            var vals = _keyObject.OperateObjectParameters.Select(p =>
+            string.Format("{0} = {1}", SqlStringUtils.GetFieldName(p.ParameterName, ParametersPlaceholder), p.ParameterName));
 
             sb.AppendFormat("set {0}", String.Join(",", vals));
         }
@@ -322,10 +262,10 @@ namespace FoxzyDBSql.DBInterface
 
                 foreach (var pars in this._keyObject.OperateObjectParameters)
                 {
-                    clo.Add(pars.ParameterName.TrimStart(ParametersPlaceholder.ToCharArray()));
+                    clo.Add(SqlStringUtils.GetFieldName(pars.ParameterName, ParametersPlaceholder));
                     vals.Add(pars.ParameterName);
                 }
-                _keyObject.DataParameters.AddRange(_keyObject.OperateObjectParameters);
+                SetParameter(_keyObject.OperateObjectParameters);
                 sb_sql.AppendFormat("({0}) values ({1})",
                     String.Join(",", clo),
                     String.Join(",", vals));

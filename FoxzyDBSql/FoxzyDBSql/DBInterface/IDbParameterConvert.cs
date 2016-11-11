@@ -21,5 +21,7 @@ namespace FoxzyDBSql.DBInterface
         /// <param name="objPara"></param>
         /// <returns></returns>
         IEnumerable<IDataParameter> FromDictionaryToParameters(Dictionary<string, object> objPara);
+
+        IEnumerable<string> GetFields { get; }
     }
 }

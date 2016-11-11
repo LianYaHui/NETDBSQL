@@ -11,22 +11,15 @@ namespace FoxzyDBSql.SqlServer
 {
     public class SqlExpression : AbsDbExpression, ISqlSkipTake
     {
+        private const string __ParametersPlaceholder = "@";
+
+        private SqlParameterConvert __ParameterConvert = null;
+
+        private static Dictionary<Common.SqlExceType, Func<string>> _ToSqlDict = null;
+
+        private DbManage db = null;
+
         #region 私有
-
-        /// <summary>
-        /// 参数化的前导字符
-        /// </summary>
-        public override string ParametersPlaceholder
-        {
-            get
-            {
-                return "@";
-            }
-        }
-
-        private DbManage db;
-
-
         private string _select()
         {
             StringBuilder sb_sql = new StringBuilder();
@@ -93,13 +86,21 @@ namespace FoxzyDBSql.SqlServer
         {
             get
             {
-                return new SqlParameterConvert();
+                return __ParameterConvert;
             }
         }
         #endregion
 
-        protected Dictionary<Common.SqlExceType, Func<string>> _ToSqlDict = null;
-
+        /// <summary>
+        /// 参数化的前导字符
+        /// </summary>
+        public override string ParametersPlaceholder
+        {
+            get
+            {
+                return __ParametersPlaceholder;
+            }
+        }
 
         public SqlExpression(DbManage db, Common.SqlExceType type)
         {
@@ -108,6 +109,11 @@ namespace FoxzyDBSql.SqlServer
 
             this.db = db;
             this._keyObject.SqlType = type;
+            __ParameterConvert = new SqlParameterConvert();
+
+
+            if (_ToSqlDict != null)
+                return;
 
             _ToSqlDict = new Dictionary<SqlExceType, Func<string>>()
             {
@@ -128,7 +134,11 @@ namespace FoxzyDBSql.SqlServer
                     new Func<string>(_insert)
                 }
             };
+        }
 
+        static SqlExpression()
+        {
+            SqlParameterConvert.ParametersPlaceholder = __ParametersPlaceholder;
         }
 
         public override AbsDbExpression From(string tableName, string AsTableName = null)
@@ -148,7 +158,7 @@ namespace FoxzyDBSql.SqlServer
 
         public override AbsDbExpression From(string tablesql)
         {
-            tablesql = tablesql.ReplaceSpace();
+            tablesql = SqlStringUtils.ReplaceSpace(tablesql);
 
             foreach (String table in tablesql.Split(','))
             {
@@ -196,6 +206,22 @@ namespace FoxzyDBSql.SqlServer
                 throw new ArgumentNullException("Fun");
 
             this._keyObject.WhereSql = Fun();
+            return this;
+        }
+
+        public override AbsDbExpression WhereFromObject(object whereEntity)
+        {
+            if (whereEntity == null)
+                throw new ArgumentNullException("whereEntity");
+
+            var pars = ParameterConvert.FromObjectToParameters(whereEntity, null);
+
+            var vals = pars.Select(p =>
+            string.Format("{0} = {1}", SqlStringUtils.GetFieldName(p.ParameterName, ParametersPlaceholder), p.ParameterName));
+
+            this._keyObject.WhereSql = string.Join(" and ", vals);
+            SetParameter(pars);
+
             return this;
         }
 
@@ -340,7 +366,7 @@ namespace FoxzyDBSql.SqlServer
 
         private DBOnExpression InitJoin(String joinTable, SqlJoinType type)
         {
-            joinTable = joinTable.Trim().ReplaceSpace();
+            joinTable = SqlStringUtils.ReplaceSpace(joinTable);
             DBOnExpression ex = new SqlDBOnExpression();
 
             ex.JoinType = type;
@@ -385,21 +411,15 @@ namespace FoxzyDBSql.SqlServer
             if (value == null)
                 throw new Exception("参数值不能为NULL");
 
-            this._keyObject.DataParameters.Add(new SqlParameter($"@{replaceText}", value));
+            this._keyObject.DataParameters.Add(new SqlParameter($"{ParametersPlaceholder}{replaceText}", value));
             return this;
         }
 
         public override AbsDbExpression SetParameter(object parsObj)
         {
-            var properties = parsObj.GetType().GetProperties();
+            var pars = ParameterConvert.FromObjectToParameters(parsObj, null);
 
-            foreach (var p in properties)
-            {
-                object val = p.GetValue(parsObj, null);
-                if (val == null) continue;
-                _keyObject.DataParameters.Add(new SqlParameter("@" + p.Name, val));
-            }
-
+            _keyObject.DataParameters.AddRange(pars);
             return this;
         }
 
@@ -407,7 +427,7 @@ namespace FoxzyDBSql.SqlServer
         {
             foreach (var d in dict)
             {
-                _keyObject.DataParameters.Add(new SqlParameter("@" + d.Key, d.Value));
+                _keyObject.DataParameters.Add(new SqlParameter(ParametersPlaceholder + d.Key, d.Value));
             }
 
             return this;
@@ -526,5 +546,7 @@ namespace FoxzyDBSql.SqlServer
             _keyObject.TakeRows = takeRowCount;
             return this;
         }
+
+
     }
 }

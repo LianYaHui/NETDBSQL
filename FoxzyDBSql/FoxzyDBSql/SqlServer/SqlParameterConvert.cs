@@ -14,20 +14,38 @@ namespace FoxzyDBSql.SqlServer
     /// </summary>
     public class SqlParameterConvert : IDbParameterConvert
     {
+        private List<string> fieldsList = new List<string>();
+
+        public static string ParametersPlaceholder { get; set; }
+
+        public IEnumerable<string> GetFields
+        {
+            get
+            {
+                return fieldsList;
+            }
+        }
+
         public IEnumerable<IDataParameter> FromDictionaryToParameters(Dictionary<string, object> objPara)
         {
+            fieldsList.Clear();
+
             List<SqlParameter> ListParas = new List<SqlParameter>();
             if (objPara == null)
                 return ListParas;
 
             foreach (var d in objPara)
-                ListParas.Add(new SqlParameter("@" + d.Key, d.Value));
-
+            {
+                fieldsList.Add(d.Key);
+                ListParas.Add(new SqlParameter(ParametersPlaceholder + d.Key, d.Value));
+            }
             return ListParas;
         }
 
         public IEnumerable<IDataParameter> FromObjectToParameters(object objPara, params string[] ignoreFields)
         {
+            fieldsList.Clear();
+
             List<SqlParameter> ListParas = new List<SqlParameter>();
             if (objPara == null)
                 return ListParas;
@@ -36,7 +54,7 @@ namespace FoxzyDBSql.SqlServer
             var properties = enEntityType.GetProperties();
             foreach (var p in properties)
             {
-                if (ignoreFields.Contains(p.Name))
+                if (ignoreFields != null && ignoreFields.Contains(p.Name))
                     continue;
 
 
@@ -52,7 +70,9 @@ namespace FoxzyDBSql.SqlServer
                 if (val == null)
                     continue;
 
-                ListParas.Add(new SqlParameter("@" + p.Name, val));
+                fieldsList.Add(p.Name);
+
+                ListParas.Add(new SqlParameter(ParametersPlaceholder + p.Name, val));
             }
 
             return ListParas;

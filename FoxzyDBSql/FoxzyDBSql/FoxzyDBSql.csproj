@@ -38,6 +38,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DBInterface\IDbCRUD.cs" />
     <Compile Include="Common\ValueConvertAttribute.cs" />
     <Compile Include="DBInterface\DBSqlKeyObject.cs" />
     <Compile Include="DBInterface\IDbParameterConvert.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="DBInterface\ISqlSkip.cs" />
     <Compile Include="OleDb\OleDbManageUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlServer\SqlDbCRUD.cs" />
     <Compile Include="SqlServer\SqlDBOnExpression.cs" />
     <Compile Include="SqlServer\SqlExpression.cs" />
     <Compile Include="SqlServer\SqlManageUtil.cs" />

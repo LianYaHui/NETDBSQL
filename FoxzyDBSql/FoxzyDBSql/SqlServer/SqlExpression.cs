@@ -15,72 +15,9 @@ namespace FoxzyDBSql.SqlServer
 
         private SqlParameterConvert __ParameterConvert = null;
 
-        private static Dictionary<Common.SqlExceType, Func<string>> _ToSqlDict = null;
+        private SqlDbCRUD sqlDbCRUD = null;
 
-        private DbManage db = null;
-
-        #region 私有
-        private string _select()
-        {
-            StringBuilder sb_sql = new StringBuilder();
-
-            if (String.IsNullOrEmpty(_keyObject.FromTable))
-                throw new Exception("没有指定要查询的表");
-
-            initSelect(sb_sql);
-            initInto(sb_sql);
-            initFrom(sb_sql);
-            initJoin(sb_sql);
-            initWhere(sb_sql);
-            initGroup(sb_sql);
-            initHaving(sb_sql);
-            initSort(sb_sql);
-            initSkip(sb_sql);
-            initTake(sb_sql);
-
-            return sb_sql.ToString();
-        }
-
-        private void initTake(StringBuilder sb_sql)
-        {
-            if (_keyObject.TakeRows < 1)
-                return;
-
-            sb_sql.AppendFormat(" FETCH  next {0} rows only", _keyObject.TakeRows);
-        }
-
-        private void initSkip(StringBuilder sb_sql)
-        {
-            if (_keyObject.SkipRows < 1)
-                return;
-
-            sb_sql.AppendFormat(" OFFSet {0} rows", _keyObject.SkipRows);
-        }
-
-        private string _update()
-        {
-            StringBuilder sb_sql = new StringBuilder();
-
-            initUpdate(sb_sql);
-            initSet(sb_sql);
-            initWhere(sb_sql);
-            return sb_sql.ToString();
-        }
-        private string _delete()
-        {
-            StringBuilder sb_sql = new StringBuilder();
-            initDelete(sb_sql);
-            initWhere(sb_sql);
-            return sb_sql.ToString();
-        }
-        private string _insert()
-        {
-            StringBuilder sb_sql = new StringBuilder();
-            initInsert(sb_sql);
-            initInsertColunmVal(sb_sql);
-            return sb_sql.ToString();
-        }
-
+        internal DbManage db = null;
 
         private IDbParameterConvert ParameterConvert
         {
@@ -89,7 +26,6 @@ namespace FoxzyDBSql.SqlServer
                 return __ParameterConvert;
             }
         }
-        #endregion
 
         /// <summary>
         /// 参数化的前导字符
@@ -110,30 +46,6 @@ namespace FoxzyDBSql.SqlServer
             this.db = db;
             this._keyObject.SqlType = type;
             __ParameterConvert = new SqlParameterConvert();
-
-
-            if (_ToSqlDict != null)
-                return;
-
-            _ToSqlDict = new Dictionary<SqlExceType, Func<string>>()
-            {
-                {
-                    SqlExceType.Select,
-                    new Func<string>(_select)
-                },
-                {
-                    SqlExceType.Delete,
-                    new Func<string>(_delete)
-                },
-                {
-                    SqlExceType.Update,
-                    new Func<string>(_update)
-                },
-                {
-                    SqlExceType.Insert,
-                    new Func<string>(_insert)
-                }
-            };
         }
 
         static SqlExpression()
@@ -298,8 +210,8 @@ namespace FoxzyDBSql.SqlServer
 
         public override string ToSql()
         {
-            Func<string> func = _ToSqlDict[_keyObject.SqlType];
-            return func.Invoke();
+            sqlDbCRUD = new SqlDbCRUD(this);
+            return sqlDbCRUD.BuildSql();
         }
 
         public override System.Data.DataSet ToDataSet(bool isDispose = false)
@@ -504,35 +416,8 @@ namespace FoxzyDBSql.SqlServer
 
         public override DataTable Pagination(int PageIndex, int PageSize, out int RowsCount)
         {
-            StringBuilder sb_sql = new StringBuilder();
-            List<String> orderSql = new List<string>();
-
-            foreach (String key in _keyObject.Sort.Keys)
-            {
-                if ((bool)(_keyObject.Sort[key]))
-                    orderSql.Add(String.Format("{0} asc", key));
-                else
-                    orderSql.Add(String.Format("{0} desc", key));
-            }
-
-            initSelect(sb_sql);
-            initFrom(sb_sql);
-            initJoin(sb_sql);
-            initWhere(sb_sql);
-            initGroup(sb_sql);
-            initHaving(sb_sql);
-
-            String baseSql = sb_sql.ToString();
-
-            var _Pagination = new SqlPaginationSelect(db);
-
-            _Pagination.Set(baseSql, this._keyObject.DataParameters);
-
-            return _Pagination.Pagination(PageIndex,
-                                            PageSize,
-                                            out RowsCount,
-                                            String.Join(",", orderSql)
-                                            );
+            sqlDbCRUD = new SqlDbCRUD(this);
+            return sqlDbCRUD.Pagination(PageIndex, PageSize, out RowsCount);
         }
 
         public AbsDbExpression Skip(int skipRowCount)

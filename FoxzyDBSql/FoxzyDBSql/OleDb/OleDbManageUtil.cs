@@ -140,11 +140,6 @@ namespace FoxzyDBSql.OleDb
             throw new NotImplementedException();
         }
 
-        public override bool ExecTranstion(Action<DbManage> action, IsolationLevel isolationLevel = IsolationLevel.Unspecified)
-        {
-            throw new NotImplementedException();
-        }
-
         public override int ExecuteNonQuery(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
         {
             throw new NotImplementedException();

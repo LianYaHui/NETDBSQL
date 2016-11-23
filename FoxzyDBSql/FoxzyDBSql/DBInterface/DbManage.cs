@@ -57,8 +57,6 @@ namespace FoxzyDBSql.DBInterface
         public abstract DataSet FillDataSet(string command, object pars = null, CommandType type = CommandType.Text,
            bool isDispose = true);
 
-        public abstract bool ExecTranstion(Action<DbManage> action, IsolationLevel isolationLevel = IsolationLevel.Unspecified);
-
         public abstract AbsDbExpression CreateSelect();
 
         public abstract AbsDbExpression CreateUpdate(String table);

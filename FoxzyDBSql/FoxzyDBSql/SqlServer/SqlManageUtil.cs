@@ -8,7 +8,7 @@ using System.Text;
 
 namespace FoxzyDBSql.SqlServer
 {
-    public class SqlManageUtil : DbManage
+    public class SqlManageUtil : DbManage, IDbTranstion
     {
         SqlConnection Connection = null;
         SqlCommand Command = null;
@@ -32,6 +32,19 @@ namespace FoxzyDBSql.SqlServer
             : base(ConnetionString)
         {
 
+        }
+
+        event OnTranstionEvent IDbTranstion.OnTranstion
+        {
+            add
+            {
+                throw new NotImplementedException();
+            }
+
+            remove
+            {
+                throw new NotImplementedException();
+            }
         }
 
         /// <summary>
@@ -315,15 +328,14 @@ namespace FoxzyDBSql.SqlServer
         }
 
         /// <summary>
-        /// 开启一个事物
+        /// 执行事务的事件，所有的操作都不允许Dispose
         /// </summary>
-        /// <param name="action">事物中包含的动作</param>
-        /// <returns>是否执行成功</returns>
-        public override bool ExecTranstion(Action<DbManage> action, IsolationLevel isolationLevel = IsolationLevel.Unspecified)
-        {
-            if (action == null)
-                throw new ArgumentNullException("action");
+        public event OnTranstionEvent OnTranstion;
 
+        public bool StartTranstion(IsolationLevel isolationLevel = IsolationLevel.Unspecified)
+        {
+            if (OnTranstion == null)
+                return false;
 
             OpenConncetion();
 
@@ -338,7 +350,7 @@ namespace FoxzyDBSql.SqlServer
 
             try
             {
-                action.Invoke(this);
+                OnTranstion.Invoke(this, EventArgs.Empty);
                 sqlTran.Commit();
             }
             catch (Exception ex)
@@ -355,6 +367,5 @@ namespace FoxzyDBSql.SqlServer
 
             return true;
         }
-
     }
 }

@@ -14,6 +14,8 @@ namespace FoxzyDBSql.SqlServer
         SqlCommand Command = null;
         SqlDataAdapter DataAdapter = null;
 
+        private bool disposed = false;
+
 
         SqlParameterConvert _ParameterConvert = new SqlParameterConvert();
         protected override IDbParameterConvert ParameterConvert
@@ -34,18 +36,6 @@ namespace FoxzyDBSql.SqlServer
 
         }
 
-        event OnTranstionEvent IDbTranstion.OnTranstion
-        {
-            add
-            {
-                throw new NotImplementedException();
-            }
-
-            remove
-            {
-                throw new NotImplementedException();
-            }
-        }
 
         /// <summary>
         /// 重载基类方法,打开数据库连接
@@ -206,13 +196,30 @@ namespace FoxzyDBSql.SqlServer
         }
 
 
-
-
-        /// <summary>
-        /// 释放所有打开的资源
-        /// </summary>
         public override void Dispose()
         {
+            //必须为true
+            Dispose(true);
+            //通知垃圾回收机制不再调用终结器（析构器）
+            GC.SuppressFinalize(this);
+        }
+
+        ~SqlManageUtil()
+        {
+            Dispose(false);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+            {
+                return;
+            }
+            if (disposing)
+            {
+                // 清理托管资源
+            }
+            // 清理非托管资源
             if (Connection != null)
             {
                 Connection.Dispose();
@@ -221,7 +228,12 @@ namespace FoxzyDBSql.SqlServer
             if (Command != null) { Command.Dispose(); Command = null; }
             if (Command != null) { Command.Dispose(); Command = null; }
             if (DataAdapter != null) { DataAdapter.Dispose(); DataAdapter = null; }
+            //让类型知道自己已经被释放
+            disposed = true;
         }
+
+
+
 
         /// <summary>
         /// 执行一个查询
@@ -353,10 +365,10 @@ namespace FoxzyDBSql.SqlServer
                 OnTranstion.Invoke(this, EventArgs.Empty);
                 sqlTran.Commit();
             }
-            catch (Exception ex)
+            catch
             {
                 sqlTran.Rollback();
-                throw ex;
+                throw;
             }
             finally
             {

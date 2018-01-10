@@ -56,12 +56,12 @@ namespace FoxzyDBSql.SqlServer
                     orderSql.Add(String.Format("{0} desc", key));
             }
 
-            initSelect(sb_sql);
-            initFrom(sb_sql);
-            initJoin(sb_sql);
-            initWhere(sb_sql);
-            initGroup(sb_sql);
-            initHaving(sb_sql);
+            InitSelect(sb_sql);
+            InitFrom(sb_sql);
+            InitJoin(sb_sql);
+            InitWhere(sb_sql);
+            InitGroup(sb_sql);
+            InitHaving(sb_sql);
 
             String baseSql = sb_sql.ToString();
 
@@ -107,16 +107,16 @@ namespace FoxzyDBSql.SqlServer
             if (String.IsNullOrEmpty(_keyObject.FromTable))
                 throw new Exception("没有指定要查询的表");
 
-            initSelect(sb_sql);
-            initInto(sb_sql);
-            initFrom(sb_sql);
-            initJoin(sb_sql);
-            initWhere(sb_sql);
-            initGroup(sb_sql);
-            initHaving(sb_sql);
-            initSort(sb_sql);
-            initSkip(sb_sql);
-            initTake(sb_sql);
+            InitSelect(sb_sql);
+            InitInto(sb_sql);
+            InitFrom(sb_sql);
+            InitJoin(sb_sql);
+            InitWhere(sb_sql);
+            InitGroup(sb_sql);
+            InitHaving(sb_sql);
+            InitSort(sb_sql);
+            InitSkip(sb_sql);
+            InitTake(sb_sql);
 
             return sb_sql.ToString();
         }
@@ -124,27 +124,27 @@ namespace FoxzyDBSql.SqlServer
         {
             StringBuilder sb_sql = new StringBuilder();
 
-            initUpdate(sb_sql);
-            initSet(sb_sql);
-            initWhere(sb_sql);
+            InitUpdate(sb_sql);
+            InitSet(sb_sql);
+            InitWhere(sb_sql);
             return sb_sql.ToString();
         }
         private string _delete()
         {
             StringBuilder sb_sql = new StringBuilder();
-            initDelete(sb_sql);
-            initWhere(sb_sql);
+            InitDelete(sb_sql);
+            InitWhere(sb_sql);
             return sb_sql.ToString();
         }
         private string _insert()
         {
             StringBuilder sb_sql = new StringBuilder();
-            initInsert(sb_sql);
-            initInsertColunmVal(sb_sql);
+            InitInsert(sb_sql);
+            InitInsertColunmVal(sb_sql);
             return sb_sql.ToString();
         }
 
-        private void initTake(StringBuilder sb_sql)
+        private void InitTake(StringBuilder sb_sql)
         {
             if (_keyObject.TakeRows < 1)
                 return;
@@ -152,7 +152,7 @@ namespace FoxzyDBSql.SqlServer
             sb_sql.AppendFormat(" FETCH  next {0} rows only", _keyObject.TakeRows);
         }
 
-        private void initSkip(StringBuilder sb_sql)
+        private void InitSkip(StringBuilder sb_sql)
         {
             if (_keyObject.SkipRows < 1)
                 return;
@@ -161,7 +161,7 @@ namespace FoxzyDBSql.SqlServer
         }
 
         #region 私有方法
-        protected void initSelect(StringBuilder sb_sql)
+        protected void InitSelect(StringBuilder sb_sql)
         {
             List<String> select_sql = new List<string>();
             sb_sql.Append("select ");
@@ -187,7 +187,7 @@ namespace FoxzyDBSql.SqlServer
             }
         }
 
-        protected void initInto(StringBuilder sb_sql)
+        protected void InitInto(StringBuilder sb_sql)
         {
             if (!String.IsNullOrEmpty(_keyObject.IntoTable))
             {
@@ -196,12 +196,12 @@ namespace FoxzyDBSql.SqlServer
         }
 
 
-        protected void initFrom(StringBuilder sb)
+        protected void InitFrom(StringBuilder sb)
         {
             sb.AppendFormat(" from {0}", this._keyObject.FromTable);
         }
 
-        protected void initWhere(StringBuilder sb)
+        protected void InitWhere(StringBuilder sb)
         {
             if (!String.IsNullOrEmpty(this._keyObject.WhereSql))
             {
@@ -210,7 +210,7 @@ namespace FoxzyDBSql.SqlServer
             }
         }
 
-        protected void initSort(StringBuilder sb)
+        protected void InitSort(StringBuilder sb)
         {
             if (this._keyObject.Sort.Count == 0)
                 return;
@@ -233,7 +233,7 @@ namespace FoxzyDBSql.SqlServer
             sb.Append(String.Join(",", orderSql));
         }
 
-        protected void initJoin(StringBuilder sb)
+        protected void InitJoin(StringBuilder sb)
         {
             if (this._keyObject.Join.Count == 0)
                 return;
@@ -247,7 +247,7 @@ namespace FoxzyDBSql.SqlServer
 
         }
 
-        protected void initGroup(StringBuilder sb)
+        protected void InitGroup(StringBuilder sb)
         {
             if (this._keyObject.GroupByField.Count == 0)
                 return;
@@ -255,7 +255,7 @@ namespace FoxzyDBSql.SqlServer
             sb.AppendFormat(" group by {0}", String.Join(",", this._keyObject.GroupByField));
         }
 
-        protected void initHaving(StringBuilder sb)
+        protected void InitHaving(StringBuilder sb)
         {
             if (!String.IsNullOrEmpty(this._keyObject.HavingSql))
             {
@@ -264,12 +264,12 @@ namespace FoxzyDBSql.SqlServer
             }
         }
 
-        protected void initUpdate(StringBuilder sb)
+        protected void InitUpdate(StringBuilder sb)
         {
             sb.AppendFormat("update {0} ", this._keyObject.UpdateTable);
         }
 
-        protected void initSet(StringBuilder sb)
+        protected void InitSet(StringBuilder sb)
         {
             if (_keyObject.OperateObjectParameters.Count == 0)
                 throw new Exception("至少制定一个Set可供更新");
@@ -281,12 +281,12 @@ namespace FoxzyDBSql.SqlServer
             sb.AppendFormat("set {0}", String.Join(",", vals));
         }
 
-        protected void initDelete(StringBuilder sb)
+        protected void InitDelete(StringBuilder sb)
         {
             sb.AppendFormat("delete {0} ", this._keyObject.DeleteTable);
         }
 
-        protected void initInsert(StringBuilder sb_sql)
+        protected void InitInsert(StringBuilder sb_sql)
         {
             if (String.IsNullOrEmpty(this._keyObject.InsertTable))
                 throw new Exception("insert 表为空");
@@ -294,19 +294,19 @@ namespace FoxzyDBSql.SqlServer
             sb_sql.AppendFormat("insert {0} ", this._keyObject.InsertTable);
         }
 
-        protected void initInsertColunmVal(StringBuilder sb_sql)
+        protected void InitInsertColunmVal(StringBuilder sb_sql)
         {
             if (_keyObject.InsertColoums.Count > 0)
             {
                 sb_sql.AppendFormat("({0}) ", String.Join(",", _keyObject.InsertColoums));
 
-                initSelect(sb_sql);
-                initFrom(sb_sql);
-                initJoin(sb_sql);
-                initWhere(sb_sql);
-                initGroup(sb_sql);
-                initHaving(sb_sql);
-                initSort(sb_sql);
+                InitSelect(sb_sql);
+                InitFrom(sb_sql);
+                InitJoin(sb_sql);
+                InitWhere(sb_sql);
+                InitGroup(sb_sql);
+                InitHaving(sb_sql);
+                InitSort(sb_sql);
             }
             else if (_keyObject.OperateObjectParameters.Count > 0)
             {

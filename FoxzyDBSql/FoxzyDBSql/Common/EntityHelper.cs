@@ -8,6 +8,13 @@ namespace FoxzyDBSql.Common
 {
     public static class EntityHelper
     {
+        /// <summary>
+        /// 将DataTable转化为实体
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="sourceTable"></param>
+        /// <param name="farmat"></param>
+        /// <returns></returns>
         public static List<TEntity> ToEntity<TEntity>(this DataTable sourceTable, Dictionary<string, Func<DataRow, object>> farmat = null) where TEntity : new()
         {
             List<TEntity> resultList = new List<TEntity>();
@@ -42,6 +49,34 @@ namespace FoxzyDBSql.Common
                         //跳过为此属性赋值
                         continue;
                     }
+                }
+
+                resultList.Add(entity);
+            }
+
+            return resultList;
+        }
+
+        /// <summary>
+        /// 将DataTable转为List<Dictionary<string, object>>
+        /// 一般用于序列化数据库
+        /// </summary>
+        /// <param name="sourceTable"></param>
+        /// <returns></returns>
+        public static List<Dictionary<string, object>> ToDictionaryList(this DataTable sourceTable)
+        {
+            List<Dictionary<string, object>> resultList = new List<Dictionary<string, object>>();
+
+            foreach (DataRow row in sourceTable.Rows)
+            {
+                Dictionary<string, object> entity = new Dictionary<string, object>();
+
+                foreach (DataColumn colunm in sourceTable.Columns)
+                {
+                    string colName = colunm.ColumnName;
+                    object FiledValue = row[colunm];
+
+                    entity.Add(colName, FiledValue);
                 }
 
                 resultList.Add(entity);

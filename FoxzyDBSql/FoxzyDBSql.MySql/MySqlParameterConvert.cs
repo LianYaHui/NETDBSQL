@@ -15,38 +15,28 @@ namespace FoxzyDBSql.MySql
     /// </summary>
     public class MySqlParameterConvert : IDbParameterConvert
     {
-        private List<string> fieldsList = new List<string>();
+        public string __ParametersPlaceholder = MySqlEnvParameter.ParametersPlaceholder;
 
-        public static string ParametersPlaceholder { get; set; }
 
-        public IEnumerable<string> GetFields
+
+        public IEnumerable<IDataParameter> FromDictionaryToParameters(IDictionary<string, object> objPara, int index)
         {
-            get
-            {
-                return fieldsList;
-            }
-        }
-
-        public IEnumerable<IDataParameter> FromDictionaryToParameters(Dictionary<string, object> objPara)
-        {
-            fieldsList.Clear();
-
             List<MySqlParameter> ListParas = new List<MySqlParameter>();
             if (objPara == null)
                 return ListParas;
 
             foreach (var d in objPara)
             {
-                fieldsList.Add(d.Key);
-                ListParas.Add(new MySqlParameter(ParametersPlaceholder + d.Key, d.Value));
+                ListParas.Add(new MySqlParameter(SqlStringUtils.BuilderParameterName(__ParametersPlaceholder, d.Key, index), d.Value)
+                {
+                    SourceColumn = d.Key
+                });
             }
             return ListParas;
         }
 
-        public IEnumerable<IDataParameter> FromObjectToParameters(object objPara, params string[] ignoreFields)
+        public IEnumerable<IDataParameter> FromObjectToParameters(object objPara, int index, params string[] ignoreFields)
         {
-            fieldsList.Clear();
-
             List<MySqlParameter> ListParas = new List<MySqlParameter>();
             if (objPara == null)
                 return ListParas;
@@ -71,9 +61,10 @@ namespace FoxzyDBSql.MySql
                 if (val == null)
                     continue;
 
-                fieldsList.Add(p.Name);
-
-                ListParas.Add(new MySqlParameter(ParametersPlaceholder + p.Name, val));
+                ListParas.Add(new MySqlParameter(SqlStringUtils.BuilderParameterName(__ParametersPlaceholder, p.Name, index), val)
+                {
+                    SourceColumn = p.Name
+                });
             }
 
             return ListParas;

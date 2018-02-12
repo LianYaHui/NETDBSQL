@@ -11,32 +11,12 @@ namespace FoxzyDBSql.SqlServer
 {
     public class SqlExpression : AbsDbExpression, ISqlSkipTake
     {
-        private const string __ParametersPlaceholder = "@";
-
-        private SqlParameterConvert __ParameterConvert = null;
-
         private SqlDbCRUD sqlDbCRUD = null;
 
         internal DbManage db = null;
 
-        private IDbParameterConvert ParameterConvert
-        {
-            get
-            {
-                return __ParameterConvert;
-            }
-        }
-
-        /// <summary>
-        /// 参数化的前导字符
-        /// </summary>
-        public override string ParametersPlaceholder
-        {
-            get
-            {
-                return __ParametersPlaceholder;
-            }
-        }
+        private IDbParameterConvert ParameterConvert = SqlEnvParameter.ParameterConvert;
+        private readonly string ParametersPlaceholder = SqlEnvParameter.ParametersPlaceholder;
 
         public SqlExpression(DbManage db, Common.SqlExceType type)
         {
@@ -45,12 +25,7 @@ namespace FoxzyDBSql.SqlServer
 
             this.db = db;
             this._keyObject.SqlType = type;
-            __ParameterConvert = new SqlParameterConvert();
-        }
 
-        static SqlExpression()
-        {
-            SqlParameterConvert.ParametersPlaceholder = __ParametersPlaceholder;
         }
 
         public override AbsDbExpression From(string tableName, string AsTableName = null)
@@ -126,10 +101,10 @@ namespace FoxzyDBSql.SqlServer
             if (whereEntity == null)
                 throw new ArgumentNullException("whereEntity");
 
-            var pars = ParameterConvert.FromObjectToParameters(whereEntity, null);
+            var pars = ParameterConvert.FromObjectToParameters(whereEntity, db.ParameterIndex, null);
 
             var vals = pars.Select(p =>
-            string.Format("{0} = {1}", SqlStringUtils.GetFieldName(p.ParameterName, ParametersPlaceholder), p.ParameterName));
+            string.Format("{0} = {1}", (p.SourceColumn), p.ParameterName));
 
             this._keyObject.WhereSql = string.Join(" and ", vals);
             SetParameter(pars);
@@ -329,7 +304,7 @@ namespace FoxzyDBSql.SqlServer
 
         public override AbsDbExpression SetParameter(object parsObj)
         {
-            var pars = ParameterConvert.FromObjectToParameters(parsObj, null);
+            var pars = ParameterConvert.FromObjectToParameters(parsObj, db.ParameterIndex, null);
 
             _keyObject.DataParameters.AddRange(pars);
             return this;
@@ -400,7 +375,7 @@ namespace FoxzyDBSql.SqlServer
 
         public override AbsDbExpression SetObject(object obj, params string[] ignoreFields)
         {
-            var pars = ParameterConvert.FromObjectToParameters(obj, ignoreFields);
+            var pars = ParameterConvert.FromObjectToParameters(obj, db.ParameterIndex, ignoreFields);
 
             _keyObject.OperateObjectParameters.AddRange(pars);
             return this;
@@ -408,7 +383,7 @@ namespace FoxzyDBSql.SqlServer
 
         public override AbsDbExpression SetDictionary(Dictionary<string, object> dictionary)
         {
-            var pars = ParameterConvert.FromDictionaryToParameters(dictionary);
+            var pars = ParameterConvert.FromDictionaryToParameters(dictionary, db.ParameterIndex);
 
             _keyObject.OperateObjectParameters.AddRange(pars);
             return this;

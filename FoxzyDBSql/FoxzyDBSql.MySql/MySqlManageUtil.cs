@@ -1,4 +1,5 @@
-﻿using FoxzyDBSql.DBInterface;
+﻿using FoxzyDBSql.Common;
+using FoxzyDBSql.DBInterface;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -17,14 +18,12 @@ namespace FoxzyDBSql.MySql
         private bool disposed = false;
 
 
-        MySqlParameterConvert _ParameterConvert = new MySqlParameterConvert();
-        protected override IDbParameterConvert ParameterConvert
-        {
-            get
-            {
-                return _ParameterConvert;
-            }
-        }
+
+        /// <summary>
+        /// 参数化的前导字符
+        /// </summary>
+        private readonly string ParametersPlaceholder = MySqlEnvParameter.ParametersPlaceholder;
+        private IDbParameterConvert ParameterConvert = MySqlEnvParameter.ParameterConvert;
 
         /// <summary>
         /// 用连接字符串初始化新的实例
@@ -75,7 +74,7 @@ namespace FoxzyDBSql.MySql
             Command.Connection = (Connection);
             Command.CommandType = type;
 
-            var paraList = ParameterConvert.FromDictionaryToParameters(pars);
+            var paraList = ParameterConvert.FromDictionaryToParameters(pars, ParameterIndex);
             Command.Parameters.AddRange(paraList.ToArray());
         }
 
@@ -90,7 +89,7 @@ namespace FoxzyDBSql.MySql
             Command.Connection = (Connection);
             Command.CommandType = type;
 
-            var paraList = ParameterConvert.FromObjectToParameters(pars);
+            var paraList = ParameterConvert.FromObjectToParameters(pars, ParameterIndex);
             Command.Parameters.AddRange(paraList.ToArray());
         }
 
@@ -123,37 +122,10 @@ namespace FoxzyDBSql.MySql
             return Command.ExecuteReader();
         }
 
-
-
-        /// <summary>
-        /// 执行一段Sql,返回受影响的行数
-        /// </summary>
-        /// <param name="command">sql 语句</param>
-        /// <param name="pars">参数集</param>
-        /// <param name="type">CommandType 指定执行的是sql,还是存储过程</param>
-        /// <returns>受影响的行数。</returns>
-        public override int ExecuteNonQuery(string command,
-            IEnumerable<IDataParameter> pars = null,
-            CommandType type = CommandType.Text,
-            bool isDispose = true)
-        {
-            InitCommand(command, pars, type);
-            int _result = Command.ExecuteNonQuery();
-            if (isDispose) Dispose();
-            return _result;
-        }
-
-        public override int ExecuteNonQuery(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
-        {
-            InitCommand(command, pars, type);
-            int _result = Command.ExecuteNonQuery();
-            if (isDispose) Dispose();
-            return _result;
-        }
-
         public override int ExecuteNonQuery(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
         {
-            InitCommand(command, pars, type);
+            BuilderCommand(command, pars, type);
+
             int _result = Command.ExecuteNonQuery();
             if (isDispose) Dispose();
             return _result;
@@ -218,16 +190,17 @@ namespace FoxzyDBSql.MySql
             if (disposing)
             {
                 // 清理托管资源
+                if (Connection != null)
+                {
+                    Connection.Dispose();
+                    Connection = null;
+                }
+                if (Command != null) { Command.Dispose(); Command = null; }
+                if (Command != null) { Command.Dispose(); Command = null; }
+                if (DataAdapter != null) { DataAdapter.Dispose(); DataAdapter = null; }
             }
             // 清理非托管资源
-            if (Connection != null)
-            {
-                Connection.Dispose();
-                Connection = null;
-            }
-            if (Command != null) { Command.Dispose(); Command = null; }
-            if (Command != null) { Command.Dispose(); Command = null; }
-            if (DataAdapter != null) { DataAdapter.Dispose(); DataAdapter = null; }
+
             //让类型知道自己已经被释放
             disposed = true;
         }
@@ -296,6 +269,7 @@ namespace FoxzyDBSql.MySql
         /// <returns></returns>
         public override AbsDbExpression CreateSelect()
         {
+            ParameterIndex++;
             var _sql = new MySqlExpression(this, Common.SqlExceType.Select);
             return _sql;
         }
@@ -307,6 +281,8 @@ namespace FoxzyDBSql.MySql
         /// <returns></returns>
         public override AbsDbExpression CreateUpdate(String table)
         {
+            ParameterIndex++;
+
             return new MySqlExpression(this, Common.SqlExceType.Update).Update(table);
         }
 
@@ -317,6 +293,8 @@ namespace FoxzyDBSql.MySql
         /// <returns></returns>
         public override AbsDbExpression CreateDelete(String table)
         {
+            ParameterIndex++;
+
             return new MySqlExpression(this, Common.SqlExceType.Delete).Delete(table);
         }
 
@@ -327,6 +305,7 @@ namespace FoxzyDBSql.MySql
         /// <returns></returns>
         public override AbsDbExpression CreateInsert(String table)
         {
+            ParameterIndex++;
             return new MySqlExpression(this, Common.SqlExceType.Insert).Insert(table);
         }
 
@@ -336,6 +315,7 @@ namespace FoxzyDBSql.MySql
         /// <returns></returns>
         public override PaginationSelect CreatePagination()
         {
+            ParameterIndex++;
             return new MySqlPaginationSelect(this);
         }
 

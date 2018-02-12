@@ -276,7 +276,7 @@ namespace FoxzyDBSql.MySql
 
             _dbDbExpression.SetParameter(_keyObject.OperateObjectParameters);
             var vals = _keyObject.OperateObjectParameters.Select(p =>
-            string.Format("{0} = {1}", SqlStringUtils.GetFieldName(p.ParameterName, _dbDbExpression.ParametersPlaceholder), p.ParameterName));
+            string.Format("{0} = {1}", p.SourceColumn, p.ParameterName));
 
             sb.AppendFormat("set {0}", String.Join(",", vals));
         }
@@ -315,7 +315,7 @@ namespace FoxzyDBSql.MySql
 
                 foreach (var pars in this._keyObject.OperateObjectParameters)
                 {
-                    clo.Add(SqlStringUtils.GetFieldName(pars.ParameterName, _dbDbExpression.ParametersPlaceholder));
+                    clo.Add(pars.SourceColumn);
                     vals.Add(pars.ParameterName);
                 }
                 _dbDbExpression.SetParameter(_keyObject.OperateObjectParameters);

@@ -1,20 +1,18 @@
-﻿using System;
+﻿using FoxzyDBSql.Common;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
 
 namespace FoxzyDBSql.DBInterface
 {
     public abstract class DbManage : IDisposable
     {
         public string ConncetionString { private set; get; }
-        protected abstract IDbParameterConvert ParameterConvert
-        {
-            get;
-        }
 
+        public int ParameterIndex
+        {
+            set; get;
+        }
 
         public DbManage(String conntionString)
         {
@@ -24,17 +22,13 @@ namespace FoxzyDBSql.DBInterface
             this.ConncetionString = conntionString;
         }
 
+
+
+
         public abstract void OpenConncetion();
-
-        public abstract int ExecuteNonQuery(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text,
-            bool isDispose = true);
-
-        public abstract int ExecuteNonQuery(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text,
-            bool isDispose = true);
 
         public abstract int ExecuteNonQuery(string command, object pars = null, CommandType type = CommandType.Text,
            bool isDispose = true);
-
 
         public abstract IDataReader ExecuteDataReader(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text);
 
@@ -70,6 +64,36 @@ namespace FoxzyDBSql.DBInterface
         protected abstract void InitCommand(string command, IEnumerable<IDataParameter> pars = null, CommandType type = CommandType.Text);
         protected abstract void InitCommand(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text);
         protected abstract void InitCommand(string command, object pars = null, CommandType type = CommandType.Text);
+
+
+        protected void BuilderCommand(string command, object pars, CommandType commandType)
+        {
+            InputParamterType paramterBuilder = new InputParamterType(command, pars, commandType);
+            paramterBuilder.OnInputIsDictionary += ParamterBuilder_OnInputIsDictionary;
+            paramterBuilder.OnInputIsList += ParamterBuilder_OnInputIsList;
+            paramterBuilder.OnInputIsObject += ParamterBuilder_OnInputIsObject;
+
+            paramterBuilder.InitCommand();
+        }
+
+        private void ParamterBuilder_OnInputIsObject(object sender, DataParameterEventArgs e)
+        {
+            InitCommand(e.CommandSql, e.InputDataParameter, e.CommandType);
+        }
+
+        private void ParamterBuilder_OnInputIsList(object sender, DataParameterEventArgs e)
+        {
+            var dataParamter = e.InputDataParameter as IEnumerable<IDataParameter>;
+
+            InitCommand(e.CommandSql, dataParamter, e.CommandType);
+        }
+
+        private void ParamterBuilder_OnInputIsDictionary(object sender, DataParameterEventArgs e)
+        {
+            var dataParamter = e.InputDataParameter as IDictionary<string, object>;
+
+            InitCommand(e.CommandSql, dataParamter, e.CommandType);
+        }
 
         public abstract void Dispose();
     }

@@ -23,11 +23,6 @@ namespace FoxzyDBSql.DBInterface
             ReSet();
         }
 
-        public abstract string ParametersPlaceholder
-        {
-            get;
-        }
-
         public abstract AbsDbExpression Update(string tb);
 
         public abstract AbsDbExpression Delete(string table);

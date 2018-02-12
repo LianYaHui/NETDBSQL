@@ -16,15 +16,8 @@ namespace FoxzyDBSql.SqlServer
 
         private bool disposed = false;
 
+        private SqlParameterConvert ParameterConvert;
 
-        SqlParameterConvert _ParameterConvert = new SqlParameterConvert();
-        protected override IDbParameterConvert ParameterConvert
-        {
-            get
-            {
-                return _ParameterConvert;
-            }
-        }
 
         /// <summary>
         /// 用连接字符串初始化新的实例
@@ -75,7 +68,7 @@ namespace FoxzyDBSql.SqlServer
             Command.Connection = (Connection);
             Command.CommandType = type;
 
-            var paraList = ParameterConvert.FromDictionaryToParameters(pars);
+            var paraList = ParameterConvert.FromDictionaryToParameters(pars, ParameterIndex);
             Command.Parameters.AddRange(paraList.ToArray());
         }
 
@@ -90,7 +83,7 @@ namespace FoxzyDBSql.SqlServer
             Command.Connection = (Connection);
             Command.CommandType = type;
 
-            var paraList = ParameterConvert.FromObjectToParameters(pars);
+            var paraList = ParameterConvert.FromObjectToParameters(pars, ParameterIndex);
             Command.Parameters.AddRange(paraList.ToArray());
         }
 
@@ -121,34 +114,6 @@ namespace FoxzyDBSql.SqlServer
             InitCommand(command, pars, type);
 
             return Command.ExecuteReader();
-        }
-
-
-
-        /// <summary>
-        /// 执行一段Sql,返回受影响的行数
-        /// </summary>
-        /// <param name="command">sql 语句</param>
-        /// <param name="pars">参数集</param>
-        /// <param name="type">CommandType 指定执行的是sql,还是存储过程</param>
-        /// <returns>受影响的行数。</returns>
-        public override int ExecuteNonQuery(string command,
-            IEnumerable<IDataParameter> pars = null,
-            CommandType type = CommandType.Text,
-            bool isDispose = true)
-        {
-            InitCommand(command, pars, type);
-            int _result = Command.ExecuteNonQuery();
-            if (isDispose) Dispose();
-            return _result;
-        }
-
-        public override int ExecuteNonQuery(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
-        {
-            InitCommand(command, pars, type);
-            int _result = Command.ExecuteNonQuery();
-            if (isDispose) Dispose();
-            return _result;
         }
 
         public override int ExecuteNonQuery(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)

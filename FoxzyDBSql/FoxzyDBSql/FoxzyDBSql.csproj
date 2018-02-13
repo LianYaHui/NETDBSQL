@@ -38,6 +38,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\EntityVerificationAttribute.cs" />
+    <Compile Include="Common\InputParamterType.cs" />
+    <Compile Include="Common\PropertyHelper.cs" />
+    <Compile Include="DataParameterEventArgs.cs" />
     <Compile Include="DBInterface\IDbCRUD.cs" />
     <Compile Include="Common\ValueConvertAttribute.cs" />
     <Compile Include="DBInterface\DBSqlKeyObject.cs" />
@@ -51,11 +55,12 @@
     <Compile Include="DBInterface\IDbTranstion.cs" />
     <Compile Include="DBInterface\PaginationSelect.cs" />
     <Compile Include="DBInterface\ISqlSkip.cs" />
+    <Compile Include="Events.cs" />
     <Compile Include="OleDb\OleDbManageUtil.cs" />
-    <Compile Include="OnTranstion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlServer\SqlDbCRUD.cs" />
     <Compile Include="SqlServer\SqlDBOnExpression.cs" />
+    <Compile Include="SqlServer\SqlEnvParameter.cs" />
     <Compile Include="SqlServer\SqlExpression.cs" />
     <Compile Include="SqlServer\SqlManageUtil.cs" />
     <Compile Include="SqlServer\SqlPaginationSelect.cs" />

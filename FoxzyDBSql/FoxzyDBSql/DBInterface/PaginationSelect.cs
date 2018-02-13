@@ -40,7 +40,7 @@ namespace FoxzyDBSql.DBInterface
                 throw new ArgumentNullException("baseSql");
 
             this.BaseSql = baseSql;
-            this.DataParameters = ParameterConvert.FromDictionaryToParameters(pars);
+            this.DataParameters = ParameterConvert.FromDictionaryToParameters(pars, db.ParameterIndex);
 
             return this;
         }
@@ -51,7 +51,7 @@ namespace FoxzyDBSql.DBInterface
                 throw new ArgumentNullException("baseSql");
 
             this.BaseSql = baseSql;
-            this.DataParameters = ParameterConvert.FromObjectToParameters(pars);
+            this.DataParameters = ParameterConvert.FromObjectToParameters(pars, db.ParameterIndex);
 
             return this;
         }

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FoxzyDBSql.DBInterface
 {
-    internal interface IDbCRUD
+    public interface IDbCRUD
     {
         string BuildSelect();
 

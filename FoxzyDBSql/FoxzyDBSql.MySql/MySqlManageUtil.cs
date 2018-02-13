@@ -63,7 +63,7 @@ namespace FoxzyDBSql.MySql
             Command.Parameters.AddRange(pars.ToArray());
         }
 
-        protected override void InitCommand(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text)
+        protected override void InitCommand(string command, IDictionary<string, object> pars = null, CommandType type = CommandType.Text)
         {
             OpenConncetion();
 
@@ -101,24 +101,9 @@ namespace FoxzyDBSql.MySql
         /// <param name="pars"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public override IDataReader ExecuteDataReader(string command,
-            IEnumerable<IDataParameter> pars = null,
-            CommandType type = CommandType.Text)
-        {
-            InitCommand(command, pars, type);
-
-            return Command.ExecuteReader();
-        }
-        public override IDataReader ExecuteDataReader(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text)
-        {
-            InitCommand(command, pars, type);
-            return Command.ExecuteReader();
-        }
-
         public override IDataReader ExecuteDataReader(string command, object pars = null, CommandType type = CommandType.Text)
         {
-            InitCommand(command, pars, type);
-
+            BuilderCommand(command, pars, type);
             return Command.ExecuteReader();
         }
 
@@ -140,28 +125,9 @@ namespace FoxzyDBSql.MySql
         /// <param name="pars">参数集</param>
         /// <param name="type">CommandType 指定执行的是sql,还是存储过程</param>
         /// <returns>结果集中第一行的第一列。</returns>
-        public override object ExecuteScalar(string command,
-            IEnumerable<IDataParameter> pars = null,
-            CommandType type = CommandType.Text,
-            bool isDispose = true)
-        {
-            InitCommand(command, pars, type);
-            object _result = Command.ExecuteScalar();
-            if (isDispose) Dispose();
-            return _result;
-        }
-
-        public override object ExecuteScalar(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
-        {
-            InitCommand(command, pars, type);
-            object _result = Command.ExecuteScalar();
-            if (isDispose) Dispose();
-            return _result;
-        }
-
         public override object ExecuteScalar(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
         {
-            InitCommand(command, pars, type);
+            BuilderCommand(command, pars, type);
             object _result = Command.ExecuteScalar();
             if (isDispose) Dispose();
             return _result;
@@ -215,45 +181,12 @@ namespace FoxzyDBSql.MySql
         /// <param name="pars">参数集</param>
         /// <param name="type">CommandType 指定执行的是sql,还是存储过程</param>
         /// <returns>执行sql生成的数据集。</returns>
-        public override DataSet FillDataSet(string command,
-            IEnumerable<IDataParameter> pars = null,
-            CommandType type = CommandType.Text,
-            bool isDispose = true)
-        {
-            DataAdapter = new MySqlDataAdapter();
-            DataSet DBDataSet = new DataSet();
-
-            InitCommand(command, pars, type);
-            DataAdapter.SelectCommand = Command;
-
-
-            DataAdapter.Fill(DBDataSet);
-
-            if (isDispose) Dispose();
-            return DBDataSet;
-
-        }
-
-        public override DataSet FillDataSet(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
-        {
-            DataAdapter = new MySqlDataAdapter();
-            DataSet DBDataSet = new DataSet();
-
-            InitCommand(command, pars, type);
-            DataAdapter.SelectCommand = Command;
-            DataAdapter.Fill(DBDataSet);
-
-            if (isDispose) Dispose();
-            return DBDataSet;
-
-        }
-
         public override DataSet FillDataSet(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
         {
             DataAdapter = new MySqlDataAdapter();
             DataSet DBDataSet = new DataSet();
 
-            InitCommand(command, pars, type);
+            BuilderCommand(command, pars, type);
             DataAdapter.SelectCommand = Command;
 
             DataAdapter.Fill(DBDataSet);

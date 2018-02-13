@@ -16,15 +16,8 @@ namespace FoxzyDBSql.SqlServer
 
         private bool disposed = false;
 
+        private SqlParameterConvert ParameterConvert;
 
-        SqlParameterConvert _ParameterConvert = new SqlParameterConvert();
-        protected override IDbParameterConvert ParameterConvert
-        {
-            get
-            {
-                return _ParameterConvert;
-            }
-        }
 
         /// <summary>
         /// 用连接字符串初始化新的实例
@@ -64,7 +57,7 @@ namespace FoxzyDBSql.SqlServer
             Command.Parameters.AddRange(pars.ToArray());
         }
 
-        protected override void InitCommand(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text)
+        protected override void InitCommand(string command, IDictionary<string, object> pars = null, CommandType type = CommandType.Text)
         {
             OpenConncetion();
 
@@ -75,7 +68,7 @@ namespace FoxzyDBSql.SqlServer
             Command.Connection = (Connection);
             Command.CommandType = type;
 
-            var paraList = ParameterConvert.FromDictionaryToParameters(pars);
+            var paraList = ParameterConvert.FromDictionaryToParameters(pars, ParameterIndex);
             Command.Parameters.AddRange(paraList.ToArray());
         }
 
@@ -90,7 +83,7 @@ namespace FoxzyDBSql.SqlServer
             Command.Connection = (Connection);
             Command.CommandType = type;
 
-            var paraList = ParameterConvert.FromObjectToParameters(pars);
+            var paraList = ParameterConvert.FromObjectToParameters(pars, ParameterIndex);
             Command.Parameters.AddRange(paraList.ToArray());
         }
 
@@ -102,58 +95,16 @@ namespace FoxzyDBSql.SqlServer
         /// <param name="pars"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public override IDataReader ExecuteDataReader(string command,
-            IEnumerable<IDataParameter> pars = null,
-            CommandType type = CommandType.Text)
-        {
-            InitCommand(command, pars, type);
-
-            return Command.ExecuteReader();
-        }
-        public override IDataReader ExecuteDataReader(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text)
-        {
-            InitCommand(command, pars, type);
-            return Command.ExecuteReader();
-        }
-
         public override IDataReader ExecuteDataReader(string command, object pars = null, CommandType type = CommandType.Text)
         {
-            InitCommand(command, pars, type);
+            BuilderCommand(command, pars, type);
 
             return Command.ExecuteReader();
-        }
-
-
-
-        /// <summary>
-        /// 执行一段Sql,返回受影响的行数
-        /// </summary>
-        /// <param name="command">sql 语句</param>
-        /// <param name="pars">参数集</param>
-        /// <param name="type">CommandType 指定执行的是sql,还是存储过程</param>
-        /// <returns>受影响的行数。</returns>
-        public override int ExecuteNonQuery(string command,
-            IEnumerable<IDataParameter> pars = null,
-            CommandType type = CommandType.Text,
-            bool isDispose = true)
-        {
-            InitCommand(command, pars, type);
-            int _result = Command.ExecuteNonQuery();
-            if (isDispose) Dispose();
-            return _result;
-        }
-
-        public override int ExecuteNonQuery(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
-        {
-            InitCommand(command, pars, type);
-            int _result = Command.ExecuteNonQuery();
-            if (isDispose) Dispose();
-            return _result;
         }
 
         public override int ExecuteNonQuery(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
         {
-            InitCommand(command, pars, type);
+            BuilderCommand(command, pars, type);
             int _result = Command.ExecuteNonQuery();
             if (isDispose) Dispose();
             return _result;
@@ -168,28 +119,9 @@ namespace FoxzyDBSql.SqlServer
         /// <param name="pars">参数集</param>
         /// <param name="type">CommandType 指定执行的是sql,还是存储过程</param>
         /// <returns>结果集中第一行的第一列。</returns>
-        public override object ExecuteScalar(string command,
-            IEnumerable<IDataParameter> pars = null,
-            CommandType type = CommandType.Text,
-            bool isDispose = true)
-        {
-            InitCommand(command, pars, type);
-            object _result = Command.ExecuteScalar();
-            if (isDispose) Dispose();
-            return _result;
-        }
-
-        public override object ExecuteScalar(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
-        {
-            InitCommand(command, pars, type);
-            object _result = Command.ExecuteScalar();
-            if (isDispose) Dispose();
-            return _result;
-        }
-
         public override object ExecuteScalar(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
         {
-            InitCommand(command, pars, type);
+            BuilderCommand(command, pars, type);
             object _result = Command.ExecuteScalar();
             if (isDispose) Dispose();
             return _result;
@@ -242,45 +174,12 @@ namespace FoxzyDBSql.SqlServer
         /// <param name="pars">参数集</param>
         /// <param name="type">CommandType 指定执行的是sql,还是存储过程</param>
         /// <returns>执行sql生成的数据集。</returns>
-        public override DataSet FillDataSet(string command,
-            IEnumerable<IDataParameter> pars = null,
-            CommandType type = CommandType.Text,
-            bool isDispose = true)
-        {
-            DataAdapter = new SqlDataAdapter();
-            DataSet DBDataSet = new DataSet();
-
-            InitCommand(command, pars, type);
-            DataAdapter.SelectCommand = Command;
-
-
-            DataAdapter.Fill(DBDataSet);
-
-            if (isDispose) Dispose();
-            return DBDataSet;
-
-        }
-
-        public override DataSet FillDataSet(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
-        {
-            DataAdapter = new SqlDataAdapter();
-            DataSet DBDataSet = new DataSet();
-
-            InitCommand(command, pars, type);
-            DataAdapter.SelectCommand = Command;
-            DataAdapter.Fill(DBDataSet);
-
-            if (isDispose) Dispose();
-            return DBDataSet;
-
-        }
-
         public override DataSet FillDataSet(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
         {
             DataAdapter = new SqlDataAdapter();
             DataSet DBDataSet = new DataSet();
 
-            InitCommand(command, pars, type);
+            BuilderCommand(command, pars, type);
             DataAdapter.SelectCommand = Command;
 
             DataAdapter.Fill(DBDataSet);

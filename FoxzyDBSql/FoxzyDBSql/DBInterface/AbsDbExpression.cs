@@ -11,7 +11,7 @@ namespace FoxzyDBSql.DBInterface
 {
     public abstract class AbsDbExpression
     {
-        internal DBSqlKeyObject _keyObject = null;
+        public DBSqlKeyObject _keyObject = null;
 
         public void ReSet()
         {
@@ -21,11 +21,6 @@ namespace FoxzyDBSql.DBInterface
         public AbsDbExpression()
         {
             ReSet();
-        }
-
-        public abstract string ParametersPlaceholder
-        {
-            get;
         }
 
         public abstract AbsDbExpression Update(string tb);

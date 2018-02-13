@@ -8,7 +8,7 @@ using System.Text;
 
 namespace FoxzyDBSql.DBInterface
 {
-    internal class DBSqlKeyObject
+    public class DBSqlKeyObject
     {
         public SqlExceType SqlType { set; get; }
 

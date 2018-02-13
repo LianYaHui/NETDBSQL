@@ -14,14 +14,6 @@ namespace FoxzyDBSql.OleDb
         OleDbCommand Command = null;
         OleDbDataAdapter DataAdapter = null;
 
-        protected override IDbParameterConvert ParameterConvert
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         public override void OpenConncetion()
         {
             Connection = new OleDbConnection(ConncetionString);
@@ -45,68 +37,7 @@ namespace FoxzyDBSql.OleDb
             Command.Parameters.AddRange(pars.ToArray());
         }
 
-        public override int ExecuteNonQuery(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text,
-            bool isDispose = true)
-        {
-            try
-            {
-                InitCommand(command, pars, type);
-                int _result = Command.ExecuteNonQuery();
-                Dispose();
-                return _result;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
 
-        public override System.Data.IDataReader ExecuteDataReader(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text)
-        {
-            InitCommand(command, pars, type);
-            try
-            {
-                return Command.ExecuteReader();
-            }
-            catch (Exception ex) { throw ex; }
-        }
-
-        public override object ExecuteScalar(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text,
-            bool isDispose = true)
-        {
-            try
-            {
-                InitCommand(command, pars, type);
-                object _result = Command.ExecuteScalar();
-                Dispose();
-                return _result;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public override System.Data.DataSet FillDataSet(string command, IEnumerable<System.Data.IDataParameter> pars = null, System.Data.CommandType type = CommandType.Text,
-            bool isDispose = true)
-        {
-            DataAdapter = new OleDbDataAdapter();
-            DataSet DBDataSet = new DataSet();
-
-            InitCommand(command, pars, type);
-            DataAdapter.SelectCommand = Command;
-
-            try
-            {
-                DataAdapter.Fill(DBDataSet);
-                Dispose();
-                return DBDataSet;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
 
         public override AbsDbExpression CreateSelect()
         {
@@ -140,37 +71,21 @@ namespace FoxzyDBSql.OleDb
             throw new NotImplementedException();
         }
 
-        public override int ExecuteNonQuery(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public override int ExecuteNonQuery(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
         {
             throw new NotImplementedException();
         }
 
-        public override IDataReader ExecuteDataReader(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text)
-        {
-            throw new NotImplementedException();
-        }
 
         public override IDataReader ExecuteDataReader(string command, object pars = null, CommandType type = CommandType.Text)
         {
             throw new NotImplementedException();
         }
 
-        public override object ExecuteScalar(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
-        {
-            throw new NotImplementedException();
-        }
 
         public override object ExecuteScalar(string command, object pars = null, CommandType type = CommandType.Text, bool isDispose = true)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override DataSet FillDataSet(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text, bool isDispose = true)
         {
             throw new NotImplementedException();
         }
@@ -180,7 +95,7 @@ namespace FoxzyDBSql.OleDb
             throw new NotImplementedException();
         }
 
-        protected override void InitCommand(string command, Dictionary<string, object> pars = null, CommandType type = CommandType.Text)
+        protected override void InitCommand(string command, IDictionary<string, object> pars = null, CommandType type = CommandType.Text)
         {
             throw new NotImplementedException();
         }

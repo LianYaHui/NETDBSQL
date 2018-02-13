@@ -13,14 +13,22 @@ namespace FoxzyDBSql.Common
             return Regex.Replace(sourceTest, " {2,}", " ");
         }
 
-        public static string GetFieldName(string ParameterName, string placeHolder)
-        {
-            if (string.IsNullOrEmpty(placeHolder))
-                throw new NullReferenceException("placeHolder");
-            if (string.IsNullOrEmpty(ParameterName))
-                throw new NullReferenceException("ParameterName");
 
-            return ParameterName.TrimStart(placeHolder.ToCharArray());
+
+        public static string BuilderParameterName(string placeholder, string name, int index)
+        {
+            string result = string.Empty;
+
+            if (index > 0)
+            {
+                result = $"{placeholder}{name}_{index}";
+            }
+            else
+            {
+                result = $"{placeholder}{name}";
+            }
+
+            return result;
         }
     }
 }

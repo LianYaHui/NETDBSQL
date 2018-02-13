@@ -14,38 +14,24 @@ namespace FoxzyDBSql.SqlServer
     /// </summary>
     public class SqlParameterConvert : IDbParameterConvert
     {
-        private List<string> fieldsList = new List<string>();
+        public static string __ParametersPlaceholder { get; set; }
 
-        public static string ParametersPlaceholder { get; set; }
-
-        public IEnumerable<string> GetFields
+        public IEnumerable<IDataParameter> FromDictionaryToParameters(IDictionary<string, object> objPara, int index)
         {
-            get
-            {
-                return fieldsList;
-            }
-        }
-
-        public IEnumerable<IDataParameter> FromDictionaryToParameters(Dictionary<string, object> objPara)
-        {
-            fieldsList.Clear();
-
             List<SqlParameter> ListParas = new List<SqlParameter>();
             if (objPara == null)
                 return ListParas;
 
             foreach (var d in objPara)
             {
-                fieldsList.Add(d.Key);
-                ListParas.Add(new SqlParameter(ParametersPlaceholder + d.Key, d.Value));
+                ListParas.Add(new SqlParameter(
+                   $"{__ParametersPlaceholder}{d.Key}_{index}", d.Value));
             }
             return ListParas;
         }
 
-        public IEnumerable<IDataParameter> FromObjectToParameters(object objPara, params string[] ignoreFields)
+        public IEnumerable<IDataParameter> FromObjectToParameters(object objPara, int index, params string[] ignoreFields)
         {
-            fieldsList.Clear();
-
             List<SqlParameter> ListParas = new List<SqlParameter>();
             if (objPara == null)
                 return ListParas;
@@ -70,9 +56,7 @@ namespace FoxzyDBSql.SqlServer
                 if (val == null)
                     continue;
 
-                fieldsList.Add(p.Name);
-
-                ListParas.Add(new SqlParameter(ParametersPlaceholder + p.Name, val));
+                ListParas.Add(new SqlParameter($"{__ParametersPlaceholder}{p.Name}_{index}", val));
             }
 
             return ListParas;

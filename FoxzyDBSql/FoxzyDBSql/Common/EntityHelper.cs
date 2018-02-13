@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -32,24 +33,41 @@ namespace FoxzyDBSql.Common
                     object FiledValue = null;
                     string farmatName = FieldName;
 
-                    var ValueConvert = enProperty.GetCustomAttributes(true).FirstOrDefault(attr => attr is ValueConvertAttribute);
-
                     try
                     {
-                        if (sourceTable.Columns.Contains(FieldName))
-                            FiledValue = row[FieldName];
-                        if (ValueConvert != null)
-                            FiledValue = (ValueConvert as ValueConvertAttribute).ConvertToModel(row, FiledValue);
+                        FiledValue = enProperty.GetValueFromDataRow(row, farmat);
 
                         if (FiledValue != null)
                             enProperty.SetValue(entity, FiledValue, null);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Trace.WriteLine($"【{DateTime.Now}】【EntityHelper.ToEntity()】- 【Entity:{entityType.FullName}】-【{FieldName}】 赋值错误，FiledValue = {FiledValue},Error:{ex.Message}");
+
                         //跳过为此属性赋值
                         continue;
                     }
                 }
+
+                try
+                {
+                    var Verifications = entityType.GetCustomAttributes(true)
+                                      .Where(attr => attr is EntityVerificationAttribute);
+
+
+                    var _verifications = Verifications.OfType<EntityVerificationAttribute>().OrderBy(attr => attr.ExecuteIndex);
+                    foreach (EntityVerificationAttribute verifica in _verifications)
+                    {
+                        verifica.Verification(row, entity);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine($"【{DateTime.Now}】【EntityHelper.ToEntity()】- 【Entity:{entityType.FullName}】 验证错误，Error:{ex.Message}");
+                    //跳过为此属性赋值
+                    continue;
+                }
+
 
                 resultList.Add(entity);
             }

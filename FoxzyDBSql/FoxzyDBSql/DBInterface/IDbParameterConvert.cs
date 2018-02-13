@@ -13,15 +13,13 @@ namespace FoxzyDBSql.DBInterface
         /// </summary>
         /// <param name="objPara"></param>
         /// <returns></returns>
-        IEnumerable<IDataParameter> FromObjectToParameters(object objPara, params string[] ignoreFields);
+        IEnumerable<IDataParameter> FromObjectToParameters(object objPara, int index, params string[] ignoreFields);
 
         /// <summary>
         /// 从字典对象反射成为dbParameters参数集
         /// </summary>
         /// <param name="objPara"></param>
         /// <returns></returns>
-        IEnumerable<IDataParameter> FromDictionaryToParameters(Dictionary<string, object> objPara);
-
-        IEnumerable<string> GetFields { get; }
+        IEnumerable<IDataParameter> FromDictionaryToParameters(IDictionary<string, object> objPara, int index);
     }
 }

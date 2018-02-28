@@ -16,6 +16,6 @@ namespace FoxzyDBSql.DBInterface
         /// </summary>
         event OnTranstionEvent OnTranstion;
 
-        bool StartTranstion(IsolationLevel isolationLevel);
+        bool StartTranstion(dynamic TranstionData, IsolationLevel isolationLevel);
     }
 }

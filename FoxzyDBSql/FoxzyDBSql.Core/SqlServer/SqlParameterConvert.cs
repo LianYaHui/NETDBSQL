@@ -14,7 +14,7 @@ namespace FoxzyDBSql.SqlServer
     /// </summary>
     public class SqlParameterConvert : IDbParameterConvert
     {
-        public static string __ParametersPlaceholder { get; set; }
+        private static string __ParametersPlaceholder = SqlEnvParameter.ParametersPlaceholder;
 
         public IEnumerable<IDataParameter> FromDictionaryToParameters(IDictionary<string, object> objPara, int index)
         {
@@ -25,7 +25,10 @@ namespace FoxzyDBSql.SqlServer
             foreach (var d in objPara)
             {
                 ListParas.Add(new SqlParameter(
-                   $"{__ParametersPlaceholder}{d.Key}_{index}", d.Value));
+                   $"{__ParametersPlaceholder}{d.Key}_{index}", d.Value)
+                {
+                    SourceColumn = d.Key
+                });
             }
             return ListParas;
         }
@@ -56,7 +59,10 @@ namespace FoxzyDBSql.SqlServer
                 if (val == null)
                     continue;
 
-                ListParas.Add(new SqlParameter($"{__ParametersPlaceholder}{p.Name}_{index}", val));
+                ListParas.Add(new SqlParameter($"{__ParametersPlaceholder}{p.Name}_{index}", val)
+                {
+                    SourceColumn = p.Name
+                });
             }
 
             return ListParas;

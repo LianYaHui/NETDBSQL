@@ -16,7 +16,7 @@ namespace FoxzyDBSql.SqlServer
 
         private bool disposed = false;
 
-        private SqlParameterConvert ParameterConvert;
+        private SqlParameterConvert ParameterConvert = SqlEnvParameter.ParameterConvert;
 
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace FoxzyDBSql.SqlServer
         /// </summary>
         public event OnTranstionEvent OnTranstion;
 
-        public bool StartTranstion(IsolationLevel isolationLevel = IsolationLevel.Unspecified)
+        public bool StartTranstion(dynamic TranstionData = null, IsolationLevel isolationLevel = IsolationLevel.Unspecified)
         {
             if (OnTranstion == null)
                 return false;
@@ -261,7 +261,7 @@ namespace FoxzyDBSql.SqlServer
 
             try
             {
-                OnTranstion.Invoke(this, EventArgs.Empty);
+                OnTranstion.Invoke(this, new TranstionEventArgs(TranstionData));
                 sqlTran.Commit();
             }
             catch

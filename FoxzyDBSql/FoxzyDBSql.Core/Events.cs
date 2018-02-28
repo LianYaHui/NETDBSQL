@@ -7,7 +7,7 @@ namespace FoxzyDBSql
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    public delegate void OnTranstionEvent(object sender, EventArgs e);
+    public delegate void OnTranstionEvent(object sender, TranstionEventArgs e);
 
 
     /// <summary>

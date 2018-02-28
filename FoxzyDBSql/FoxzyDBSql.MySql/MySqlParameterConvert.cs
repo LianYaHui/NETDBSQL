@@ -15,9 +15,7 @@ namespace FoxzyDBSql.MySql
     /// </summary>
     public class MySqlParameterConvert : IDbParameterConvert
     {
-        public string __ParametersPlaceholder = MySqlEnvParameter.ParametersPlaceholder;
-
-
+        private string __ParametersPlaceholder = MySqlEnvParameter.ParametersPlaceholder;
 
         public IEnumerable<IDataParameter> FromDictionaryToParameters(IDictionary<string, object> objPara, int index)
         {

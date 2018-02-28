@@ -257,7 +257,7 @@ namespace FoxzyDBSql.MySql
         /// </summary>
         public event OnTranstionEvent OnTranstion;
 
-        public bool StartTranstion(IsolationLevel isolationLevel = IsolationLevel.Unspecified)
+        public bool StartTranstion(dynamic TranstionData = null, IsolationLevel isolationLevel = IsolationLevel.Unspecified)
         {
             if (OnTranstion == null)
                 return false;
@@ -274,7 +274,7 @@ namespace FoxzyDBSql.MySql
 
             try
             {
-                OnTranstion.Invoke(this, EventArgs.Empty);
+                OnTranstion.Invoke(this, new TranstionEventArgs(TranstionData));
                 sqlTran.Commit();
             }
             catch
